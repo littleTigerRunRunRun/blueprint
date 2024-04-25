@@ -15,6 +15,6 @@ export class Connection<A extends Node, B extends Node> extends ClassicPreset.Co
 
 export type Schemes = GetSchemes<
   Node,
-  Connection<UniNode<'text'|'number', string|number>, UniNode<'text'|'number', string|number>>
+  Connection<Node, Node>
 >
 export type AreaExtra = VueArea2D<Schemes> | ContextMenuExtra

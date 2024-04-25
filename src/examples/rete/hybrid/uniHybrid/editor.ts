@@ -6,7 +6,7 @@ import { ControlFlowEngine, DataflowEngine } from 'rete-engine'
 import { ContextMenuPlugin, Presets as ContextMenuPresets } from "rete-context-menu-plugin"
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin'
 
-import { type Schemes, type AreaExtra, UniNode, getCreateUniNode, Connection } from './define'
+import { type Schemes, type AreaExtra, getCreateUniNode, Connection } from './define'
 
 export async function createEditor(
   container: HTMLElement,

@@ -11,7 +11,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, type Ref } from 'vue'
 // import { createEditor } from './basic/editor' // retejs基础示例
-import { createEditor } from './dasv/editor' // dasv风格练手示例
+import { createEditor } from './editor' // dasv风格练手示例
 
 export default defineComponent({
   name: 'ReteDataflow',

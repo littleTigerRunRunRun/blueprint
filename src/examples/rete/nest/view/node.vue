@@ -9,7 +9,7 @@
     data-testid="node"
   >
     <div class="border" />
-    <div class="customized-title">{{ data.label }}</div>
+    <div class="customized-title">{{ data.label }}{{ data.id }}</div>
     <div class="customized-content">
       <div class="content-block align-right">
         <div class="content-block-title">事件</div>

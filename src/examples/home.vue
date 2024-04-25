@@ -35,8 +35,14 @@
       </router-link>
       <router-link to="/rete-customization">
         <div class="example">
-          <img src="../assets/hybrid.png" />
+          <img src="../assets/customization.png" />
           <span>自定义样式</span>
+        </div>
+      </router-link>
+      <router-link to="/rete-nest">
+        <div class="example">
+          <img src="../assets/customization.png" />
+          <span>节点嵌套</span>
         </div>
       </router-link>
     </div>
@@ -44,8 +50,8 @@
     <div class="content">
       <router-link to="/ast-basic">
         <div class="example">
-          <img src="../assets/controlflow.png" />
-          <span>AST解析示例</span>
+          <img src="../assets/errorMonitor.png" />
+          <span>报错监听插入（AST）</span>
         </div>
       </router-link>
     </div>
@@ -80,7 +86,7 @@ html, body {
   width: 100%;
   height: 100%;
   .title{
-    padding: 40px 0 0 40px;
+    padding: 20px 0 0 40px;
     font-size: 24px;
   }
   .content{

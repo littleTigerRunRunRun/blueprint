@@ -1,6 +1,6 @@
 <template>
   <div class="rete-renderer">
-    <div class="rete-details">蓝图节点全局报错监听模型（见控制台）</div>
+    <div class="rete-details">基于AST的报错监听插入（处理内容见控制台）</div>
     <div class="rete-functions"></div>
     <div class="rete-renderer-container"></div>
   </div>
