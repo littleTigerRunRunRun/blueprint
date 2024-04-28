@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.3.6",
     "@babel/generator": "^7.24.4",
     "@babel/parser": "^7.24.4",
     "@babel/traverse": "^7.24.1",

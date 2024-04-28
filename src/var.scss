@@ -4,3 +4,8 @@ $mainThemeColor: #75b5ff;
   height: $height;
   line-height: $height;
 }
+
+@mixin fullsize() {
+  width: 100%;
+  height: 100%;
+}
