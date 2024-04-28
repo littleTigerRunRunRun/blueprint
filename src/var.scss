@@ -1,0 +1,6 @@
+$mainThemeColor: #75b5ff;
+
+@mixin SameLineHeight($height) {
+  height: $height;
+  line-height: $height;
+}
