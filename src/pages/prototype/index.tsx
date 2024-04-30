@@ -1,7 +1,8 @@
-import { useState } from 'react'
+// import { useState } from 'react'
 import { Layout } from 'antd'
 import './index.scss'
 import NodePanel from './components/NodePanel'
+import Blueprint from './components/blueprint'
 
 function Prototype() {
   // const [collapsed, setCollapsed] = useState(false)
@@ -13,6 +14,7 @@ function Prototype() {
         <NodePanel>
         </NodePanel>
         <Layout>
+          <Blueprint />
         </Layout>
       </Layout>
     </div>

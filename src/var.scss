@@ -1,5 +1,23 @@
+// 平台核心主题色
 $mainThemeColor: #75b5ff;
 
+// 色表
+$red: #F35353;
+$green: #3DB900;
+$blue: #009EF1;
+$orange: #F1A900;
+$purple: #C77EFF;
+$gray: #444444;
+
+// 定义类型用色表
+$typeBoolean: $red;
+$typeString: $green;
+$typeNumber: $blue;
+$typeObject: $orange;
+$typeBoolean: $purple;
+$typeUnknow: $gray;
+
+// 工具函数
 @mixin SameLineHeight($height) {
   height: $height;
   line-height: $height;

@@ -2,4 +2,7 @@
 
 .prototype-main{
   @include fullsize;
+  * {
+    user-select: none;
+  }
 }
