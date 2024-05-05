@@ -1,13 +1,20 @@
-import { useRete } from 'rete-react-plugin'
+// import { useRef } from 'react'
 import { createEditor } from './editor'
+import './index.scss'
 
 function Blueprint() {
-  const ref = useRete(createEditor) as never;
+  let container // = useRef(null)
+
+  const onMounted = (ref:HTMLDivElement | null) => {
+    container = ref
+    if (ref) createEditor(ref)
+  }
 
   return (
-    <div>
-      <div ref={ref} style={{ height: '100%', width: '100%' }} />
-    </div>
+    <div
+      className="blueprint-container"
+      ref={onMounted}
+    />
   )
 }
 

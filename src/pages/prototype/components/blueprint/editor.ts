@@ -5,6 +5,7 @@ import { ReactPlugin, Presets, type ReactArea2D } from "rete-react-plugin"
 import type { SelectorEntity } from 'rete-area-plugin/_types/extensions/selectable.d'
 // import { getDOMSocketPosition } from 'rete-render-utils'
 import { structures } from 'rete-structures'
+import { createRoot } from 'react-dom/client'
 
 class SizeNode extends ClassicPreset.Node {
   width?: number
@@ -28,7 +29,7 @@ export async function createEditor(container: HTMLElement) {
   const editor = new NodeEditor<Schemes>()
   const area = new AreaPlugin<Schemes, AreaExtra>(container)
   const connection = new ConnectionPlugin<Schemes, AreaExtra>()
-  const render = new ReactPlugin<Schemes, AreaExtra>()
+  const render = new ReactPlugin<Schemes, AreaExtra>({ createRoot })
 
   class MySelector<E extends SelectorEntity> extends AreaExtensions.Selector<E> {
     add(entity:E, accumulate:boolean):void {

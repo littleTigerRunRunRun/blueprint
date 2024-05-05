@@ -1,0 +1,13 @@
+.blueprint-container{
+  width: 100%;
+  height: 100%;
+  background-color: #262626;
+  background-image:
+    linear-gradient(#0f0f0f 1.5px, transparent 1.5px),
+    linear-gradient(90deg, #0f0f0f 1.5px, transparent 1.5px),
+    linear-gradient(#333333 1.5px, transparent 1.5px),
+    linear-gradient(90deg, #333333 1.5px, #262626 1.5px);
+  background-size: 200px 200px, 200px 200px, 25px 25px, 25px 25px;
+  background-position: -1.5px -1.5px, -1.5px -1.5px, -1.5px -1.5px, -1.5px -1.5px;
+}
+/* radial-gradient(circle at center, #555 1px, transparent 2px); */
