@@ -46,7 +46,7 @@
       &.align-right {
         text-align: right;
         padding-right: 8px;
-        .content--socket-line{
+        .content-socket-line{
           .socket-container {
             right: -13px; /* 8 + 5*/
           }
@@ -55,7 +55,7 @@
       &.align-left {
         text-align: left;
         padding-left: 8px;
-        .content--socket-line{
+        .content-socket-line{
           .socket-container {
             left: -13px; /* 8 + 5*/
           }
@@ -71,7 +71,7 @@
         letter-spacing: 1px;
         color: #666;
       }
-      .content--socket-line{
+      .content-socket-line{
         position: relative;
         height: 24px;
         line-height: 24px;
@@ -82,6 +82,16 @@
           position: absolute;
           border-radius: 50%;
           top: 7px; /* 24 / 2 - 5 */
+          .output-socket, .input-socket {
+            width: 10px;
+            height: 10px;
+            display: block;
+            &>span {
+              width: 100%;
+              height: 100%;
+              display: block;
+            }
+          }
         }
       }
     }

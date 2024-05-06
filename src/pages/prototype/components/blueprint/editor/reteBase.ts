@@ -11,6 +11,7 @@ import type { Size } from "rete-scopes-plugin/_types/types"
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin'
 // import { structures } from 'rete-structures'
 import { createRoot } from 'react-dom/client'
+
 import type { Schemes, AreaExtra, StarMapAbilityDefine, StarmapGraph, StarmapAllNode, StarmapAllConnection } from './define'
 import { StarMapAbility } from './define'
 import { NodeView, GroupView, ConnectionView, SocketView } from './view'
@@ -56,7 +57,7 @@ export async function createEditor(container: HTMLElement, abilities:StarMapAbil
   const render = new ReactPlugin<Schemes, AreaExtra>({ createRoot })
   const scopes = new ScopesPlugin<Schemes>({
     elder: scopeElder,
-    size: (id:string, size:Size) => {
+    size: (_id:string, size:Size) => {
       return {
         width: Math.max(size.width, groupMiniSize.width),
         height: Math.max(size.height, groupMiniSize.height)
@@ -81,9 +82,9 @@ export async function createEditor(container: HTMLElement, abilities:StarMapAbil
   render.addPreset(
     Presets.classic.setup({
       socketPositionWatcher: getDOMSocketPosition({
-        offset: (position, _nodeId, _side, _key) => {
+        offset: (position, _nodeId, side, _key) => {
           return {
-            x: position.x - 5, // (side === 'output' ? -5 : 0),
+            x: position.x + (side === 'output' ? 5 : -5),
             y: position.y
           }
         }

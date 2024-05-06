@@ -37,7 +37,7 @@ export function NodeView(props: Props) {
           outputs.map(([key, output]) => {
             if (!output) return
             return <div
-              className="content--socket-line"
+              className="content-socket-line"
               key={`${key}`}
             >
               { output.label }
@@ -49,6 +49,7 @@ export function NodeView(props: Props) {
                   socketKey={key}
                   nodeId={id}
                   payload={output.socket}
+                  data-testid="output-socket"
                 />
               </div>
             </div>
@@ -74,7 +75,7 @@ export function NodeView(props: Props) {
           inputs.map(([key, input]) => {
             if (!input) return
             return <div
-              className="content--socket-line"
+              className="content-socket-line"
               key={`${key}`}
             >
               { input.label }
@@ -86,6 +87,7 @@ export function NodeView(props: Props) {
                   socketKey={key}
                   nodeId={id}
                   payload={input.socket}
+                  data-testid="input-socket"
                 />
               </div>
               {

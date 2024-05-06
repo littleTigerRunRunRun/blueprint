@@ -1,8 +1,10 @@
-// import { useState } from 'react'
+// import { useRef } from 'react'
 import { Layout } from 'antd'
 import './index.scss'
 import NodePanel from './components/NodePanel'
 import Blueprint from './components/blueprint'
+
+const { Sider } = Layout
 
 function Prototype() {
   // const [collapsed, setCollapsed] = useState(false)
@@ -10,9 +12,9 @@ function Prototype() {
   return (
     <div className="prototype-main">
       <Layout style={{ height: '100%' }}>
-        {/* <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}> */}
-        <NodePanel>
-        </NodePanel>
+        <Sider width="240" className="node-panel">
+          <NodePanel />
+        </Sider>
         <Layout>
           <Blueprint />
         </Layout>
