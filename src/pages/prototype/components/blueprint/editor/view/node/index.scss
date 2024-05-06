@@ -1,0 +1,89 @@
+.customized-node{
+  border-radius: 4px;
+  box-sizing: border-box;
+  position: relative;
+  * {
+    user-select: none;
+  }
+  &.selected {
+    .border {
+      border: 2px solid #0772ff;
+      filter: drop-shadow(0px 0px 4px rgba(7, 114, 255, 0.4));
+    }
+  }
+  .border {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.6);
+  }
+  .customized-title{
+    width: 100%;
+    height: 32px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    background: #1A1A1A;
+    border-radius: 4px 4px 0 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    line-height: 32px;
+    font-size: 14px;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+  .customized-content{
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 0 0 4px 4px;
+    background: #232323;
+    .content-block{
+      padding-bottom: 8px;
+      border-bottom: 1px solid #333333;
+      &.align-right {
+        text-align: right;
+        padding-right: 8px;
+        .content--socket-line{
+          .socket-container {
+            right: -13px; /* 8 + 5*/
+          }
+        }
+      }
+      &.align-left {
+        text-align: left;
+        padding-left: 8px;
+        .content--socket-line{
+          .socket-container {
+            left: -13px; /* 8 + 5*/
+          }
+        }
+      }
+      &.no-next {
+        border:none;
+      }
+      .content-block-title{
+        height: 28px;
+        line-height: 28px;
+        font-size: 12px;
+        letter-spacing: 1px;
+        color: #666;
+      }
+      .content--socket-line{
+        position: relative;
+        height: 24px;
+        line-height: 24px;
+        font-size: 12px;
+        letter-spacing: 2px;
+        color: #efefef;
+        .socket-container {
+          position: absolute;
+          border-radius: 50%;
+          top: 7px; /* 24 / 2 - 5 */
+        }
+      }
+    }
+  }
+}

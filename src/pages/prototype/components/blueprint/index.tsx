@@ -1,19 +1,27 @@
-// import { useRef } from 'react'
-import { createEditor } from './editor'
+import { useEffect, useRef } from 'react'
+import { starmap, type StarmapEditor } from './editor'
 import './index.scss'
 
 function Blueprint() {
-  let container // = useRef(null)
+  const container = useRef<HTMLDivElement>(null)
 
-  const onMounted = (ref:HTMLDivElement | null) => {
-    container = ref
-    if (ref) createEditor(ref)
-  }
+  useEffect(() => {
+    let editor:StarmapEditor|undefined
+    if (container.current && !editor) {
+      starmap(container.current).then((edit) => {
+        editor = edit
+      })
+    }
+    
+    return () => {
+      if (editor) editor.destroy()
+    }
+  }, [])
 
   return (
     <div
       className="blueprint-container"
-      ref={onMounted}
+      ref={container}
     />
   )
 }
