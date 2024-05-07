@@ -1,6 +1,6 @@
 import { type GetSchemes, ClassicPreset } from "rete"
 import type { ReactArea2D } from "rete-react-plugin"
-import type { StarmapAllConnection, StarmapAllNode, StarmapGraph } from './data'
+import type { StarmapAllConnection, StarmapAllNode, StarmapGraph, StarmapNode, StarmapInput, StarmapOutput, StarmapControl } from './data'
 import { UniNode } from '@/lib/uniNode'
 
 export * from './data'
@@ -31,7 +31,27 @@ export interface AbilityHotKeyConfig {
 }
 
 export interface StarmapNodeDefine {
-
+  name: string
+  label: string
+  define: {
+    theme: string
+    // parent?: string
+    // nest?: NestConfig // 可否成为容器节点
+    // children?: Array<NodeId>
+    // label: string // 节点名称
+    inputs: {
+      [name: string]: StarmapInput
+    }
+    outputs: {
+      [name: string]: StarmapOutput
+    }
+    controls: {
+      [name: string]: StarmapControl
+    }
+    // status: {
+    //   error: boolean // 错误节点，比如画布中已经删除但是在蓝图中仍然存在的节点
+    // }
+  }
 }
 
 export type StarMapAbilityDefine = Array<
@@ -44,15 +64,15 @@ type Level2StringInfo = Record<string, string | Record<string, string>>
 export interface StarmapTheme {
   node: {
     style: Level2StringInfo
-    themes: Level2StringInfo
+    themes: Record<string, Record<string, string>>
   }
   connection: {
     style: Level2StringInfo
-    themes: Level2StringInfo
+    themes: Record<string, Record<string, string>>
   }
   socket: {
     style: Level2StringInfo
-    themes: Level2StringInfo
+    themes: Record<string, Record<string, string>>
   }
   globalStyle: Level2StringInfo
 }
@@ -69,4 +89,5 @@ export interface StarmapEditor {
   destroy: () => void
   export: () => StarmapGraph<StarmapAllNode, StarmapAllConnection>
   import: (data:StarmapGraph<StarmapAllNode, StarmapAllConnection>) => void
+  dropAdd: (item: StarmapNodeDefine|null) => void
 }

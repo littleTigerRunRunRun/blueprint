@@ -32,10 +32,29 @@
     top: 8%;
     transform: translate(-50%, -50%);
     background-color: #2d2d2d;
-    box-shadow: 0 0 3px 1px rgba(0, 0, 0, 1);
+    box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.6);
     button{
+      background-color: #3c3c3c;
+      box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.6);
+      --wave-color: #fff;
+      cursor: pointer;
       &:not(:first-child) {
         margin-left: 8px;
+      }
+      &:not(:disabled):not(.ant-btn-disabled) {
+        &:focus, &:hover, &:active{
+          border: none;
+          outline: none;
+          background-color: lighten(#3c3c3c, 10%);
+        }
+        &:focus {
+          background-color: #3c3c3c;
+          box-shadow: inset 0 0 3px 1px rgba(0, 0, 0, 0.6);
+        }
+      }
+      .anticon{
+        font-size: 12px;
+        filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.6));
       }
     }
   }

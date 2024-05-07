@@ -25,6 +25,7 @@ export type UniControl<T extends 'text'|'number', N = T extends 'text' ? string 
 export type UniNodeConfig<K extends 'number'|'text', N extends number | string, T extends UniSocket<K>, S extends UniControl<K>> = {
   label:string
   type?:string
+  theme?:string
   hasChildren?:boolean
   width:number
   height:number // todo:更希望高度可以传入一个计算标准来自适应计算
@@ -51,18 +52,20 @@ export class UniNode<T extends 'number'|'text', N extends number | string> exten
   type?:string
   hasChildren:boolean = false
   parent?:string
+  theme:string = ''
   updateOutputControls?:(controlIds:Array<string>) => void
   dataOperation?:(inputs: Record<string, Array<N>>, self:UniNode<T, N>) => { [key:string]: N }
   executeOperation?:(forward: (output:string) => void, self:UniNode<T, N>) => void
   inputKeys:Array<string>
   outputKeys:Array<string>
   controlKeys:Array<string>
-  constructor({ label, width = 180, height = 150, type, hasChildren, inputs, outputs, controls, dataOperation, executeOperation }:UniNodeConfig<T, N, UniSocket<T>, UniControl<T>>) {
+  constructor({ label, width = 180, height = 150, type, theme, hasChildren, inputs, outputs, controls, dataOperation, executeOperation }:UniNodeConfig<T, N, UniSocket<T>, UniControl<T>>) {
     super(label)
 
     this.width = width
     this.height = height
     this.type = type
+    if (theme) this.theme = theme
     this.dataOperation = dataOperation
     this.executeOperation = executeOperation
     if (hasChildren) {

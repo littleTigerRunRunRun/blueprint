@@ -1,16 +1,36 @@
 import { Tabs } from 'antd'
 import './NodePanel.scss'
-import { tabs } from './NodePanelUse'
+import { createTabs } from './NodePanelUse'
+import { useEffect } from 'react'
+import { StarmapNodeDefine } from '../components/blueprint/editor'
 
-function NodePanel() {
+declare interface NodePanelProps {
+  setDragging(item:StarmapNodeDefine|null):void
+}
+
+function NodePanel(props:NodePanelProps) {
   // const [collapsed, setCollapsed] = useState(false)
-  
+  const onDragStart = (item:StarmapNodeDefine) => {
+    props.setDragging(item)
+  }
+
+  const onDragEnd = () => {
+    props.setDragging(null)
+  }
+  document.body.addEventListener('mouseup', onDragEnd)
+
+  useEffect(() => {
+    return () => {
+      document.body.removeEventListener('mouseup', onDragEnd)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <Tabs
       tabPosition="left"
       type="card"
-      items={tabs}
+      items={createTabs(onDragStart)}
       defaultActiveKey='1'
     />
   )

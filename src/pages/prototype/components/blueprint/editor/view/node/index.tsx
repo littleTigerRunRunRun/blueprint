@@ -1,10 +1,12 @@
 import './index.scss'
 import type { Schemes } from '../../define'
 import { RenderEmit, Presets } from 'rete-react-plugin'
+import { Tooltip } from 'antd'
+import { getNodeTheme } from '../../defaultTheme'
 
 const { RefSocket, RefControl } = Presets.classic
 
-type NodeExtraData = { width?: number; height?: number }
+type NodeExtraData = { width?: number; height?: number, theme?: string }
 
 type Props = {
   data: Schemes["Node"] & NodeExtraData
@@ -18,6 +20,7 @@ export function NodeView(props: Props) {
   const controls = Object.entries(props.data.controls)
   const selected = props.data.selected || false
   const { id, label, width, height } = props.data
+  const theme = getNodeTheme(props.data.theme)
 
   return <div
     className={`customized-node ${selected ? 'selected' : ''}`}
@@ -28,9 +31,26 @@ export function NodeView(props: Props) {
     data-testid="node"
   >
     <div className="border" />
-    <div className="customized-title">{ label }{ id }</div>
-    <div className="customized-content">
-      <div className="content-block align-right">
+    <Tooltip title={`${label}${id}`} color={'#35bfff'}>
+      <div
+        className="customized-title"
+        style={{
+          backgroundColor: theme.title
+        }}
+      >{ label }{ id }</div>
+    </Tooltip>
+    <div
+      className="customized-content"
+      style={{
+        backgroundColor: theme.content
+      }}
+    >
+      <div
+        className="content-block align-right"
+        style={{
+          borderColor: theme.cateBorder
+        }}
+      >
         <div className="content-block-title">事件</div>
         {
           /* Outputs */
@@ -68,7 +88,12 @@ export function NodeView(props: Props) {
           ) : null
         })
       }
-      <div className="content-block align-left no-next">
+      <div
+        className="content-block align-left no-next"
+        style={{
+          borderColor: theme.cateBorder
+        }}
+      >
         <div className="content-block-title">动作</div>
         {
           /* Inputs */

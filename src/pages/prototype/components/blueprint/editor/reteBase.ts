@@ -6,53 +6,60 @@ import type { SelectorEntity } from 'rete-area-plugin/_types/extensions/selectab
 import { getDOMSocketPosition } from 'rete-render-utils'
 import { ScopesPlugin, Presets as ScopesPresets } from '@/lib/rete-extend/rete-scopes-plugin'
 import type { Size } from "rete-scopes-plugin/_types/types"
+import { DropAddPlugin} from './drop-add-plugin'
 // import { ScopesPlugin, Presets as ScopesPresets } from 'rete-scopes-plugin'
 // import { structures } from 'rete-structures'
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin'
 // import { structures } from 'rete-structures'
 import { createRoot } from 'react-dom/client'
 
-import type { Schemes, AreaExtra, StarMapAbilityDefine, StarmapGraph, StarmapAllNode, StarmapAllConnection } from './define'
+import type { Schemes, AreaExtra, StarMapAbilityDefine, StarmapGraph, StarmapAllNode, StarmapAllConnection, StarmapNodeDefine, StarmapTheme } from './define'
 import { StarMapAbility } from './define'
 import { NodeView, GroupView, ConnectionView, SocketView } from './view'
-import { getCreateUniNode, scopeElder } from '@/lib/uniNode'
+import { scopeElder, getCreateUniNode } from '@/lib/uniNode'
+import { setThemes } from './defaultTheme'
 
 const groupMiniSize = { width: 190, height: 150 }
 const createUniNode = getCreateUniNode<'text'|'number', string|number>({})
-const createSizeNode = () => {
-  return createUniNode({
-    label: '自定义节点',
-    type: 'common',
-    width: 150,
-    height: 177,
-    inputs: {
-      hide: { label: '隐藏' },
-      show: { label: '显示' }
-    },
-    outputs: {
-      onVisibleSwitch: { label: '切换显隐' }
-    },
-    controls: {}
-  })
-}
-const createGroup = () => {
-  return createUniNode({
-    label: '分组',
-    type: 'group',
-    hasChildren: true,
-    width: groupMiniSize.width,
-    height: groupMiniSize.height,
-    inputs: {},
-    outputs: {},
-    controls: {}
-  })
-}
+// const createSizeNode = () => {
+//   return createUniNode({
+//     label: '自定义节点',
+//     type: 'common',
+//     width: 150,
+//     height: 177,
+//     inputs: {
+//       hide: { label: '隐藏' },
+//       show: { label: '显示' }
+//     },
+//     outputs: {
+//       onVisibleSwitch: { label: '切换显隐' }
+//     },
+//     controls: {}
+//   })
+// }
+// const createGroup = () => {
+//   return createUniNode({
+//     label: '分组',
+//     type: 'group',
+//     hasChildren: true,
+//     width: groupMiniSize.width,
+//     height: groupMiniSize.height,
+//     inputs: {},
+//     outputs: {},
+//     controls: {}
+//   })
+// }
 
-export async function createEditor(container: HTMLElement, abilities:StarMapAbilityDefine) {
-  const socket = new ClassicPreset.Socket("socket")
+export async function createEditor(config: {
+  container: HTMLElement,
+  abilities: StarMapAbilityDefine,
+  themes?: StarmapTheme
+}) {
+  const _socket = new ClassicPreset.Socket("socket")
+  setThemes(config.themes)
 
   const editor = new NodeEditor<Schemes>()
-  const area = new AreaPlugin<Schemes, AreaExtra>(container)
+  const area = new AreaPlugin<Schemes, AreaExtra>(config.container)
   const connection = new ConnectionPlugin<Schemes, AreaExtra>()
   const render = new ReactPlugin<Schemes, AreaExtra>({ createRoot })
   const scopes = new ScopesPlugin<Schemes>({
@@ -65,6 +72,18 @@ export async function createEditor(container: HTMLElement, abilities:StarMapAbil
     }
   })
   const arrange = new AutoArrangePlugin<Schemes>()
+  const dropAdd = new DropAddPlugin<Schemes>()
+  // {
+  //   onPointerEnter: () => {
+
+  //   },
+  //   onPointerLeave: () => {
+
+  //   },
+  //   onPointerMove: () => {
+
+  //   }
+  // }
 
   class MySelector<E extends SelectorEntity> extends AreaExtensions.Selector<E> {
     add(entity:E, accumulate:boolean):void {
@@ -114,9 +133,10 @@ export async function createEditor(container: HTMLElement, abilities:StarMapAbil
   area.use(render)
   area.use(scopes)
   area.use(arrange)
+  area.use(dropAdd)
 
   // 能力注册：
-  abilities.forEach(([name, config]) => {
+  config.abilities.forEach(([name, config]) => {
     switch (name) {
       case StarMapAbility.NODE_SELECTABLE: {
         AreaExtensions.selectableNodes(area, new MySelector(), {
@@ -131,29 +151,48 @@ export async function createEditor(container: HTMLElement, abilities:StarMapAbil
     }
   })
 
-  const a = createSizeNode()
-  await editor.addNode(a)
+  // const a = createSizeNode()
+  // await editor.addNode(a)
 
-  const b = createSizeNode()
-  await editor.addNode(b)
+  // const b = createSizeNode()
+  // await editor.addNode(b)
 
-  const group = createGroup()
-  await editor.addNode(group)
+  // const group = createGroup()
+  // await editor.addNode(group)
 
-  await area.translate(b.id, { x: 320, y: 0 })
+  // await area.translate(b.id, { x: 320, y: 0 })
 
-  await editor.addConnection(new ClassicPreset.Connection(a, "onVisibleSwitch", b, "hide"))
+  // await editor.addConnection(new ClassicPreset.Connection(a, "onVisibleSwitch", b, "hide"))
 
-  await arrange.layout()
-  AreaExtensions.zoomAt(area, editor.getNodes())
+  // await arrange.layout()
+  // AreaExtensions.zoomAt(area, editor.getNodes())
 
   return {
-    destroy: () => area.destroy(),
+    destroy: () => {
+      dropAdd.destroy()
+      area.destroy()
+    },
     import: (data:StarmapGraph<StarmapAllNode, StarmapAllConnection>) => {
       console.log('data', data)
     },
     export: () => {
       return {} as StarmapGraph<StarmapAllNode, StarmapAllConnection>
+    },
+    dropAdd: (item:StarmapNodeDefine|null) => {
+      if (item) {
+        dropAdd.add(() => {
+          return createUniNode({
+            label: item.label,
+            type: 'common',
+            theme: item.define.theme,
+            width: 150,
+            height: 177,
+            inputs: {},
+            outputs: {},
+            controls: {}
+          })
+        })
+      } else dropAdd.remove()
     }
   }
 }
