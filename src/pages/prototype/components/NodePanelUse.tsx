@@ -31,7 +31,7 @@ const tabContentList:Record<
                     name: 'clickItem',
                     type: 'output',
                     description: {
-                      dataType: StarmapDataType.object,
+                      dataType: StarmapDataType.OBJECT,
                       dataOnly: false
                     }
                   }
@@ -45,7 +45,7 @@ const tabContentList:Record<
                     name: 'updateData',
                     type: 'input',
                     description: {
-                      dataType: StarmapDataType.array,
+                      dataType: StarmapDataType.ARRAY,
                       dataOnly: false
                     }
                   }

@@ -136,7 +136,7 @@ export async function createEditor(config: {
   area.use(dropAdd)
 
   // 能力注册：
-  config.abilities.forEach(([name, config]) => {
+  config.abilities.forEach(([name, _config]) => {
     switch (name) {
       case StarmapAbility.NODE_SELECTABLE: {
         AreaExtensions.selectableNodes(area, new MySelector(), {
@@ -144,23 +144,8 @@ export async function createEditor(config: {
         })
         break
       }
-      case StarmapAbility.HOT_KEY: {
-        console.log('hotkey config', config)
-        break
-      }
     }
   })
-
-  // const a = createSizeNode()
-  // await editor.addNode(a)
-
-  // const b = createSizeNode()
-  // await editor.addNode(b)
-
-  // const group = createGroup()
-  // await editor.addNode(group)
-
-  // await area.translate(b.id, { x: 320, y: 0 })
 
   // await editor.addConnection(new ClassicPreset.Connection(a, "onVisibleSwitch", b, "hide"))
 
@@ -173,11 +158,17 @@ export async function createEditor(config: {
       area.destroy()
     },
     import: async (data:StarmapGraph<StarmapNode, StarmapConnection>) => {
-      editor.clear()
+      // 清空内容
+      await editor.clear()
+      // 归零内容
+      area.area.transform.k = 1
+      area.area.transform.x = 0
+      area.area.transform.y = 0
 
       // to do:根据节点间的父子级关系分顺序加入节点
       for (const nodeData of data.nodes) {
         const node = createUniNode({
+          nodeId: nodeData.nodeId,
           label: nodeData.label,
           type: 'common',
           theme: nodeData.theme,
@@ -192,6 +183,7 @@ export async function createEditor(config: {
         view?.translate(nodeData.position.x, nodeData.position.y)
       }
       await area.area.zoom(data.transform.scale, data.transform.x, data.transform.y)
+      console.log('now:', area.area.transform)
     },
     export: () => {
       console.log('nodes', editor.getNodes())
@@ -209,7 +201,7 @@ export async function createEditor(config: {
           const view = area.nodeViews.get(node.id)
           if (!view) throw new Error(`no node view when export data:${node.id}`)
           return {
-            id: node.id,
+            nodeId: node.nodeId,
             theme: node.theme,
             // parent?: string
             // nest?: NestConfig // 可否成为容器节点
@@ -231,6 +223,7 @@ export async function createEditor(config: {
       if (item) {
         dropAdd.add(() => {
           return createUniNode({
+            nodeId: item?.nodeId,
             label: item.label,
             type: 'common',
             theme: item.define.theme,

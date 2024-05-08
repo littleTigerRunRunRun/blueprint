@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { starmap, type StarmapEditor } from './editor'
 import './index.scss'
 import { BlueprintToolbar } from './tools'
-import { StarmapNodeDefine } from './editor/define'
+import { StarmapExec, StarmapNodeDefine } from './editor/define'
 
 declare interface BlueprintProps {
   dragging: StarmapNodeDefine|null
@@ -24,7 +24,7 @@ function Blueprint(props:BlueprintProps) {
     }
 
     if (editor) {
-      callExec('import')
+      editor.callExec(StarmapExec.IMPORT)
     }
     
     return () => {
@@ -32,24 +32,6 @@ function Blueprint(props:BlueprintProps) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor])
-
-  function callExec(exec:string) {
-    switch (exec) {
-      case 'import': {
-        const graphData = JSON.parse(localStorage.exportSaveData)
-        editor?.import(graphData)
-        break
-      }
-      case 'export': {
-        if (editor) {
-          const graphData = editor.export()
-          console.log('export', graphData)
-          localStorage.exportSaveData = JSON.stringify(graphData)
-        }
-        break
-      }
-    }
-  }
 
   function dropAdd() {
     editor?.dropAdd(props.dragging)
@@ -62,7 +44,7 @@ function Blueprint(props:BlueprintProps) {
 
   return (
     <div className="blueprint-container">
-      <BlueprintToolbar callExec={callExec} />
+      <BlueprintToolbar callExec={editor?.callExec} />
       <div className={`blueprint-ref ${opening ? 'show' : ''}`} ref={container} />
     </div>
   )

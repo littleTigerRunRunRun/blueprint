@@ -16,23 +16,31 @@ export type Schemes = GetSchemes<
 
 export type AreaExtra = ReactArea2D<Schemes>
 
+export type Callback = (...argus: unknown[]) => void
+
 export enum StarmapAbility {
   NODE_SELECTABLE,
   HOT_KEY
 }
 
 export enum StarmapExec {
-
+  IMPORT,
+  EXPORT,
+  DELETE_SELECT
 }
 
 export interface AbilityHotKeyConfig {
   key: string
-  excute: StarmapExec
+  exec: StarmapExec
 }
 
-
+export type StarmapAbilityDefine = Array<
+  [StarmapAbility.NODE_SELECTABLE] |
+  [StarmapAbility.HOT_KEY, Array<AbilityHotKeyConfig>]
+>
 
 export interface StarmapNodeDefine {
+  nodeId?:string // 区分于rete内部的id系统
   name: string
   label: string
   define: {
@@ -66,11 +74,6 @@ export interface StarmapNodeDefine {
   }
 }
 
-export type StarmapAbilityDefine = Array<
-  [StarmapAbility.NODE_SELECTABLE] |
-  [StarmapAbility.HOT_KEY, Array<AbilityHotKeyConfig>]
->
-
 export type Level2StringInfo = Record<string, Record<string, string>>
 
 export interface StarmapTheme {
@@ -102,4 +105,5 @@ export interface StarmapEditor {
   export: () => StarmapGraph<StarmapNode, StarmapConnection>
   import: (data:StarmapGraph<StarmapNode, StarmapConnection>) => void
   dropAdd: (item: StarmapNodeDefine|null) => void
+  callExec(exec:StarmapExec):void
 }

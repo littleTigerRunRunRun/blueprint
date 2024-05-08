@@ -690,6 +690,11 @@
   resolved "https://registry.npmmirror.com/@types/json-schema/-/json-schema-7.0.15.tgz"
   integrity sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==
 
+"@types/keyboardjs@^2.5.3":
+  version "2.5.3"
+  resolved "https://registry.npmmirror.com/@types/keyboardjs/-/keyboardjs-2.5.3.tgz#a84aa67c60ff6e9bfdd76ec847c6ed34cb3dd4cf"
+  integrity sha512-mYU/8h0CuZ+/25805vFqZk/2IxyTKoDlGF7BTLUQ6igewlBH6XoArgS2/kR5JKXrdA1hoF68aZoJ/rlaEMVQbg==
+
 "@types/node@^20.12.5":
   version "20.12.7"
   resolved "https://registry.npmmirror.com/@types/node/-/node-20.12.7.tgz"
@@ -1987,6 +1992,11 @@ json2mq@^0.2.0:
   integrity sha512-SzoRg7ux5DWTII9J2qkrZrqV1gt+rTaoufMxEzXbS26Uid0NwaJd123HcoB80TgubEppxxIGdNxCx50fEoEWQA==
   dependencies:
     string-convert "^0.2.0"
+
+keyboardjs@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.npmmirror.com/keyboardjs/-/keyboardjs-2.7.0.tgz#d4f6a56d9f3f1822d7383c6d2d39b12f534ffb2c"
+  integrity sha512-3tiQuAoLM1M5Xyo/eQVaqsq9joByTRkB0Byga+0S7BYJvY4HIlfW0SofOj4a20YSAFjv0SIFU/lw+Qjp6KYHPA==
 
 keyv@^4.5.3:
   version "4.5.4"

@@ -6,7 +6,7 @@ import { getNodeTheme } from '../../defaultTheme'
 
 const { RefSocket, RefControl } = Presets.classic
 
-type NodeExtraData = { width?: number; height?: number, theme?: string }
+type NodeExtraData = { width?: number; height?: number, theme?: string, nodeId?:string }
 
 type Props = {
   data: Schemes["Node"] & NodeExtraData
@@ -19,7 +19,7 @@ export function NodeView(props: Props) {
   const outputs = Object.entries(props.data.outputs)
   const controls = Object.entries(props.data.controls)
   const selected = props.data.selected || false
-  const { id, label, width, height } = props.data
+  const { id, nodeId, label, width, height } = props.data
   const { theme, style } = getNodeTheme(props.data.theme)
 
   return <div
@@ -41,7 +41,7 @@ export function NodeView(props: Props) {
         filter: selected ? `drop-shadow(${style.selected.dropShadow})` : ''
       }}
     />
-    <Tooltip title={`${label}${id}`} color={'#35bfff'}>
+    <Tooltip title={`${label}${nodeId}`} color={'#35bfff'}>
       <div
         className="customized-title"
         style={{
@@ -50,7 +50,7 @@ export function NodeView(props: Props) {
           lineHeight: style.title.height,
           ...style.title
         }}
-      >{ label }{ id }</div>
+      >{ label }{ nodeId }</div>
     </Tooltip>
     <div
       className="customized-content"

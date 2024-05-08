@@ -1,18 +1,18 @@
 // 本文件为蓝图编辑器所用到的数据结构的设计
-export const StarmapControlDataTypeMapping = {
-  input: 'string',
-  inputNumber: 'number',
-  select: 'unknow',
-  color: ['number', 'string'],
-  switch: 'boolean',
-}
+// export const StarmapControlDataTypeMapping = {
+//   input: 'string',
+//   inputNumber: 'number',
+//   select: 'unknow',
+//   color: ['number', 'string'],
+//   switch: 'boolean',
+// }
 
 export enum StarmapControlType {
-  'input',
-  'inputNumber',
-  'select',
-  'color',
-  'switch',
+  INPUT,
+  INPUTNUMBER,
+  SELECT,
+  COLOR,
+  SWITCH,
 }
 
 // control在节点上显示为一个可交互控件，而在将节点拆解为逻辑组合后能看到Control是一个变量节点
@@ -22,13 +22,13 @@ export type StarmapControl = {
 }
 
 export enum StarmapDataType {
-  'string',
-  'number',
-  'boolean',
-  'object',
-  'array',
-  'unknow',
-  'null',
+  STRING,
+  NUMBER,
+  BOOLEAN,
+  OBJECT,
+  ARRAY,
+  UNKNOW,
+  NULL,
 }
 
 export type StarmapPort = {
@@ -60,7 +60,7 @@ type NestConfig = {
 
 // 基础节点类型
 export type StarmapNode = {
-  id: NodeId
+  nodeId: NodeId
   theme: string
   parent?: string
   nest?: NestConfig // 可否成为容器节点
@@ -83,12 +83,12 @@ export type StarmapNode = {
 
 // 节点设计版本一
 export enum StarmapNodeType {
-  'IF_ELSE',
-  'TIME_DELAY',
-  'TIME_LOOP',
-  'GLOBAL_VARIABLE',
-  'SCENE_FILTER',
-  'SERIES_LOGIC',
+  IF_ELSE,
+  TIME_DELAY,
+  TIME_LOOP,
+  GLOBAL_VARIABLE,
+  SCENE_FILTER,
+  SERIES_LOGIC,
 }
 
 export type StarmapStaticNode = StarmapNode & {
@@ -98,13 +98,13 @@ export type StarmapStaticNode = StarmapNode & {
 // 节点设计版本二
 // 一些最基础的逻辑模块
 export enum StarmapPrimitive {
-  'CONSTANT',
-  'VARIABLE',
-  'IF_ELSE',
-  'SWITCH',
-  'CUSTOM_CODE',
-  'INPUT',
-  'OUTPUT',
+  CONSTANT,
+  VARIABLE,
+  IF_ELSE,
+  SWITCH,
+  CUSTOM_CODE,
+  INPUT,
+  OUTPUT,
 }
 
 // 一种描述原语逻辑的节点，每一个这样的节点都代表着一个对应的能转换成代码的逻辑意图

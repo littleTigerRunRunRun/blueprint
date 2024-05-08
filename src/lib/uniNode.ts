@@ -23,6 +23,7 @@ export type UniControl<T extends 'text'|'number', N = T extends 'text' ? string 
 }
 
 export type UniNodeConfig<K extends 'number'|'text', N extends number | string, T extends UniSocket<K>, S extends UniControl<K>> = {
+  nodeId?:string
   label:string
   type?:string
   theme?:string
@@ -47,6 +48,7 @@ export class UniNode<T extends 'number'|'text', N extends number | string> exten
   Record<string, ClassicPreset.Socket>,
   Record<string, ClassicPreset.InputControl<'number'|'text'>>
 >{
+  nodeId?:string
   width:number
   height:number
   type?:string
@@ -59,9 +61,10 @@ export class UniNode<T extends 'number'|'text', N extends number | string> exten
   inputKeys:Array<string>
   outputKeys:Array<string>
   controlKeys:Array<string>
-  constructor({ label, width = 180, height = 150, type, theme, hasChildren, inputs, outputs, controls, dataOperation, executeOperation }:UniNodeConfig<T, N, UniSocket<T>, UniControl<T>>) {
+  constructor({ nodeId, label, width = 180, height = 150, type, theme, hasChildren, inputs, outputs, controls, dataOperation, executeOperation }:UniNodeConfig<T, N, UniSocket<T>, UniControl<T>>) {
     super(label)
 
+    this.nodeId = nodeId || this.id
     this.width = width
     this.height = height
     this.type = type
