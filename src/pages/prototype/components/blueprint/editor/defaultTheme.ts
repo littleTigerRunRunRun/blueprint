@@ -1,8 +1,24 @@
-import { StarmapTheme } from "./define"
+import type { StarmapTheme, Level2StringInfo } from "./define"
 
 export const defaultTheme:StarmapTheme = {
   node: {
-    style: {},
+    style: {
+      main: {
+        borderRadius: '4px',
+        border: '1px solid rgba(0, 0, 0, 0.6)'
+      },
+      selected: {
+        border: '2px solid #0772ff',
+        dropShadow: '0px 0px 4px rgba(7, 114, 255, 0.4)'
+      },
+      title: {
+        height: '32px',
+        padding: '0 8px',
+        color: '#fff',
+        fontSize: '14px',
+        letterSpacing: '1px'
+      }
+    },
     themes: {
       gray: {
         id: 'gray',
@@ -73,12 +89,16 @@ function getThemes():StarmapTheme {
   return customTheme || defaultTheme
 }
 
-export function getNodeTheme(themeName?:string):Record<string, string> {
-  const nodeThemes = getThemes().node.themes
+export function getNodeTheme(themeName?:string):{ style: Level2StringInfo, theme: Record<string, string> } {
+  const nodeThemes = getThemes().node
+  const themes = nodeThemes.themes
   let theme:Record<string, string>|undefined
   if (themeName) {
-    theme = nodeThemes[themeName]
+    theme = themes[themeName]
   }
-  if (!theme) theme = nodeThemes[Object.keys(nodeThemes)[0]]
-  return theme
+  if (!theme) theme = themes[Object.keys(themes)[0]]
+  return {
+    style: nodeThemes.style,
+    theme
+  }
 }

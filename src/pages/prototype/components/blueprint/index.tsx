@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { starmap, type StarmapEditor } from './editor'
 import './index.scss'
 import { BlueprintToolbar } from './tools'
@@ -11,40 +11,52 @@ declare interface BlueprintProps {
 function Blueprint(props:BlueprintProps) {
   const container = useRef<HTMLDivElement>(null)
   const [opening, setOpening] = useState(false)
-  const [exec, callExec] = useState('')
   const [editor, setEditor] = useState<StarmapEditor>()
+  // let editor:StarmapEditor
 
   useEffect(() => {
     if (container.current && !editor) {
       starmap(container.current).then((edit) => {
-        setEditor(edit)
         setOpening(true)
+        setEditor(edit)
+        // editor = edit
       })
+    }
+
+    if (editor) {
+      callExec('import')
     }
     
     return () => {
       if (editor) editor.destroy()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [editor])
 
-  useEffect(() => {
+  function callExec(exec:string) {
     switch (exec) {
       case 'import': {
-        console.log('import')
+        const graphData = JSON.parse(localStorage.exportSaveData)
+        editor?.import(graphData)
         break
       }
       case 'export': {
-        console.log('export')
+        if (editor) {
+          const graphData = editor.export()
+          console.log('export', graphData)
+          localStorage.exportSaveData = JSON.stringify(graphData)
+        }
         break
       }
     }
-  }, [exec])
+  }
+
+  function dropAdd() {
+    editor?.dropAdd(props.dragging)
+  }
 
   useEffect(() => {
-    if (editor) {
-      editor.dropAdd(props.dragging)
-    }
+    dropAdd()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.dragging])
 

@@ -20,22 +20,35 @@ export function NodeView(props: Props) {
   const controls = Object.entries(props.data.controls)
   const selected = props.data.selected || false
   const { id, label, width, height } = props.data
-  const theme = getNodeTheme(props.data.theme)
+  const { theme, style } = getNodeTheme(props.data.theme)
 
   return <div
     className={`customized-node ${selected ? 'selected' : ''}`}
     style={{
       width: `${width}px`,
-      height: `${height}px`
+      height: `${height}px`,
+      borderRadius: style.main.borderRadius
     }}
     data-testid="node"
   >
-    <div className="border" />
+    <div
+      className="border"
+      style={{
+        width: `${width}px`,
+        height: `${height}px`,
+        borderRadius: style.main.borderRadius,
+        border: selected ? style.selected.border : style.main.border,
+        filter: selected ? `drop-shadow(${style.selected.dropShadow})` : ''
+      }}
+    />
     <Tooltip title={`${label}${id}`} color={'#35bfff'}>
       <div
         className="customized-title"
         style={{
-          backgroundColor: theme.title
+          backgroundColor: theme.title,
+          borderRadius: `${style.main.borderRadius} ${style.main.borderRadius} 0 0`,
+          lineHeight: style.title.height,
+          ...style.title
         }}
       >{ label }{ id }</div>
     </Tooltip>

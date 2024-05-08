@@ -1,5 +1,5 @@
 import { PieChartOutlined, MergeOutlined, DeploymentUnitOutlined } from '@ant-design/icons'
-import { StarmapNodeDefine } from '../components/blueprint/editor'
+import { StarmapNodeDefine, StarmapDataType } from '../components/blueprint/editor'
 
 export type DraggingExec = (item:StarmapNodeDefine) => void
 
@@ -22,9 +22,36 @@ const tabContentList:Record<
           label: '饼图',
           define: {
             theme: 'gray',
-            inputs: {},
-            outputs: {},
-            controls: {}
+            category: [
+              {
+                label: '事件',
+                content: [
+                  {
+                    label: '点击扇形',
+                    name: 'clickItem',
+                    type: 'output',
+                    description: {
+                      dataType: StarmapDataType.object,
+                      dataOnly: false
+                    }
+                  }
+                ]
+              },
+              {
+                label: '动作',
+                content: [
+                  {
+                    label: '更新数据',
+                    name: 'updateData',
+                    type: 'input',
+                    description: {
+                      dataType: StarmapDataType.array,
+                      dataOnly: false
+                    }
+                  }
+                ]
+              }
+            ]
           }
         }
       ] 
@@ -40,9 +67,7 @@ const tabContentList:Record<
           label: '分支判断',
           define: {
             theme: 'blue',
-            inputs: {},
-            outputs: {},
-            controls: {}
+            category: []
           }
         }
       ] 
@@ -58,9 +83,7 @@ const tabContentList:Record<
           label: '用户自定义逻辑组合1',
           define: {
             theme: 'orange',
-            inputs: {},
-            outputs: {},
-            controls: {}
+            category: []
           }
         }
       ] 

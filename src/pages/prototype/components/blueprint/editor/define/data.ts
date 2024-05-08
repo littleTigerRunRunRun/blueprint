@@ -31,27 +31,27 @@ export enum StarmapDataType {
   'null',
 }
 
-type Port = {
+export type StarmapPort = {
   dataType: StarmapDataType
   dataOnly: boolean
 }
 
-export type StarmapInput = Port & {
-  type: 'input'
-}
+// export type StarmapInput = Port & {
+//   type: 'input'
+// }
 
-export type StarmapOutput = Port & {
-  type: 'output'
-}
+// export type StarmapOutput = Port & {
+//   type: 'output'
+// }
 
 type NodeId = string
 
 type NestConfig = {
   innerInputs: {
-    [name: string]: StarmapInput
+    [name: string]: StarmapPort
   }
   innerOutputs: {
-    [name: string]: StarmapOutput
+    [name: string]: StarmapPort
   }
   innerControls: {
     [name: string]: StarmapControl
@@ -66,11 +66,12 @@ export type StarmapNode = {
   nest?: NestConfig // 可否成为容器节点
   children?: Array<NodeId>
   label: string // 节点名称
+  position: { x: number, y: number }
   inputs: {
-    [name: string]: StarmapInput
+    [name: string]: StarmapPort
   }
   outputs: {
-    [name: string]: StarmapOutput
+    [name: string]: StarmapPort
   }
   controls: {
     [name: string]: StarmapControl
@@ -164,7 +165,11 @@ export type StarmapAllConnection = StarmapControlConnection | StarmapDataConnect
 
 // 基础蓝图数据类
 export type StarmapGraph<N extends StarmapNode, C extends StarmapConnection> = {
-  // transform?:Transform // 全手动编辑的蓝图需要记录用户上次缩放、拖放画布的位置
+  transform:{
+    x: number
+    y: number
+    scale: number
+  }
   nodes: Array<N>
   connections: Array<C>
 }

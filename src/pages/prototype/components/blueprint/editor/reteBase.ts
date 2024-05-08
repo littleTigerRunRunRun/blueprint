@@ -13,10 +13,10 @@ import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-
 // import { structures } from 'rete-structures'
 import { createRoot } from 'react-dom/client'
 
-import type { Schemes, AreaExtra, StarMapAbilityDefine, StarmapGraph, StarmapAllNode, StarmapAllConnection, StarmapNodeDefine, StarmapTheme } from './define'
-import { StarMapAbility } from './define'
+import type { Schemes, AreaExtra, StarmapAbilityDefine, StarmapGraph, StarmapNode, StarmapConnection, StarmapNodeDefine, StarmapTheme } from './define'
+import { StarmapAbility } from './define'
 import { NodeView, GroupView, ConnectionView, SocketView } from './view'
-import { scopeElder, getCreateUniNode } from '@/lib/uniNode'
+import { scopeElder, getCreateUniNode, UniNode } from '@/lib/uniNode'
 import { setThemes } from './defaultTheme'
 
 const groupMiniSize = { width: 190, height: 150 }
@@ -52,7 +52,7 @@ const createUniNode = getCreateUniNode<'text'|'number', string|number>({})
 
 export async function createEditor(config: {
   container: HTMLElement,
-  abilities: StarMapAbilityDefine,
+  abilities: StarmapAbilityDefine,
   themes?: StarmapTheme
 }) {
   const _socket = new ClassicPreset.Socket("socket")
@@ -138,13 +138,13 @@ export async function createEditor(config: {
   // 能力注册：
   config.abilities.forEach(([name, config]) => {
     switch (name) {
-      case StarMapAbility.NODE_SELECTABLE: {
+      case StarmapAbility.NODE_SELECTABLE: {
         AreaExtensions.selectableNodes(area, new MySelector(), {
           accumulating: AreaExtensions.accumulateOnCtrl()
         })
         break
       }
-      case StarMapAbility.HOT_KEY: {
+      case StarmapAbility.HOT_KEY: {
         console.log('hotkey config', config)
         break
       }
@@ -172,11 +172,60 @@ export async function createEditor(config: {
       dropAdd.destroy()
       area.destroy()
     },
-    import: (data:StarmapGraph<StarmapAllNode, StarmapAllConnection>) => {
-      console.log('data', data)
+    import: async (data:StarmapGraph<StarmapNode, StarmapConnection>) => {
+      editor.clear()
+
+      // to do:根据节点间的父子级关系分顺序加入节点
+      for (const nodeData of data.nodes) {
+        const node = createUniNode({
+          label: nodeData.label,
+          type: 'common',
+          theme: nodeData.theme,
+          width: 150,
+          height: 177,
+          inputs: {},
+          outputs: {},
+          controls: {}
+        })
+        await editor.addNode(node)
+        const view = area.nodeViews.get(node.id)
+        view?.translate(nodeData.position.x, nodeData.position.y)
+      }
+      await area.area.zoom(data.transform.scale, data.transform.x, data.transform.y)
     },
     export: () => {
-      return {} as StarmapGraph<StarmapAllNode, StarmapAllConnection>
+      console.log('nodes', editor.getNodes())
+      console.log('connections', editor.getConnections())
+      // console.log('transform', area.area.transform)
+      const nodes:Array<UniNode<'text'|'number', string|number>> = editor.getNodes()
+      const transform = area.area.transform
+      return {
+        transform: {
+          x: transform.x,
+          y: transform.y,
+          scale: transform.k
+        },
+        nodes: nodes.map((node) => {
+          const view = area.nodeViews.get(node.id)
+          if (!view) throw new Error(`no node view when export data:${node.id}`)
+          return {
+            id: node.id,
+            theme: node.theme,
+            // parent?: string
+            // nest?: NestConfig // 可否成为容器节点
+            // children?: Array<NodeId>
+            position: view?.position,
+            label: node.label,
+            inputs: {},
+            outputs: {},
+            controls: {},
+            status: {
+              error: false
+            }
+          }
+        }),
+        connections: []
+      } as StarmapGraph<StarmapNode, StarmapConnection>
     },
     dropAdd: (item:StarmapNodeDefine|null) => {
       if (item) {

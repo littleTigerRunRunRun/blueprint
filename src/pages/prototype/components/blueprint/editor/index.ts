@@ -1,5 +1,5 @@
 import { createEditor } from './reteBase'
-import { StarmapEditorConfig, StarmapEditor, StarMapAbility } from './define'
+import { StarmapEditorConfig, StarmapEditor, StarmapAbility } from './define'
 
 export * from './define'
 
@@ -7,7 +7,7 @@ export async function starmap(container: HTMLElement, config?:StarmapEditorConfi
   const editor = await createEditor({
     container,
     abilities: (config && config?.abilities) || [
-      [StarMapAbility.NODE_SELECTABLE]
+      [StarmapAbility.NODE_SELECTABLE]
     ],
     themes: config && config?.theme
   })
