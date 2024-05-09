@@ -1,9 +1,11 @@
-import type { StarmapTheme, Level2StringInfo } from "./define"
+import { StarmapTheme, Level2StringInfo, StarmapDataType, StarmapNodeCategory } from "./define"
 
 export const defaultTheme:StarmapTheme = {
   node: {
     style: {
       main: {
+        width: '150px',
+        minHeight: '60px',
         borderRadius: '4px',
         border: '1px solid rgba(0, 0, 0, 0.6)'
       },
@@ -17,6 +19,28 @@ export const defaultTheme:StarmapTheme = {
         color: '#fff',
         fontSize: '14px',
         letterSpacing: '1px'
+      },
+      category: {
+        paddingVeritical: '8px',
+        paddingHorizontal: '8px',
+        borderBottomNotLast: '1px solid #333333',
+        socketOffset: '-12px'
+      },
+      blockTitle: {
+        height: '24px',
+        fontSize: '12px',
+        letterSpacing: '1px',
+        color: '#666666'
+      },
+      blockLine: {
+        height: '24px',
+        fontSize: '12px',
+        letterSpacing: '2px',
+        color: '#efefef'
+      },
+      socket: {
+        top: '8px',
+        size: '10px'
       }
     },
     themes: {
@@ -69,16 +93,59 @@ export const defaultTheme:StarmapTheme = {
     themes: {}
   },
   socket: {
-    style: {},
-    themes: {}
+    style: {
+      main: {
+        border: '1px solid #000'
+      }
+    },
+    themes: {
+      boolean: {
+        main: '#F35353'
+      },
+      string: {
+        main: '#3DB900'
+      },
+      number: {
+        main: '#009EF1'
+      },
+      object: {
+        main: '#F1A900'
+      },
+      array: {
+        main: '#C77EFF'
+      },
+      unknown: {
+        main: '#444444'
+      },
+      null: {
+        main: '#ffffff'
+      }
+    }
   },
   globalStyle: {}
 }
 
 let customTheme:StarmapTheme|undefined
 
-export function computeNodeSizeByDefine() {
-  
+export function computeNodeSizeByDefine(category:StarmapNodeCategory) {
+  const style = getThemes().node.style
+  let height = parseFloat(style.title.height)
+  category.forEach((cate, i) => {
+    height += (category[i + 1] && !category[i + 1].label) ? 0 : parseFloat(style.category.paddingVeritical)
+    if (cate.label) {
+      height += parseFloat(style.blockTitle.height)
+      if (i !== category.length) height += parseFloat(style.main.border.split(' ')[0]) // style.main.border
+    } else if (!category[i - 1] || category[i - 1].label) height += parseFloat(style.category.paddingVeritical)
+    // height += (cate.label ? parseFloat(style.blockTitle.height) : parseFloat(style.category.paddingVeritical))
+    cate.content.forEach(() => {
+      // 遇到控件的情况，要根据一个控件高度计算工具，来具体计算高度
+      height += parseFloat(style.blockLine.height)
+    })
+  })
+  return {
+    width: parseFloat(style.main.width),
+    height: Math.max(parseFloat(style.main.minHeight), height)
+  }
 }
 
 export function setThemes(themes?:StarmapTheme) {
@@ -100,5 +167,14 @@ export function getNodeTheme(themeName?:string):{ style: Level2StringInfo, theme
   return {
     style: nodeThemes.style,
     theme
+  }
+}
+
+export function getSocketTheme(dataType:StarmapDataType = StarmapDataType.UNKNOW) {
+  const socketThemes = getThemes().socket
+  const themes = socketThemes.themes
+  return {
+    style: socketThemes.style,
+    theme: themes[dataType]
   }
 }

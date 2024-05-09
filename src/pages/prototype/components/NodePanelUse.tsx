@@ -20,39 +20,33 @@ const tabContentList:Record<
         {
           name: 'pieChartSample',
           label: '饼图',
-          define: {
-            theme: 'gray',
-            category: [
-              {
-                label: '事件',
-                content: [
-                  {
-                    label: '点击扇形',
-                    name: 'clickItem',
-                    type: 'output',
-                    description: {
-                      dataType: StarmapDataType.OBJECT,
-                      dataOnly: false
-                    }
-                  }
-                ]
-              },
-              {
-                label: '动作',
-                content: [
-                  {
-                    label: '更新数据',
-                    name: 'updateData',
-                    type: 'input',
-                    description: {
-                      dataType: StarmapDataType.ARRAY,
-                      dataOnly: false
-                    }
-                  }
-                ]
-              }
-            ]
-          }
+          theme: 'gray',
+          category: [
+            {
+              label: '事件',
+              align: 'right',
+              content: [
+                {
+                  label: '点击扇形',
+                  name: 'clickItem',
+                  type: 'output',
+                  dataType: StarmapDataType.OBJECT
+                }
+              ]
+            },
+            {
+              label: '动作',
+              align: 'left',
+              content: [
+                {
+                  label: '更新数据',
+                  name: 'updateData',
+                  type: 'input',
+                  dataType: StarmapDataType.ARRAY
+                }
+              ]
+            }
+          ]
         }
       ] 
     }
@@ -65,10 +59,37 @@ const tabContentList:Record<
         {
           name: 'ifJudgement',
           label: '分支判断',
-          define: {
-            theme: 'blue',
-            category: []
-          }
+          theme: 'blue',
+          category: [
+            {
+              align: 'left',
+              content: [
+                {
+                  label: '判断条件',
+                  name: 'judgement',
+                  type: 'input',
+                  dataType: StarmapDataType.BOOLEAN
+                }
+              ]
+            },
+            {
+              align: 'right',
+              content: [
+                {
+                  label: '真',
+                  name: 'true',
+                  type: 'output',
+                  dataType: StarmapDataType.NULL
+                },
+                {
+                  label: '假',
+                  name: 'false',
+                  type: 'output',
+                  dataType: StarmapDataType.NULL
+                }
+              ]
+            }
+          ]
         }
       ] 
     }
@@ -81,10 +102,8 @@ const tabContentList:Record<
         {
           name: 'customCombination1',
           label: '用户自定义逻辑组合1',
-          define: {
-            theme: 'orange',
-            category: []
-          }
+          theme: 'orange',
+          category: []
         }
       ] 
     }

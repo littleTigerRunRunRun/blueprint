@@ -1,8 +1,19 @@
+import { getSocketTheme } from '../../defaultTheme'
 import './index.scss'
-import { ClassicPreset } from 'rete'
+import { UniSocket } from '../../uniNode'
 
-export function SocketView<T extends ClassicPreset.Socket>(_props: {
-  data: T
-}) {
-  return <div className="customized-socket"></div>
+declare interface SocketProps {
+  data: UniSocket
+}
+
+export function SocketView(props: SocketProps) {
+  const { style, theme } = getSocketTheme(props.data.type)
+
+  return <div
+    className="customized-socket"
+    style={{
+      background: theme.main,
+      border: style.main.border
+    }}
+  />
 }

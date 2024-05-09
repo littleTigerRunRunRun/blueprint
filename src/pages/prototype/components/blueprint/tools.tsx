@@ -1,5 +1,5 @@
 import { Button, Tooltip } from 'antd'
-import { ImportOutlined, ExportOutlined } from '@ant-design/icons'
+import { ImportOutlined, ExportOutlined, RestOutlined } from '@ant-design/icons'
 import { StarmapExec } from './editor'
 
 const toolbarList = [
@@ -12,6 +12,11 @@ const toolbarList = [
     name: StarmapExec.EXPORT,
     label: '导出',
     icon: <ExportOutlined />
+  },
+  {
+    name: StarmapExec.CLEAR,
+    label: '清空',
+    icon: <RestOutlined />
   }
 ]
 

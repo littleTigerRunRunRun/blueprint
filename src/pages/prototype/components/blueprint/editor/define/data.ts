@@ -1,39 +1,49 @@
 // 本文件为蓝图编辑器所用到的数据结构的设计
-// export const StarmapControlDataTypeMapping = {
-//   input: 'string',
-//   inputNumber: 'number',
-//   select: 'unknow',
-//   color: ['number', 'string'],
-//   switch: 'boolean',
-// }
-
 export enum StarmapControlType {
-  INPUT,
-  INPUTNUMBER,
-  SELECT,
-  COLOR,
-  SWITCH,
+  INPUT = 'input',
+  INPUTNUMBER = 'inputNumber',
+  SELECT = 'select',
+  COLOR = 'color',
+  SWITCH = 'switch',
+}
+
+export const StarmapControlDataTypeMapping = {
+  [StarmapControlType.INPUT]: 'string',
+  [StarmapControlType.INPUTNUMBER]: 'number',
+  [StarmapControlType.SELECT]: 'unknow',
+  [StarmapControlType.COLOR]: ['number', 'string'],
+  [StarmapControlType.SWITCH]: 'boolean',
 }
 
 // control在节点上显示为一个可交互控件，而在将节点拆解为逻辑组合后能看到Control是一个变量节点
-export type StarmapControl = {
+interface BaseControl {
   type: StarmapControlType
-  readonly: boolean // 是否只读
+  initial?: string | number | boolean | unknown
+  readonly?:boolean
+  change?:() => void
 }
+
+export interface InputControl extends BaseControl {
+  type: StarmapControlType.INPUT
+  initial: string
+}
+
+export interface InputNumberControl extends BaseControl {
+  type: StarmapControlType.INPUTNUMBER
+  initial: number
+}
+
+// 这个Control类型需要能被扩展
+export type StarmapControl = InputControl | InputNumberControl
 
 export enum StarmapDataType {
-  STRING,
-  NUMBER,
-  BOOLEAN,
-  OBJECT,
-  ARRAY,
-  UNKNOW,
-  NULL,
-}
-
-export type StarmapPort = {
-  dataType: StarmapDataType
-  dataOnly: boolean
+  STRING = 'string',
+  NUMBER = 'number',
+  BOOLEAN = 'boolean',
+  OBJECT = 'object',
+  ARRAY = 'array',
+  UNKNOW = 'unknow',
+  NULL = 'null',
 }
 
 // export type StarmapInput = Port & {
@@ -46,36 +56,46 @@ export type StarmapPort = {
 
 type NodeId = string
 
-type NestConfig = {
-  innerInputs: {
-    [name: string]: StarmapPort
-  }
-  innerOutputs: {
-    [name: string]: StarmapPort
-  }
-  innerControls: {
-    [name: string]: StarmapControl
-  }
+// 
+export type StarmapNodeCategory = Array<
+{
+  label?: string
+  align: 'left' | 'center' | 'right'
+  content: Array<
+    // dataTypeDecription
+    { label: string, name: string, type: 'input', dataType?: StarmapDataType, control?: StarmapControl } |
+    { label: string, name: string, type: 'control', control: StarmapControl }
+  > | Array<
+    { label: string, name: string, type: 'output', dataType?: StarmapDataType, control?: StarmapControl } |
+    { label: string, name: string, type: 'control', control: StarmapControl }
+  >
 }
+>
+
+// type NestConfig = {
+//   innerInputs: {
+//     [name: string]: StarmapSocket
+//   }
+//   innerOutputs: {
+//     [name: string]: StarmapSocket
+//   }
+//   innerControls: {
+//     [name: string]: StarmapControl
+//   }
+// }
 
 // 基础节点类型
 export type StarmapNode = {
   nodeId: NodeId
+  width: number
+  height: number
   theme: string
   parent?: string
-  nest?: NestConfig // 可否成为容器节点
+  nest?: StarmapNodeCategory // 可否成为容器节点
   children?: Array<NodeId>
   label: string // 节点名称
   position: { x: number, y: number }
-  inputs: {
-    [name: string]: StarmapPort
-  }
-  outputs: {
-    [name: string]: StarmapPort
-  }
-  controls: {
-    [name: string]: StarmapControl
-  }
+  category: StarmapNodeCategory
   status: {
     error: boolean // 错误节点，比如画布中已经删除但是在蓝图中仍然存在的节点
   }
@@ -83,12 +103,12 @@ export type StarmapNode = {
 
 // 节点设计版本一
 export enum StarmapNodeType {
-  IF_ELSE,
-  TIME_DELAY,
-  TIME_LOOP,
-  GLOBAL_VARIABLE,
-  SCENE_FILTER,
-  SERIES_LOGIC,
+  IF_ELSE = 'if_else',
+  TIME_DELAY = 'time_delay',
+  TIME_LOOP = 'time_loop',
+  GLOBAL_VARIABLE = 'global_variable',
+  SCENE_FILTER = 'scene_filter',
+  SERIES_LOGIC = 'series_logic',
 }
 
 export type StarmapStaticNode = StarmapNode & {
@@ -98,13 +118,13 @@ export type StarmapStaticNode = StarmapNode & {
 // 节点设计版本二
 // 一些最基础的逻辑模块
 export enum StarmapPrimitive {
-  CONSTANT,
-  VARIABLE,
-  IF_ELSE,
-  SWITCH,
-  CUSTOM_CODE,
-  INPUT,
-  OUTPUT,
+  CONSTANT = 'constant',
+  VARIABLE = 'variable',
+  IF_ELSE = 'if_else',
+  SWITCH = 'switch',
+  CUSTOM_CODE = 'custom_code',
+  INPUT = 'input',
+  OUTPUT = 'output',
 }
 
 // 一种描述原语逻辑的节点，每一个这样的节点都代表着一个对应的能转换成代码的逻辑意图

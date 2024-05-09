@@ -1,26 +1,23 @@
 import './index.scss'
-import type { Schemes } from '../../define'
+import { UniNode } from '../../uniNode'
+import { Schemes, StarmapDataType } from '../../define'
 import { RenderEmit, Presets } from 'rete-react-plugin'
 import { Tooltip } from 'antd'
 import { getNodeTheme } from '../../defaultTheme'
+import { Control } from 'rete/_types/presets/classic'
 
 const { RefSocket, RefControl } = Presets.classic
 
-type NodeExtraData = { width?: number; height?: number, theme?: string, nodeId?:string }
-
 type Props = {
-  data: Schemes["Node"] & NodeExtraData
-  styles?: () => unknown
+  data: UniNode
   emit: RenderEmit<Schemes>
 }
 
 export function NodeView(props: Props) {
-  const inputs = Object.entries(props.data.inputs)
-  const outputs = Object.entries(props.data.outputs)
-  const controls = Object.entries(props.data.controls)
   const selected = props.data.selected || false
-  const { id, nodeId, label, width, height } = props.data
+  const { nodeId, label, width, height, category, inputs, outputs, controls } = props.data
   const { theme, style } = getNodeTheme(props.data.theme)
+  // console.log(props)
 
   return <div
     className={`customized-node ${selected ? 'selected' : ''}`}
@@ -55,95 +52,100 @@ export function NodeView(props: Props) {
     <div
       className="customized-content"
       style={{
-        backgroundColor: theme.content
+        backgroundColor: theme.content,
+        borderRadius: `0 0 ${style.main.borderRadius} ${style.main.borderRadius}`
       }}
     >
-      <div
-        className="content-block align-right"
-        style={{
-          borderColor: theme.cateBorder
-        }}
-      >
-        <div className="content-block-title">事件</div>
-        {
-          /* Outputs */
-          outputs.map(([key, output]) => {
-            if (!output) return
-            return <div
-              className="content-socket-line"
-              key={`${key}`}
-            >
-              { output.label }
-              <div className="socket-container">
-                <RefSocket
-                  name="output-socket"
-                  side="output"
-                  emit={props.emit}
-                  socketKey={key}
-                  nodeId={id}
-                  payload={output.socket}
-                  data-testid="output-socket"
-                />
-              </div>
-            </div>
-          })
-        }
-      </div>
       {
-        controls.map(([key, control]) => {
-          return control ? (
-            <RefControl
-              key={key}
-              name="control"
-              emit={props.emit}
-              payload={control}
-            />
-          ) : null
-        })
-      }
-      <div
-        className="content-block align-left no-next"
-        style={{
-          borderColor: theme.cateBorder
-        }}
-      >
-        <div className="content-block-title">动作</div>
-        {
-          /* Inputs */
-          inputs.map(([key, input]) => {
-            if (!input) return
-            return <div
-              className="content-socket-line"
-              key={`${key}`}
+        category.map((cate, ci) => {
+          return (
+            <div
+              className={`content-block align-${cate.align}`}
+              style={{
+                borderColor: theme.cateBorder,
+                padding: `
+                  ${cate.label || (category[ci - 1] &&!category[ci - 1].label) ? '0' : style.category.paddingVeritical} 
+                  ${cate.align === 'left' ? '0' : style.category.paddingHorizontal} 
+                  ${category[ci + 1] && !category[ci + 1].label ? '0' : style.category.paddingVeritical} 
+                  ${cate.align === 'left' ? style.category.paddingHorizontal : '0'}
+                `,
+                borderBottom: (ci !== category.length - 1 && cate.label) ?style.category.borderBottomNotLast : '',
+                '--socket-offset': style.category.socketOffset
+              } as React.CSSProperties}
+              key={`cate_${ci}`}
             >
-              { input.label }
-              <div className="socket-container">
-                <RefSocket
-                  name="input-socket"
-                  emit={props.emit}
-                  side="input"
-                  socketKey={key}
-                  nodeId={id}
-                  payload={input.socket}
-                  data-testid="input-socket"
-                />
-              </div>
               {
-                input?.control && input?.showControl && (
-                  <span className="input-control">
-                    <RefControl
-                      key={key}
-                      name="input-control"
-                      emit={props.emit}
-                      payload={input.control}
-                    />
-                  </span>
-                )
+                (cate.label ? <div
+                  className="content-block-title"
+                  style={{
+                    lineHeight: style.blockTitle.height,
+                    ...style.blockTitle
+                  }}
+                >{ cate.label }</div> : '')
+              }
+              {
+                cate.content.map((item, ii) => {
+                  const port = item.type === 'input' ? inputs[item.name] : outputs[item.name]
+                  if (port && 'dataType' in item) port.socket.type = item.dataType || StarmapDataType.UNKNOW
+                  return <div
+                    className="content-socket-line"
+                    key={`content_${ci}_${ii}`}
+                    style={{
+                      lineHeight: style.blockLine.height,
+                      ...style.blockLine
+                    }}
+                  >
+                    { item.label }
+                    <div
+                      className="socket-container"
+                      style={{
+                        '--socket-size': style.socket.size,
+                        top: style.socket.top
+                      } as React.CSSProperties}
+                    >
+                      {
+                        item.type === 'control' ?
+                          <RefControl
+                            key={item.name}
+                            name="control"
+                            emit={props.emit}
+                            payload={controls[item.name]}
+                          />
+                        : (
+                          <>
+                            {/* {`${item.type}_${item.name}_${item.dataType}`} */}
+                            <RefSocket
+                              name={`${item.type}-socket`}
+                              side={item.type}
+                              emit={props.emit}
+                              socketKey={`socket_${item.type}_${item.name}`}
+                              nodeId={nodeId || ''}
+                              payload={(item.type === 'input' ? inputs[item.name]!.socket : outputs[item.name]!.socket)}
+                              data-testid={`${item.type}-socket`}
+                            />
+                            {
+                              item.type === 'input' && inputs[item.name]?.control && inputs[item.name]?.showControl ? (
+                                <span className="input-control">
+                                  <RefControl
+                                    key={`control_${item.type}_${item.name}`}
+                                    name="input-control"
+                                    emit={props.emit}
+                                    payload={inputs[item.name]!.control as Control}
+                                  />
+                                </span>
+                              ) : ''
+                            }
+                          </>
+                        )
+                      }
+                    </div>
+                  </div>
+                })
               }
             </div>
-          })
-        }
-      </div>
+          )
+        })
+      }
     </div>
   </div>
 }

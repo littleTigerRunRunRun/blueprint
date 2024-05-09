@@ -36,6 +36,10 @@ export async function starmap(container: HTMLElement, config?:StarmapEditorConfi
         console.log('delete')
         break
       }
+      case StarmapExec.CLEAR: {
+        editor.clear()
+        break
+      }
     }
   }
 

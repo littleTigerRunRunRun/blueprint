@@ -1,17 +1,19 @@
 import { type GetSchemes, ClassicPreset } from "rete"
 import type { ReactArea2D } from "rete-react-plugin"
-import type { StarmapConnection, StarmapNode, StarmapGraph, StarmapPort, StarmapControl } from './data'
-import { UniNode } from '@/lib/uniNode'
+import type { StarmapConnection, StarmapNode, StarmapGraph, StarmapNodeCategory, StarmapDataType } from './data'
+import { UniNode } from '../uniNode'
 
 export * from './data'
 
-type Node = UniNode<'text'|'number', string|number>
+export interface StarmapSocket extends ClassicPreset.Socket {
+  type: StarmapDataType
+}
 
-class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> {}
+class Connection<A extends UniNode, B extends UniNode> extends ClassicPreset.Connection<A, B> {}
 
 export type Schemes = GetSchemes<
-  Node,
-  Connection<Node, Node>
+  UniNode,
+  Connection<UniNode, UniNode>
 >
 
 export type AreaExtra = ReactArea2D<Schemes>
@@ -19,14 +21,15 @@ export type AreaExtra = ReactArea2D<Schemes>
 export type Callback = (...argus: unknown[]) => void
 
 export enum StarmapAbility {
-  NODE_SELECTABLE,
-  HOT_KEY
+  NODE_SELECTABLE = 'node_selectable',
+  HOT_KEY = 'hot_key'
 }
 
 export enum StarmapExec {
-  IMPORT,
-  EXPORT,
-  DELETE_SELECT
+  IMPORT = 'import',
+  EXPORT = 'export',
+  DELETE_SELECT = 'delete_select',
+  CLEAR = 'clear'
 }
 
 export interface AbilityHotKeyConfig {
@@ -43,35 +46,15 @@ export interface StarmapNodeDefine {
   nodeId?:string // 区分于rete内部的id系统
   name: string
   label: string
-  define: {
-    theme: string
-    category: Array<
-      {
-        label?: string
-        content: Array<
-          { label: string, name: string, type: 'input', description: StarmapPort } |
-          { label: string, name: string, type: 'output', description: StarmapPort } |
-          { label: string, name: string, type: 'control', description: StarmapControl }
-        >
-      }
-    >
-    // parent?: string
-    // nest?: NestConfig // 可否成为容器节点
-    // children?: Array<NodeId>
-    // label: string // 节点名称
-    // inputs: {
-    //   [name: string]: StarmapInput
-    // }
-    // outputs: {
-    //   [name: string]: StarmapOutput
-    // }
-    // controls: {
-    //   [name: string]: StarmapControl
-    // }
-    // status: {
-    //   error: boolean // 错误节点，比如画布中已经删除但是在蓝图中仍然存在的节点
-    // }
-  }
+  theme: string
+  category: StarmapNodeCategory
+  // parent?: string
+  // nest?: NestConfig // 可否成为容器节点
+  // children?: Array<NodeId>
+  // label: string // 节点名称
+  // status: {
+  //   error: boolean // 错误节点，比如画布中已经删除但是在蓝图中仍然存在的节点
+  // }
 }
 
 export type Level2StringInfo = Record<string, Record<string, string>>
