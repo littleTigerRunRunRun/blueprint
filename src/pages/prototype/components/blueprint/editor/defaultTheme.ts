@@ -148,8 +148,8 @@ export function computeNodeSizeByDefine(category:StarmapNodeCategory) {
   }
 }
 
-export function setThemes(themes?:StarmapTheme) {
-  if (themes) customTheme = themes
+export function setThemes(theme:StarmapTheme) {
+  customTheme = theme
 }
 
 function getThemes():StarmapTheme {

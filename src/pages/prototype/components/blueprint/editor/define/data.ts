@@ -86,7 +86,8 @@ export type StarmapNodeCategory = Array<
 
 // 基础节点类型
 export type StarmapNode = {
-  nodeId: NodeId
+  id: NodeId
+  name: string
   width: number
   height: number
   theme: string
@@ -164,7 +165,7 @@ export type StarmapConnection = {
   sourceOutput: string // output name of source
   target: NodeId
   targetInput: string // input name of target
-  status: {
+  status?: {
     log: boolean
   }
 }

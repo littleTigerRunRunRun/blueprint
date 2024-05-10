@@ -1,10 +1,11 @@
 import { createEditor } from './reteBase'
 import { StarmapEditorConfig, StarmapEditor, StarmapAbility, StarmapExec, AbilityHotKeyConfig } from './define'
 import { BlueprintKeyboard } from './keyborad'
+import { defaultTheme } from './defaultTheme'
 
 export * from './define'
 
-export async function starmap(container: HTMLElement, config?:StarmapEditorConfig):Promise<StarmapEditor> {
+export async function starmap(config:StarmapEditorConfig):Promise<StarmapEditor> {
   // 向配置中融入默认配置
   const abilities = (config && config?.abilities) || [
     [StarmapAbility.NODE_SELECTABLE],
@@ -14,17 +15,11 @@ export async function starmap(container: HTMLElement, config?:StarmapEditorConfi
   ]
 
   const editor = await createEditor({
-    container,
+    container: config.container,
     abilities,
-    themes: config && config?.theme,
-    eventHandlers: {
-      onNodeSelected(node) {
-        console.log('node selected', node)
-      },
-      onNodeUnselected(node) {
-        console.log('node unselected', node)
-      }
-    }
+    assets: config.assets || {},
+    theme: config && config?.theme || defaultTheme,
+    eventHandlers: config.eventHandlers || {}
   })
 
   function callExec(exec:StarmapExec) {

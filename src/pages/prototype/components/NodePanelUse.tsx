@@ -1,5 +1,6 @@
 import { PieChartOutlined, MergeOutlined, DeploymentUnitOutlined } from '@ant-design/icons'
 import { StarmapNodeDefine, StarmapDataType } from '../components/blueprint/editor'
+import { useState } from 'react'
 
 export type DraggingExec = (item:StarmapNodeDefine) => void
 
@@ -18,9 +19,10 @@ const tabContentList:Record<
       theme: '#444444',
       list: [
         {
-          name: 'pieChartSample',
-          label: '饼图',
+          name: 'pieChart_1',
+          label: '饼图_1',
           theme: 'gray',
+          instanceNum: 1,
           category: [
             {
               label: '事件',
@@ -43,6 +45,25 @@ const tabContentList:Record<
                   name: 'updateData',
                   type: 'input',
                   dataType: StarmapDataType.ARRAY
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'button_1',
+          label: '按钮_1',
+          theme: 'gray',
+          instanceNum: 1,
+          category: [
+            {
+              align: 'right',
+              content: [
+                {
+                  label: '点击按钮',
+                  name: 'click',
+                  type: 'output',
+                  dataType: StarmapDataType.NULL
                 }
               ]
             }
@@ -90,6 +111,35 @@ const tabContentList:Record<
               ]
             }
           ]
+        },
+        {
+          name: 'transformer_null_object',
+          label: 'Null转为对象',
+          theme: 'blue',
+          category: [
+            {
+              align: 'left',
+              content: [
+                {
+                  label: '输入',
+                  name: 'input',
+                  type: 'input',
+                  dataType: StarmapDataType.NULL
+                }
+              ]
+            },
+            {
+              align: 'right',
+              content: [
+                {
+                  label: '输出',
+                  name: 'output',
+                  type: 'output',
+                  dataType: StarmapDataType.OBJECT
+                }
+              ]
+            }
+          ]
         }
       ] 
     }
@@ -110,17 +160,37 @@ const tabContentList:Record<
   ]
 }
 
+const instanceCounter:Record<string, { num: number, setNum: React.Dispatch<React.SetStateAction<number>>}> = {}
+
+export const checkInstanceNumChange = (name:string, change:number) => {
+  const state = instanceCounter[name]
+  if (state) {
+    state.setNum(state.num + change)
+  }
+}
+
 const createTabChildren = (key:string, execDragStart: DraggingExec) => {
   return tabContentList[key].map((list, li) => {
     return <div className="node-list" key={`node_list_${li}`}>
       {
         list.list.map((item, ii) => {
-          return <div
-            className="node-item"
-            style={{ backgroundColor: list.theme }}
-            key={`node_item_${li}_${ii}`}
-            onMouseDown={() => execDragStart(item)}
-          >{ item.label }</div>
+          if (typeof item.instanceNum === 'number') {
+            const [num, setNum] = useState<number>(item.instanceNum)
+            instanceCounter[item.name] = { num, setNum }
+            return <div
+              className={`node-item ${num === 0 ? 'disabled' : ''}`}
+              style={{ backgroundColor: list.theme }}
+              key={`node_item_${li}_${ii}`}
+              onMouseDown={() => execDragStart(item)}
+            >{ item.label }</div>
+          } else {
+            return <div
+              className="node-item"
+              style={{ backgroundColor: list.theme }}
+              key={`node_item_${li}_${ii}`}
+              onMouseDown={() => execDragStart(item)}
+            >{ item.label }</div>
+          }
         })
       }
     </div>

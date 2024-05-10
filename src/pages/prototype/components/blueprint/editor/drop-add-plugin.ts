@@ -18,7 +18,11 @@ export class DropAddPlugin<Schemes extends StarmapSchemes> extends Scope<never, 
   editor:NodeEditor<Schemes>|null = null
   // private handlers?:DropAddHandlers
   constructor(
-    private getDropCenter:getDropCenter = (width, height) => ({ x: 0.5 * width, y: 0.5 * height })
+    private getDropCenter:getDropCenter = (width, height) => ({ x: 0.5 * width, y: 0.5 * height }),
+    private handler?: {
+      onNodeAdd?: (data:Schemes['Node']) => void
+      onNodeRemove?: (data:Schemes['Node']) => void
+    }
   ) {
     super('DropAdd')
   }
@@ -34,6 +38,16 @@ export class DropAddPlugin<Schemes extends StarmapSchemes> extends Scope<never, 
     this.area.container.addEventListener('pointerenter', this.onPointerEnter)
     this.area.container.addEventListener('pointermove', this.onPointerMove)
     this.area.container.addEventListener('pointerleave', this.onPointerLeave)
+
+    this.addPipe(context => {
+      if (context.type === 'nodecreated') {
+        if (this.handler?.onNodeAdd) this.handler?.onNodeAdd(context.data)
+      }
+      if (context.type === 'noderemoved') {
+        if (this.handler?.onNodeRemove) this.handler?.onNodeRemove(context.data)
+      }
+      return context
+    })
   }
 
   onPointerEnter = async (event:PointerEvent) => {
@@ -43,7 +57,8 @@ export class DropAddPlugin<Schemes extends StarmapSchemes> extends Scope<never, 
       this.area.area.setPointerFrom(event)
       // this.handlers?.onPointerEnter(area.area.pointer)
 
-      this.editor?.addNode(this.draggingNode)
+      await this.editor?.addNode(this.draggingNode)
+      if (this.select) this.select(this.draggingNode.id, false)
       const view = this.area.nodeViews.get(this.draggingNode.id)
       if (view) {
         const dropCenter = this.getDropCenter(this.draggingNode.width, this.draggingNode.height)
@@ -63,9 +78,9 @@ export class DropAddPlugin<Schemes extends StarmapSchemes> extends Scope<never, 
     }
   }
 
-  onPointerLeave = () => {
+  onPointerLeave = async () => {
     this.dragging = false
-    if (this.draggingNode) this.editor?.removeNode(this.draggingNode.id)
+    if (this.draggingNode) await this.editor?.removeNode(this.draggingNode.id)
   }
 
   add = (creator: () => Schemes['Node']) => {
@@ -76,6 +91,13 @@ export class DropAddPlugin<Schemes extends StarmapSchemes> extends Scope<never, 
     // 结算逻辑
     this.draggingNode = null
     this.dragging = false
+  }
+
+  select?: (nodeId: string, accumulate: boolean) => void
+  unselect?: (nodeId: string) => void
+  getSelectHanlder(selectHanlder:{ select:(nodeId: string, accumulate: boolean) => void, unselect:(nodeId: string) => void }) {
+    this.select = selectHanlder.select
+    this.unselect = selectHanlder.unselect
   }
 
   destroy() {

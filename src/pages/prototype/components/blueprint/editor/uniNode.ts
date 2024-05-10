@@ -26,10 +26,11 @@ export const scopeElder = (nodeId:string) => {
   return canUseAsParent.includes(nodeId)
 }
 
-const nodeList:Record<string, true> = {}
+// const nodeList:Record<string, true> = {}
 
 export type UniNodeConfig = {
-  nodeId?:string
+  id?:string
+  name:string
   label:string
   type?:string
   theme?:string
@@ -46,7 +47,7 @@ export class UniNode extends ClassicPreset.Node<
   Record<string, StarmapSocket>,
   Record<string, ClassicPreset.InputControl<'number'|'text'>>
 > {
-  nodeId?:string
+  name:string
   width:number
   height:number
   type?:string
@@ -60,13 +61,13 @@ export class UniNode extends ClassicPreset.Node<
   inputKeys:Array<string> = []
   outputKeys:Array<string> = []
   controlKeys:Array<string> = []
-  constructor({ nodeId, label, width = 180, height = 150, type, theme, hasChildren, category, dataOperation, executeOperation }:UniNodeConfig) {
+  constructor({ id, label, name, width = 180, height = 150, type, theme, hasChildren, category, dataOperation, executeOperation }:UniNodeConfig) {
     super(label)
 
-    if (nodeId) nodeList[nodeId] = true
-    else nodeList[this.id] = true
+    // nodeList[this.id] = true
 
-    this.nodeId = nodeId || this.id
+    this.name = name
+    if (id) this.id = id
     this.width = width
     this.height = height
     this.type = type

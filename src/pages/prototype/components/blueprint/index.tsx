@@ -6,6 +6,7 @@ import { StarmapExec, StarmapNodeDefine } from './editor/define'
 
 declare interface BlueprintProps {
   dragging: StarmapNodeDefine|null
+  checkInstanceNumChange: (name:string, change:number) => void
 }
 
 function Blueprint(props:BlueprintProps) {
@@ -16,7 +17,17 @@ function Blueprint(props:BlueprintProps) {
 
   useEffect(() => {
     if (container.current && !editor) {
-      starmap(container.current).then((edit) => {
+      starmap({
+        container: container.current,
+        eventHandlers: {
+          onNodeAdd: (node) => {
+            props.checkInstanceNumChange(node.name, -1)
+          },
+          onNodeRemove: (node) => {
+            props.checkInstanceNumChange(node.name, 1)
+          }
+        }
+      }).then((edit) => {
         setOpening(true)
         setEditor(edit)
         // editor = edit
@@ -24,7 +35,7 @@ function Blueprint(props:BlueprintProps) {
     }
 
     if (editor) {
-      editor.callExec(StarmapExec.IMPORT)
+      // editor.callExec(StarmapExec.IMPORT)
     }
     
     return () => {

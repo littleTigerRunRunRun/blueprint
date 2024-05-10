@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Layout } from 'antd'
 import './index.scss'
 import NodePanel from './components/NodePanel'
+import { checkInstanceNumChange } from './components/NodePanelUse'
 import Blueprint from './components/blueprint'
 import { StarmapNodeDefine } from './components/blueprint/editor'
 
@@ -18,7 +19,7 @@ function Prototype() {
           <NodePanel setDragging={setDragging} />
         </Sider>
         <Layout>
-          <Blueprint dragging={dragging} />
+          <Blueprint dragging={dragging} checkInstanceNumChange={checkInstanceNumChange} />
         </Layout>
       </Layout>
     </div>

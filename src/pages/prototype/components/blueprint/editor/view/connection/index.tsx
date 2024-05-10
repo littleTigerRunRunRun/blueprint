@@ -8,6 +8,7 @@ export function ConnectionView(_props: {
   data: Schemes["Connection"] & { isLoop?: boolean }
   styles?: () => unknown
 }) {
+
   const { path } = useConnection()
   if (!path) return
 

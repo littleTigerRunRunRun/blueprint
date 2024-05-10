@@ -1,4 +1,4 @@
-import { NodeEditor } from "rete"
+import { NodeEditor, ClassicPreset } from "rete"
 import { ReactPlugin, Presets } from "rete-react-plugin"
 import { getDOMSocketPosition } from 'rete-render-utils'
 import { AreaPlugin, AreaExtensions } from "rete-area-plugin"
@@ -13,7 +13,7 @@ import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-
 // import { structures } from 'rete-structures'
 import { createRoot } from 'react-dom/client'
 
-import type { Schemes, AreaExtra, StarmapAbilityDefine, StarmapGraph, StarmapNode, StarmapConnection, StarmapNodeDefine, StarmapTheme } from './define'
+import type { Schemes, AreaExtra, StarmapEditorConfig, StarmapGraph, StarmapNode, StarmapConnection, StarmapNodeDefine, StarmapTheme } from './define'
 import { StarmapAbility } from './define'
 import { NodeView, GroupView, ConnectionView, SocketView } from './view'
 import { scopeElder, getCreateUniNode, UniNode } from './uniNode'
@@ -50,17 +50,9 @@ const createUniNode = getCreateUniNode({})
 //   })
 // }
 
-export async function createEditor(config: {
-  container: HTMLElement,
-  abilities: StarmapAbilityDefine,
-  themes?: StarmapTheme,
-  eventHandlers?: {
-    onNodeSelected?: (node:SelectorEntity&{node:UniNode}) => void,
-    onNodeUnselected?: (node:SelectorEntity&{node:UniNode}) => void
-  }
-}) {
+export async function createEditor(config: Required<StarmapEditorConfig>) {
   // const _socket = new ClassicPreset.Socket("socket")
-  setThemes(config.themes)
+  setThemes(config.theme)
 
   const editor = new NodeEditor<Schemes>()
   const area = new AreaPlugin<Schemes, AreaExtra>(config.container, {
@@ -86,18 +78,10 @@ export async function createEditor(config: {
     }
   })
   const arrange = new AutoArrangePlugin<Schemes>()
-  const dropAdd = new DropAddPlugin<Schemes>()
-  // {
-  //   onPointerEnter: () => {
-
-  //   },
-  //   onPointerLeave: () => {
-
-  //   },
-  //   onPointerMove: () => {
-
-  //   }
-  // }
+  const dropAdd = new DropAddPlugin<Schemes>(undefined, {
+    onNodeAdd: config.eventHandlers.onNodeAdd,
+    onNodeRemove: config.eventHandlers.onNodeRemove
+  })
   
   arrange.addPreset(ArrangePresets.classic.setup())
   render.addPreset(
@@ -157,20 +141,25 @@ export async function createEditor(config: {
       })
     }
   }
-  const nodeSelector = new MySelector()
+  let selectNode:(nodeId: string, accumulate: boolean) => void
+  let unselectNode:(nodeId: string) => void
+  const selector = new MySelector()
   config.abilities.forEach(([name, _config]) => {
     switch (name) {
       case StarmapAbility.NODE_SELECTABLE: {
-
-        AreaExtensions.selectableNodes(area, nodeSelector, {
+        const selectableNodes = AreaExtensions.selectableNodes(area, selector, {
           accumulating: AreaExtensions.accumulateOnCtrl()
+        })
+        selectNode = selectableNodes.select
+        unselectNode = selectableNodes.unselect
+        dropAdd.getSelectHanlder({
+          select: selectableNodes.select,
+          unselect: selectableNodes.unselect
         })
         break
       }
     }
   })
-
-  // await editor.addConnection(new ClassicPreset.Connection(a, "onVisibleSwitch", b, "hide"))
 
   // await arrange.layout()
   // AreaExtensions.zoomAt(area, editor.getNodes())
@@ -200,8 +189,9 @@ export async function createEditor(config: {
       // to do:根据节点间的父子级关系分顺序加入节点
       for (const nodeData of data.nodes) {
         const node = createUniNode({
-          nodeId: nodeData.nodeId,
+          id: nodeData.id,
           label: nodeData.label,
+          name: nodeData.name,
           type: 'common',
           theme: nodeData.theme,
           width: nodeData.width,
@@ -211,6 +201,14 @@ export async function createEditor(config: {
         await editor.addNode(node)
         const view = area.nodeViews.get(node.id)
         view?.translate(nodeData.position.x, nodeData.position.y)
+      }
+      for (const connectionData of data.connections) {
+        await editor.addConnection(new ClassicPreset.Connection(
+          editor.getNode(connectionData.source),
+          connectionData.sourceOutput,
+          editor.getNode(connectionData.target),
+          connectionData.targetInput
+        ))
       }
       await area.area.zoom(data.transform.scale, data.transform.x, data.transform.y)
     },
@@ -230,7 +228,8 @@ export async function createEditor(config: {
           const view = area.nodeViews.get(node.id)
           if (!view) throw new Error(`no node view when export data:${node.id}`)
           return {
-            nodeId: node.nodeId,
+            id: node.id,
+            name: node.name,
             theme: node.theme,
             width: node.width,
             height: node.height,
@@ -245,7 +244,12 @@ export async function createEditor(config: {
             }
           }
         }),
-        connections: []
+        connections: editor.getConnections().map((connection) => ({
+          source: connection.source,
+          sourceOutput: connection.sourceOutput.split('_')[2],
+          target: connection.target,
+          targetInput: connection.targetInput.split('_')[2]
+        }))
       } as StarmapGraph<StarmapNode, StarmapConnection>
     },
     dropAdd: (item:StarmapNodeDefine|null) => {
@@ -253,7 +257,8 @@ export async function createEditor(config: {
         dropAdd.add(() => {
           const { width, height } = computeNodeSizeByDefine(item.category)
           return createUniNode({
-            nodeId: item?.nodeId,
+            id: item?.id,
+            name: item.name,
             label: item.label,
             type: 'common',
             theme: item.theme,
@@ -264,8 +269,10 @@ export async function createEditor(config: {
         })
       } else dropAdd.remove()
     },
-    deleteSelect: () => {
-      console.log(nodeSelector)
+    deleteSelect: async () => {
+      selector.entities.forEach(async (entity) => {
+        await editor?.removeNode(entity.id)
+      })
     }
   }
 }

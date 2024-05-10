@@ -15,7 +15,7 @@ type Props = {
 
 export function NodeView(props: Props) {
   const selected = props.data.selected || false
-  const { id, nodeId, label, width, height, category, inputs, outputs, controls } = props.data
+  const { id, label, width, height, category, inputs, outputs, controls } = props.data
   const { theme, style } = getNodeTheme(props.data.theme)
   // console.log(props)
 

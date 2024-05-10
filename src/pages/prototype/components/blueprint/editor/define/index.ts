@@ -1,5 +1,6 @@
 import { type GetSchemes, ClassicPreset } from "rete"
 import type { ReactArea2D } from "rete-react-plugin"
+import { type SelectorEntity } from 'rete-area-plugin/_types/extensions/selectable.d'
 import type { StarmapConnection, StarmapNode, StarmapGraph, StarmapNodeCategory, StarmapDataType } from './data'
 import { UniNode } from '../uniNode'
 
@@ -43,7 +44,8 @@ export type StarmapAbilityDefine = Array<
 >
 
 export interface StarmapNodeDefine {
-  nodeId?:string // 区分于rete内部的id系统
+  id?:string
+  instanceNum?: number
   name: string
   label: string
   theme: string
@@ -77,10 +79,17 @@ export interface StarmapTheme {
 
 export interface StarmapEditorConfig {
   // renderer: 'react' // 如果未来需要支持vue的话，另处理
-  nodeDefine: Record<string, StarmapNodeDefine>
-  assets: Record<string, [string, unknown]>
+  container: HTMLElement
+  // nodeDefine?: Record<string, StarmapNodeDefine>
+  assets?: Record<string, [string, unknown]>
   theme?: StarmapTheme
   abilities?: StarmapAbilityDefine
+  eventHandlers?: {
+    onNodeSelected?: (node:SelectorEntity&{node:UniNode}) => void
+    onNodeUnselected?: (node:SelectorEntity&{node:UniNode}) => void
+    onNodeAdd?: (node:UniNode) => void
+    onNodeRemove?: (node:UniNode) => void
+  }
 }
 
 export interface StarmapEditor {
