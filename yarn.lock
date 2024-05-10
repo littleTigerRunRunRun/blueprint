@@ -2847,10 +2847,8 @@ resolve@^1.17.0:
     path-parse "^1.0.7"
     supports-preserve-symlinks-flag "^1.0.0"
 
-rete-area-plugin@^2.0.4:
+"rete-area-plugin@file:./src/lib/rete-extend/rete-area-plugin":
   version "2.0.4"
-  resolved "https://registry.npmmirror.com/rete-area-plugin/-/rete-area-plugin-2.0.4.tgz"
-  integrity sha512-i0yDG/NGWnEjFd/aD+zCxH0gt47htYrSDuTUOfL6jnnlHboj+3gMOSfaUIU6wfoLW4lK/2MV4w0XP2+NdpNQ7g==
   dependencies:
     "@babel/runtime" "^7.21.0"
 
@@ -2861,10 +2859,8 @@ rete-auto-arrange-plugin@^2.0.1:
   dependencies:
     "@babel/runtime" "^7.21.0"
 
-rete-connection-plugin@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.npmmirror.com/rete-connection-plugin/-/rete-connection-plugin-2.0.1.tgz"
-  integrity sha512-KE1IcjeOQtHgkByODtWS5hgRJDGhR3Z9sZyJAEd7YMgI6o+KUIflcNjbkvhJvPeIAv6WlEAh7ZkwdLhF9bkr4w==
+"rete-connection-plugin@file:./src/lib/rete-extend/rete-connection-plugin":
+  version "2.0.2"
   dependencies:
     "@babel/runtime" "^7.21.0"
 
@@ -2897,10 +2893,8 @@ rete-render-utils@^2.0.2:
   dependencies:
     "@babel/runtime" "^7.21.0"
 
-rete-scopes-plugin@^2.0.1:
+"rete-scopes-plugin@file:./src/lib/rete-extend/rete-scopes-plugin":
   version "2.0.1"
-  resolved "https://registry.npmmirror.com/rete-scopes-plugin/-/rete-scopes-plugin-2.0.1.tgz"
-  integrity sha512-b1IHy26ov6z4JIXXWwTVU29iZsQCKjtG1Lr/JUNCPsO/ly7ncBa3nOFStvIMH09CMPVf6jcZ/oWGztIgRxb48Q==
   dependencies:
     "@babel/runtime" "^7.21.0"
 

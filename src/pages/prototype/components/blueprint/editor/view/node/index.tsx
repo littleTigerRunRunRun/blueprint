@@ -2,7 +2,7 @@ import './index.scss'
 import { UniNode } from '../../uniNode'
 import { Schemes, StarmapDataType } from '../../define'
 import { RenderEmit, Presets } from 'rete-react-plugin'
-import { Tooltip } from 'antd'
+// import { Tooltip } from 'antd'
 import { getNodeTheme } from '../../defaultTheme'
 import { Control } from 'rete/_types/presets/classic'
 
@@ -15,7 +15,7 @@ type Props = {
 
 export function NodeView(props: Props) {
   const selected = props.data.selected || false
-  const { nodeId, label, width, height, category, inputs, outputs, controls } = props.data
+  const { id, nodeId, label, width, height, category, inputs, outputs, controls } = props.data
   const { theme, style } = getNodeTheme(props.data.theme)
   // console.log(props)
 
@@ -38,17 +38,17 @@ export function NodeView(props: Props) {
         filter: selected ? `drop-shadow(${style.selected.dropShadow})` : ''
       }}
     />
-    <Tooltip title={`${label}${nodeId}`} color={'#35bfff'}>
-      <div
-        className="customized-title"
-        style={{
-          backgroundColor: theme.title,
-          borderRadius: `${style.main.borderRadius} ${style.main.borderRadius} 0 0`,
-          lineHeight: style.title.height,
-          ...style.title
-        }}
-      >{ label }{ nodeId }</div>
-    </Tooltip>
+    {/* <Tooltip title={`${label}`} color={'#35bfff'}>
+    </Tooltip> */}
+    <div
+      className="customized-title"
+      style={{
+        backgroundColor: theme.title,
+        borderRadius: `${style.main.borderRadius} ${style.main.borderRadius} 0 0`,
+        lineHeight: style.title.height,
+        ...style.title
+      }}
+    >{ label }</div>
     <div
       className="customized-content"
       style={{
@@ -119,7 +119,7 @@ export function NodeView(props: Props) {
                               side={item.type}
                               emit={props.emit}
                               socketKey={`socket_${item.type}_${item.name}`}
-                              nodeId={nodeId || ''}
+                              nodeId={id || ''}
                               payload={(item.type === 'input' ? inputs[item.name]!.socket : outputs[item.name]!.socket)}
                               data-testid={`${item.type}-socket`}
                             />

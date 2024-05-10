@@ -16,7 +16,15 @@ export async function starmap(container: HTMLElement, config?:StarmapEditorConfi
   const editor = await createEditor({
     container,
     abilities,
-    themes: config && config?.theme
+    themes: config && config?.theme,
+    eventHandlers: {
+      onNodeSelected(node) {
+        console.log('node selected', node)
+      },
+      onNodeUnselected(node) {
+        console.log('node unselected', node)
+      }
+    }
   })
 
   function callExec(exec:StarmapExec) {
@@ -33,7 +41,7 @@ export async function starmap(container: HTMLElement, config?:StarmapEditorConfi
         break
       }
       case StarmapExec.DELETE_SELECT: {
-        console.log('delete')
+        editor.deleteSelect()
         break
       }
       case StarmapExec.CLEAR: {
