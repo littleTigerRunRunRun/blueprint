@@ -2,7 +2,7 @@ import { type GetSchemes, ClassicPreset } from "rete"
 import type { ReactArea2D } from "rete-react-plugin"
 import { type SelectorEntity } from 'rete-area-plugin/_types/extensions/selectable.d'
 import type { StarmapConnection, StarmapNode, StarmapGraph, StarmapNodeCategory, StarmapDataType } from './data'
-import { UniNode } from '../uniNode'
+import { UniNode } from '../tool/uniNode'
 
 export * from './data'
 
@@ -10,7 +10,10 @@ export interface StarmapSocket extends ClassicPreset.Socket {
   dataType: StarmapDataType
 }
 
-class Connection<A extends UniNode, B extends UniNode> extends ClassicPreset.Connection<A, B> {}
+class Connection<A extends UniNode, B extends UniNode> extends ClassicPreset.Connection<A, B> {
+  isLoop?: boolean
+  selected?: boolean
+}
 
 export type Schemes = GetSchemes<
   UniNode,

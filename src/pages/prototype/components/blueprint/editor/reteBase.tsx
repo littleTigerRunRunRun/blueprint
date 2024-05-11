@@ -2,53 +2,25 @@ import { NodeEditor, ClassicPreset } from "rete"
 import { ReactPlugin, Presets } from "rete-react-plugin"
 import { getDOMSocketPosition } from 'rete-render-utils'
 import { AreaPlugin, AreaExtensions } from "rete-area-plugin"
-import { type SelectorEntity } from 'rete-area-plugin/_types/extensions/selectable.d'
-import { ConnectionPlugin, Presets as ConnectionPresets, SocketData } from "rete-connection-plugin"
+import type { SelectorEntity } from 'rete-area-plugin/_types/extensions/selectable.d'
+import { ConnectionPlugin, Presets as ConnectionPresets, SocketData, getSourceTarget, Context, makeConnection } from "rete-connection-plugin"
 import { ScopesPlugin, Presets as ScopesPresets } from 'rete-scopes-plugin'
 import type { Size } from "rete-scopes-plugin/_types/types"
-import { DropAddPlugin} from './drop-add-plugin'
+import { DropAddPlugin} from './plugin/drop-add-plugin'
 // import { ScopesPlugin, Presets as ScopesPresets } from 'rete-scopes-plugin'
 // import { structures } from 'rete-structures'
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin'
 // import { structures } from 'rete-structures'
 import { createRoot } from 'react-dom/client'
 
-import type { Schemes, AreaExtra, StarmapEditorConfig, StarmapGraph, StarmapNode, StarmapConnection, StarmapNodeDefine, StarmapTheme } from './define'
-import { StarmapAbility, StarmapDataType } from './define'
+import type { Schemes, AreaExtra, StarmapEditorConfig, StarmapGraph, StarmapNode, StarmapConnection, StarmapNodeDefine } from './define'
+import { StarmapAbility } from './define'
 import { NodeView, GroupView, ConnectionView, SocketView } from './view'
-import { scopeElder, getCreateUniNode, UniNode } from './uniNode'
+import { scopeElder, getCreateUniNode, UniNode } from './tool/uniNode'
 import { setThemes, computeNodeSizeByDefine } from './defaultTheme'
+import { createTransformer } from './tool/transformer'
 
-const groupMiniSize = { width: 190, height: 150 }
 const createUniNode = getCreateUniNode({})
-// const createSizeNode = () => {
-//   return createUniNode({
-//     label: '自定义节点',
-//     type: 'common',
-//     width: 150,
-//     height: 177,
-//     inputs: {
-//       hide: { label: '隐藏' },
-//       show: { label: '显示' }
-//     },
-//     outputs: {
-//       onVisibleSwitch: { label: '切换显隐' }
-//     },
-//     controls: {}
-//   })
-// }
-// const createGroup = () => {
-//   return createUniNode({
-//     label: '分组',
-//     type: 'group',
-//     hasChildren: true,
-//     width: groupMiniSize.width,
-//     height: groupMiniSize.height,
-//     inputs: {},
-//     outputs: {},
-//     controls: {}
-//   })
-// }
 
 export async function createEditor(config: Required<StarmapEditorConfig>) {
   // const _socket = new ClassicPreset.Socket("socket")
@@ -69,13 +41,13 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
   })
   const render = new ReactPlugin<Schemes, AreaExtra>({ createRoot })
   const scopes = new ScopesPlugin<Schemes>({
-    elder: scopeElder,
-    size: (_id:string, size:Size) => {
-      return {
-        width: Math.max(size.width, groupMiniSize.width),
-        height: Math.max(size.height, groupMiniSize.height)
-      }
-    }
+    elder: scopeElder
+    // size: (_id:string, size:Size) => {
+    //   return {
+    //     width: Math.max(size.width, groupMiniSize.width),
+    //     height: Math.max(size.height, groupMiniSize.height)
+    //   }
+    // }
   })
   const arrange = new AutoArrangePlugin<Schemes>()
   const dropAdd = new DropAddPlugin<Schemes>(undefined, {
@@ -106,13 +78,91 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           return SocketView
         },
         connection(_context) {
-          return ConnectionView
+          return function bindConnectionProps(props: { data: Schemes["Connection"] }) {
+            return <ConnectionView
+              { ...props }
+              click={() => {
+                selector.add(
+                  {
+                    id: props.data.id,
+                    label: 'connection',
+                    translate() {},
+                    unselect() {
+                      props.data.selected = false
+                      area.update("connection", props.data.id)
+                    }
+                  },
+                  false
+                  // accumulating.active()
+                )
+                props.data.selected = true
+                area.update("connection", props.data.id)
+              }}
+            />
+          }
         }
       }
     })
   )
   scopes.addPreset(ScopesPresets.classic.setup())
-  connection.addPreset(ConnectionPresets.classic.setup())
+  connection.addPreset(ConnectionPresets.classic.setup<Schemes>({
+    // canMakeConnection: (initial: SocketData, socket: SocketData) => {
+    //   if (!getSourceTarget(initial, socket)) return false
+    //   // console.log('can make connection', initial, socket)
+    //   const source = editor.getNode(initial.nodeId)
+    //   const sourceOutput = source.outputs[initial.key]
+    //   const target = editor.getNode(socket.nodeId)
+    //   const targetInput = target.inputs[socket.key]
+    //   if (sourceOutput?.socket.dataType !== targetInput?.socket.dataType) {
+    //     // do transformer
+    //     // alert('格式匹配错误')
+    //     return false
+    //   }
+    //   return true
+    // }
+    makeConnection: (initial: SocketData, socket: SocketData, context: Context<Schemes, Array<unknown>>) => {
+      const source = editor.getNode(initial.nodeId)
+      const sourceOutput = source.outputs[initial.key]
+      const target = editor.getNode(socket.nodeId)
+      const targetInput = target.inputs[socket.key]
+      if (!sourceOutput || !targetInput) return
+      if (sourceOutput.socket.dataType !== targetInput.socket.dataType) {
+        // do transformer
+        // alert('格式匹配错误')
+        const { transformer, inputName, outputName } = createTransformer(sourceOutput.socket.dataType, targetInput.socket.dataType)
+        const { width, height } = computeNodeSizeByDefine(transformer.category)
+        const transformerNode = createUniNode({
+          ...transformer,
+          width,
+          height
+        })
+        const createAndConnectTransformer = async () => {
+          await editor.addNode(transformerNode)
+          const sourceView = area.nodeViews.get(source.id)
+          const targetView = area.nodeViews.get(target.id)
+          await area.translate(transformerNode.id, {
+            x: (sourceView?.position.x || 0) * 0.5 + (targetView?.position.x || 0) * 0.5,
+            y: (sourceView?.position.y || 0) * 0.5 + (targetView?.position.y || 0) * 0.5
+          })
+          await editor.addConnection(new ClassicPreset.Connection(
+            source,
+            initial.key,
+            transformerNode,
+            inputName
+          ))
+          await editor.addConnection(new ClassicPreset.Connection(
+            transformerNode,
+            outputName,
+            target,
+            socket.key
+          ))
+        }
+        createAndConnectTransformer()
+        return false
+      }
+      return makeConnection(initial, socket, context)
+    }
+  }))
 
   editor.use(area)
   area.use(connection)
@@ -141,8 +191,8 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
       })
     }
   }
-  let selectNode:(nodeId: string, accumulate: boolean) => void
-  let unselectNode:(nodeId: string) => void
+  // let selectNode:(nodeId: string, accumulate: boolean) => void
+  // let unselectNode:(nodeId: string) => void
   const selector = new MySelector()
   config.abilities.forEach(([name, _config]) => {
     switch (name) {
@@ -150,8 +200,8 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
         const selectableNodes = AreaExtensions.selectableNodes(area, selector, {
           accumulating: AreaExtensions.accumulateOnCtrl()
         })
-        selectNode = selectableNodes.select
-        unselectNode = selectableNodes.unselect
+        // selectNode = selectableNodes.select
+        // unselectNode = selectableNodes.unselect
         dropAdd.getSelectHanlder({
           select: selectableNodes.select,
           unselect: selectableNodes.unselect
@@ -246,9 +296,9 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
         }),
         connections: editor.getConnections().map((connection) => ({
           source: connection.source,
-          sourceOutput: connection.sourceOutput.split('_')[2],
+          sourceOutput: connection.sourceOutput,
           target: connection.target,
-          targetInput: connection.targetInput.split('_')[2]
+          targetInput: connection.targetInput
         }))
       } as StarmapGraph<StarmapNode, StarmapConnection>
     },
@@ -271,7 +321,22 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
     },
     deleteSelect: async () => {
       selector.entities.forEach(async (entity) => {
-        await editor?.removeNode(entity.id)
+        switch (entity.label) {
+          case 'connection': {
+            await editor.removeConnection(entity.id)
+            break
+          }
+          case 'node': {
+            const connections = editor.getConnections().filter(c => {
+              return c.source === entity.id || c.target === entity.id
+            })
+            for (const connection of connections) {
+              await editor.removeConnection(connection.id)
+            }
+            await editor.removeNode(entity.id)
+            break
+          }
+        }
       })
     }
   }

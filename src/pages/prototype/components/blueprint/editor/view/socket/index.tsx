@@ -1,6 +1,6 @@
 import { getSocketTheme } from '../../defaultTheme'
 import './index.scss'
-import { UniSocket } from '../../uniNode'
+import { UniSocket } from '../../tool/uniNode'
 
 declare interface SocketProps {
   data: UniSocket

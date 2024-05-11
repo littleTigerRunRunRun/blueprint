@@ -1,5 +1,5 @@
 import './index.scss'
-import { UniNode } from '../../uniNode'
+import { UniNode } from '../../tool/uniNode'
 import { Schemes, StarmapDataType } from '../../define'
 import { RenderEmit, Presets } from 'rete-react-plugin'
 // import { Tooltip } from 'antd'

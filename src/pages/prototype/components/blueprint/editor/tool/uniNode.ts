@@ -1,9 +1,8 @@
-// changelog: 
-// 0.0.1: 为节点添加了可以设置父子级关系的能力，为节点添加了可以定义类型的方法
-// 0.0.3: UniNode不再直接具备inputs、outputs、controls，而改为一个描述了带有input、output、control三种内容的内容序列，并且取消了UniNode需要的类型参数
+// retejs里的节点，有很多可以配置的内容，这导致其自动化生成的方法，有些复杂，这里我们需要用一个函数，来描述这个节点的类型，以及返回对应的类
+// 统一化节点，用一种统一数据结构描述多种节点
 
 import { ClassicPreset } from 'rete'
-import { StarmapNodeCategory, StarmapSocket, StarmapDataType } from './define'
+import { StarmapNodeCategory, StarmapSocket, StarmapDataType } from '../define'
 
 export class UniSocket extends ClassicPreset.Socket {
   public dataType: StarmapDataType
@@ -13,12 +12,6 @@ export class UniSocket extends ClassicPreset.Socket {
     this.dataType = dataType || StarmapDataType.UNKNOW
   }
 }
-
-// const socket = new UniSocket('socket')
-
-// retejs里的节点，有很多可以配置的内容，这导致其自动化生成的方法，有些复杂，这里我们需要用一个函数，来描述这个节点的类型，以及返回对应的类
-// 统一化节点，用一种统一数据结构描述多种节点
-
 
 // 这个数组表示能够被加入内容的容器节点，这个部分是和我自己fork过的scope-plugin一起解决这个插件开启后任何节点都能相互嵌套的问题
 const canUseAsParent:Array<string> = []
@@ -86,7 +79,7 @@ export class UniNode extends ClassicPreset.Node<
         switch(element.type) {
           case 'input':{
             this.inputKeys.push(element.name)
-            const input = new ClassicPreset.Input(new UniSocket(element.name), element.label)
+            const input = new ClassicPreset.Input(new UniSocket(element.name), element.label, true)
             // 需要一个中间件来解决element.control.type的匹配问题
             if (element.control) input.addControl(new ClassicPreset.InputControl<'number'|'text'>('number', { initial: element.control.initial, change: element.control.change, readonly: element.control.readonly }))
             this.addInput(element.name, input)
@@ -95,7 +88,7 @@ export class UniNode extends ClassicPreset.Node<
           case 'output':{
             this.outputKeys.push(element.name)
             if (element.control) this.addControl(element.name, new ClassicPreset.InputControl<'number'|'text'>('number', { initial: element.control.initial, readonly: element.control.readonly, change: element.control.change }))
-            this.addOutput(element.name, new ClassicPreset.Output(new UniSocket(element.name), element.label))
+            this.addOutput(element.name, new ClassicPreset.Output(new UniSocket(element.name), element.label, true))
             break
           }
           case 'control':{

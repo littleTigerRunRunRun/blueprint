@@ -89,7 +89,20 @@ export const defaultTheme:StarmapTheme = {
     }
   },
   connection: {
-    style: {},
+    style: {
+      main: {
+        stroke: '#fff',
+        strokeWidth: '2.5px'
+      },
+      hover: {
+        stroke: 'rgba(255, 255, 255, 0)',
+        strokeWidth: '8px'
+      },
+      selected: {
+        stroke: '#0772ff'
+      },
+      log: {}
+    },
     themes: {}
   },
   socket: {
@@ -152,7 +165,7 @@ export function setThemes(theme:StarmapTheme) {
   customTheme = theme
 }
 
-function getThemes():StarmapTheme {
+export function getThemes():StarmapTheme {
   return customTheme || defaultTheme
 }
 

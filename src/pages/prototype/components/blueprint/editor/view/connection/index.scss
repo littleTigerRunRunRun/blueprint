@@ -6,8 +6,19 @@
   height: 9999px;
   path {
     fill: none;
-    stroke-width: 2.5px;
-    stroke: #fff;
+  }
+  .view-path {
+    // stroke-width: 2.5px;
+    // stroke: #fff;
+    pointer-events: none;
+    // &.selected {
+    //   stroke: #f00;
+    // }
+  }
+  .hover-path {
+    // stroke: rgba(255, 255, 255, 0);
+    // stroke-width: 8px;
     pointer-events: auto;
+    cursor: pointer;
   }
 }

@@ -1,5 +1,5 @@
 import keyboardJS from 'keyboardjs'
-import { Callback, AbilityHotKeyConfig, StarmapExec } from './define'
+import { Callback, AbilityHotKeyConfig, StarmapExec } from '../define'
 
 export interface KeyBind {
 

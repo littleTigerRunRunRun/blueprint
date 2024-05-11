@@ -1,5 +1,6 @@
-import { PieChartOutlined, MergeOutlined, DeploymentUnitOutlined } from '@ant-design/icons'
-import { StarmapNodeDefine, StarmapDataType } from '../components/blueprint/editor'
+import { PieChartOutlined, MergeOutlined, DeploymentUnitOutlined, ApiOutlined, NumberOutlined } from '@ant-design/icons'
+import type { StarmapNodeDefine } from '../components/blueprint/editor'
+import { createTransformer, StarmapDataType } from '../components/blueprint/editor'
 import { useState } from 'react'
 
 export type DraggingExec = (item:StarmapNodeDefine) => void
@@ -25,6 +26,18 @@ const tabContentList:Record<
           instanceNum: 1,
           category: [
             {
+              label: '动作',
+              align: 'left',
+              content: [
+                {
+                  label: '更新数据',
+                  name: 'updateData',
+                  type: 'input',
+                  dataType: StarmapDataType.OBJECT
+                }
+              ]
+            },
+            {
               label: '事件',
               align: 'right',
               content: [
@@ -33,18 +46,6 @@ const tabContentList:Record<
                   name: 'clickItem',
                   type: 'output',
                   dataType: StarmapDataType.OBJECT
-                }
-              ]
-            },
-            {
-              label: '动作',
-              align: 'left',
-              content: [
-                {
-                  label: '更新数据',
-                  name: 'updateData',
-                  type: 'input',
-                  dataType: StarmapDataType.ARRAY
                 }
               ]
             }
@@ -57,6 +58,25 @@ const tabContentList:Record<
           instanceNum: 1,
           category: [
             {
+              label: '动作',
+              align: 'left',
+              content: [
+                {
+                  label: '显示',
+                  name: 'show',
+                  type: 'input',
+                  dataType: StarmapDataType.NULL
+                },
+                {
+                  label: '隐藏',
+                  name: 'hide',
+                  type: 'input',
+                  dataType: StarmapDataType.NULL
+                }
+              ]
+            },
+            {
+              label: '事件',
               align: 'right',
               content: [
                 {
@@ -111,40 +131,21 @@ const tabContentList:Record<
               ]
             }
           ]
-        },
-        {
-          name: 'transformer_null_object',
-          label: 'Null转为对象',
-          theme: 'blue',
-          category: [
-            {
-              align: 'left',
-              content: [
-                {
-                  label: '输入',
-                  name: 'input',
-                  type: 'input',
-                  dataType: StarmapDataType.NULL
-                }
-              ]
-            },
-            {
-              align: 'right',
-              content: [
-                {
-                  label: '输出',
-                  name: 'output',
-                  type: 'output',
-                  dataType: StarmapDataType.OBJECT
-                }
-              ]
-            }
-          ]
         }
       ] 
     }
   ],
   '3': [
+    {
+      typeName: 'transformerNode',
+      theme: '#C77EFF',
+      list: [
+        createTransformer(StarmapDataType.NULL, StarmapDataType.ARRAY).transformer,
+        createTransformer(StarmapDataType.NULL, StarmapDataType.OBJECT).transformer
+      ] 
+    }
+  ],
+  '4': [
     {
       typeName: 'nodeCombination',
       theme: '#F1A900',
@@ -156,6 +157,72 @@ const tabContentList:Record<
           category: []
         }
       ] 
+    }
+  ],
+  '5': [
+    {
+      typeName: 'Variable',
+      theme: '#444444',
+      list: [
+        {
+          name: 'variable_province',
+          label: '变量_省份',
+          theme: 'gray',
+          category: [
+            {
+              align: 'left',
+              content: [
+                {
+                  label: '设置',
+                  name: 'set',
+                  type: 'input',
+                  dataType: StarmapDataType.STRING
+                }
+              ]
+            },
+            {
+              align: 'right',
+              content: [
+                {
+                  label: '获取',
+                  name: 'get',
+                  type: 'output',
+                  dataType: StarmapDataType.STRING
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'variable_city',
+          label: '变量_城市',
+          theme: 'gray',
+          category: [
+            {
+              align: 'left',
+              content: [
+                {
+                  label: '设置',
+                  name: 'set',
+                  type: 'input',
+                  dataType: StarmapDataType.STRING
+                }
+              ]
+            },
+            {
+              align: 'right',
+              content: [
+                {
+                  label: '获取',
+                  name: 'get',
+                  type: 'output',
+                  dataType: StarmapDataType.STRING
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }
@@ -212,10 +279,22 @@ export function createTabs(execDragStart: DraggingExec) {
       children: createTabChildren('2', execDragStart)
     },
     {
-      label: '逻辑组合',
+      label: '转换节点',
       key: '3',
-      icon: <DeploymentUnitOutlined />,
+      icon: <ApiOutlined />,
       children: createTabChildren('3', execDragStart)
+    },
+    {
+      label: '逻辑组合',
+      key: '4',
+      icon: <DeploymentUnitOutlined />,
+      children: createTabChildren('4', execDragStart)
+    },
+    {
+      label: '变量',
+      key: '5',
+      icon: <NumberOutlined />,
+      children: createTabChildren('5', execDragStart)
     }
   ]
 }

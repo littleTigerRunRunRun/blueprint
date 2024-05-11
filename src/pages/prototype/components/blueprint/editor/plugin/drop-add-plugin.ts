@@ -1,6 +1,6 @@
 import { Scope, Root, NodeEditor } from 'rete'
 import { Area2DInherited, Area2D, AreaPlugin } from 'rete-area-plugin'
-import { Schemes as StarmapSchemes } from './define'
+import { Schemes as StarmapSchemes } from '../define'
 
 // declare interface DropAddHandlers {
 //   onPointerEnter: (position:{ x:number, y:number }) => void

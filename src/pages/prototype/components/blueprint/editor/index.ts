@@ -1,9 +1,10 @@
 import { createEditor } from './reteBase'
 import { StarmapEditorConfig, StarmapEditor, StarmapAbility, StarmapExec, AbilityHotKeyConfig } from './define'
-import { BlueprintKeyboard } from './keyborad'
+import { BlueprintKeyboard } from './tool/keyborad'
 import { defaultTheme } from './defaultTheme'
 
 export * from './define'
+export * from './tool/transformer'
 
 export async function starmap(config:StarmapEditorConfig):Promise<StarmapEditor> {
   // 向配置中融入默认配置
