@@ -6,11 +6,11 @@ import { ClassicPreset } from 'rete'
 import { StarmapNodeCategory, StarmapSocket, StarmapDataType } from './define'
 
 export class UniSocket extends ClassicPreset.Socket {
-  public type: StarmapDataType
-  constructor(name:string, type?: StarmapDataType) {
+  public dataType: StarmapDataType
+  constructor(name:string, dataType?: StarmapDataType) {
     super(name)
 
-    this.type = type || StarmapDataType.UNKNOW
+    this.dataType = dataType || StarmapDataType.UNKNOW
   }
 }
 

@@ -14,7 +14,7 @@ import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-
 import { createRoot } from 'react-dom/client'
 
 import type { Schemes, AreaExtra, StarmapEditorConfig, StarmapGraph, StarmapNode, StarmapConnection, StarmapNodeDefine, StarmapTheme } from './define'
-import { StarmapAbility } from './define'
+import { StarmapAbility, StarmapDataType } from './define'
 import { NodeView, GroupView, ConnectionView, SocketView } from './view'
 import { scopeElder, getCreateUniNode, UniNode } from './uniNode'
 import { setThemes, computeNodeSizeByDefine } from './defaultTheme'
@@ -179,6 +179,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
       await area.area.zoom(1, 0, 0)
     },
     import: async (data:StarmapGraph<StarmapNode, StarmapConnection>) => {
+      // console.log('import data', data)
       // 清空内容
       await editor.clear()
       // 归零内容
@@ -199,8 +200,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           category: nodeData.category || []
         })
         await editor.addNode(node)
-        const view = area.nodeViews.get(node.id)
-        view?.translate(nodeData.position.x, nodeData.position.y)
+        await area.translate(nodeData.id, nodeData.position)
       }
       for (const connectionData of data.connections) {
         await editor.addConnection(new ClassicPreset.Connection(

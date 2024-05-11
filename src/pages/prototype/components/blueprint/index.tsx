@@ -35,7 +35,7 @@ function Blueprint(props:BlueprintProps) {
     }
 
     if (editor) {
-      // editor.callExec(StarmapExec.IMPORT)
+      editor.callExec(StarmapExec.IMPORT)
     }
     
     return () => {

@@ -7,7 +7,7 @@ import { UniNode } from '../uniNode'
 export * from './data'
 
 export interface StarmapSocket extends ClassicPreset.Socket {
-  type: StarmapDataType
+  dataType: StarmapDataType
 }
 
 class Connection<A extends UniNode, B extends UniNode> extends ClassicPreset.Connection<A, B> {}

@@ -86,7 +86,7 @@ export function NodeView(props: Props) {
               {
                 cate.content.map((item, ii) => {
                   const port = item.type === 'input' ? inputs[item.name] : outputs[item.name]
-                  if (port && 'dataType' in item) port.socket.type = item.dataType || StarmapDataType.UNKNOW
+                  if (port && 'dataType' in item) port.socket.dataType = item.dataType || StarmapDataType.UNKNOW
                   return <div
                     className="content-socket-line"
                     key={`content_${ci}_${ii}`}
@@ -118,7 +118,7 @@ export function NodeView(props: Props) {
                               name={`${item.type}-socket`}
                               side={item.type}
                               emit={props.emit}
-                              socketKey={`socket_${item.type}_${item.name}`}
+                              socketKey={item.name}
                               nodeId={id || ''}
                               payload={(item.type === 'input' ? inputs[item.name]!.socket : outputs[item.name]!.socket)}
                               data-testid={`${item.type}-socket`}
@@ -127,7 +127,7 @@ export function NodeView(props: Props) {
                               item.type === 'input' && inputs[item.name]?.control && inputs[item.name]?.showControl ? (
                                 <span className="input-control">
                                   <RefControl
-                                    key={`control_${item.type}_${item.name}`}
+                                    key={item.name}
                                     name="input-control"
                                     emit={props.emit}
                                     payload={inputs[item.name]!.control as Control}

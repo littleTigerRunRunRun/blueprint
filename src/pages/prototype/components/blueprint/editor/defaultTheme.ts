@@ -175,6 +175,6 @@ export function getSocketTheme(dataType:StarmapDataType = StarmapDataType.UNKNOW
   const themes = socketThemes.themes
   return {
     style: socketThemes.style,
-    theme: themes[dataType]
+    theme: themes[dataType] || themes.unknown
   }
 }

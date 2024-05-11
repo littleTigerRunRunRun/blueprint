@@ -7,7 +7,7 @@ declare interface SocketProps {
 }
 
 export function SocketView(props: SocketProps) {
-  const { style, theme } = getSocketTheme(props.data.type)
+  const { style, theme } = getSocketTheme(props.data.dataType)
 
   return <div
     className="customized-socket"
