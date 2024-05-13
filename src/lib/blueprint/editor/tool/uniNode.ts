@@ -2,14 +2,15 @@
 // 统一化节点，用一种统一数据结构描述多种节点
 
 import { ClassicPreset } from 'rete'
-import { StarmapNodeCategory, StarmapSocket, StarmapDataType } from '../define'
+import { StarmapNodeCategory, StarmapSocket, StarmapDataType, StarmapSocketType } from '../define'
 
 export class UniSocket extends ClassicPreset.Socket {
-  public dataType: StarmapDataType
-  constructor(name:string, dataType?: StarmapDataType) {
+  constructor(
+    name:string,
+    public dataType: StarmapDataType = StarmapDataType.NULL,
+    public socketType: StarmapSocketType = StarmapSocketType.DATA
+  ) {
     super(name)
-
-    this.dataType = dataType || StarmapDataType.UNKNOW
   }
 }
 

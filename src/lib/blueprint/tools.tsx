@@ -1,6 +1,6 @@
 import { Button, Tooltip } from 'antd'
 import { ImportOutlined, ExportOutlined, RestOutlined } from '@ant-design/icons'
-import { StarmapExec } from './editor'
+import { StarmapExec, StarmapEditorCallExec } from './editor'
 
 const toolbarList = [
   {
@@ -21,12 +21,12 @@ const toolbarList = [
 ]
 
 declare interface ToolbarProps {
-  callExec?: (exce:StarmapExec) => void
+  callExec?: StarmapEditorCallExec
 }
 
 export function BlueprintToolbar(props:ToolbarProps) {
-  const onButtonClick = (name:StarmapExec) => {
-    if (props.callExec) props.callExec(name)
+  const onButtonClick = async (name:StarmapExec) => {
+    if (props.callExec) props.callExec[name]()
   }
 
   return (

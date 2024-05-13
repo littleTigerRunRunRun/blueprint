@@ -1,14 +1,16 @@
 .socket-container{
-  .customized-socket {
+  .control-socket {
     cursor: pointer;
     width: 100%; /* 实际可触摸范围可以大于这个，到时候把瞬间触发范围做大一点 */
     height: 100%;
-    border-radius: 50%;
+    // border-radius: 50%;
     // border: 1px solid #000;
-    background: #999999;
     box-sizing: border-box;
-    &:hover {
-      background: #36C38E;
+    font-size: 0px;
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
   }
 }

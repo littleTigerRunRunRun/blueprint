@@ -14,6 +14,19 @@
     // &.selected {
     //   stroke: #f00;
     // }
+    &.control-path {
+      stroke-dasharray: 14px 8px;
+      animation: dash 0.4s linear infinite;
+      stroke-dashoffset: 22px;
+      @keyframes dash {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+    }
+    &.data-path {
+      opacity: 1;
+    }
   }
   .hover-path {
     // stroke: rgba(255, 255, 255, 0);

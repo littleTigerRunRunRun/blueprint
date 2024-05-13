@@ -1,6 +1,6 @@
-import { PieChartOutlined, MergeOutlined, DeploymentUnitOutlined, ApiOutlined, NumberOutlined } from '@ant-design/icons'
+import { PieChartOutlined, MergeOutlined, DeploymentUnitOutlined, ApiOutlined, NumberOutlined, JavaScriptOutlined, MessageOutlined } from '@ant-design/icons'
 import type { StarmapNodeDefine } from '@/lib/blueprint/editor'
-import { StarmapDataType } from '@/lib/blueprint/editor'
+import { StarmapDataType, StarmapSocketType } from '@/lib/blueprint/editor'
 import { useState } from 'react'
 
 export type DraggingExec = (item:StarmapNodeDefine) => void
@@ -33,6 +33,7 @@ const tabContentList:Record<
                   label: '更新数据',
                   name: 'updateData',
                   type: 'input',
+                  socketType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.OBJECT
                 }
               ]
@@ -45,6 +46,7 @@ const tabContentList:Record<
                   label: '点击扇形',
                   name: 'clickItem',
                   type: 'output',
+                  socketType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.OBJECT
                 }
               ]
@@ -65,13 +67,13 @@ const tabContentList:Record<
                   label: '显示',
                   name: 'show',
                   type: 'input',
-                  dataType: StarmapDataType.NULL
+                  socketType: StarmapSocketType.CONTROL
                 },
                 {
                   label: '隐藏',
                   name: 'hide',
                   type: 'input',
-                  dataType: StarmapDataType.NULL
+                  socketType: StarmapSocketType.CONTROL
                 }
               ]
             },
@@ -83,7 +85,7 @@ const tabContentList:Record<
                   label: '点击按钮',
                   name: 'click',
                   type: 'output',
-                  dataType: StarmapDataType.NULL
+                  socketType: StarmapSocketType.CONTROL
                 }
               ]
             }
@@ -99,7 +101,7 @@ const tabContentList:Record<
       list: [
         {
           name: 'ifJudgement',
-          label: '分支判断',
+          label: '条件判断',
           theme: 'blue',
           category: [
             {
@@ -109,6 +111,7 @@ const tabContentList:Record<
                   label: '判断条件',
                   name: 'judgement',
                   type: 'input',
+                  socketType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.BOOLEAN
                 }
               ]
@@ -120,18 +123,54 @@ const tabContentList:Record<
                   label: '真',
                   name: 'true',
                   type: 'output',
-                  dataType: StarmapDataType.NULL
+                  socketType: StarmapSocketType.CONTROL
                 },
                 {
                   label: '假',
                   name: 'false',
                   type: 'output',
-                  dataType: StarmapDataType.NULL
+                  socketType: StarmapSocketType.CONTROL
                 }
               ]
             }
           ]
-        }
+        },
+        // {
+        //   name: 'stringSwitch',
+        //   label: '分支判断(字符串)',
+        //   theme: 'blue',
+        //   category: [
+        //     {
+        //       align: 'left',
+        //       content: [
+        //         {
+        //           label: '判断条件',
+        //           name: 'judgement',
+        //           type: 'input',
+        //           socketType: StarmapSocketType.CONTROL,
+        //           dataType: StarmapDataType.BOOLEAN
+        //         }
+        //       ]
+        //     },
+        //     {
+        //       align: 'right',
+        //       content: [
+        //         {
+        //           label: '真',
+        //           name: 'true',
+        //           type: 'output',
+        //           socketType: StarmapSocketType.CONTROL
+        //         },
+        //         {
+        //           label: '假',
+        //           name: 'false',
+        //           type: 'output',
+        //           socketType: StarmapSocketType.CONTROL
+        //         }
+        //       ]
+        //     }
+        //   ]
+        // }
       ] 
     }
   ],
@@ -142,7 +181,7 @@ const tabContentList:Record<
       list: [
         {
           name: 'temp_transformer_1',
-          label: '临时转换器：对象解析',
+          label: '转换器：对象解析',
           theme: 'purple',
           category: [
             {
@@ -152,6 +191,7 @@ const tabContentList:Record<
                   label: '输入',
                   name: 'input',
                   type: 'input',
+                  socketType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.OBJECT
                 }
               ]
@@ -160,22 +200,105 @@ const tabContentList:Record<
               align: 'right',
               content: [
                 {
+                  label: '',
+                  name: 'controlOut',
+                  type: 'output',
+                  socketType: StarmapSocketType.CONTROL
+                },
+                {
                   label: 'x',
                   name: 'value_1',
                   type: 'output',
+                  socketType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.STRING
                 },
                 {
                   label: 'y',
                   name: 'value_2',
                   type: 'output',
+                  socketType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.NUMBER
                 },
                 {
                   label: 'canDig',
                   name: 'value_3',
                   type: 'output',
+                  socketType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.BOOLEAN
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'temp_transformer_1',
+          label: '转换器：组合布尔控制',
+          theme: 'purple',
+          category: [
+            {
+              align: 'left',
+              content: [
+                {
+                  label: '',
+                  name: 'controlIn',
+                  type: 'input',
+                  socketType: StarmapSocketType.CONTROL
+                },
+                {
+                  label: '输入',
+                  name: 'controlValue',
+                  type: 'input',
+                  socketType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.BOOLEAN
+                }
+              ]
+            },
+            {
+              align: 'right',
+              content: [
+                {
+                  label: '',
+                  name: 'controlOut',
+                  type: 'output',
+                  socketType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.BOOLEAN
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'temp_transformer_1',
+          label: '转换器：组合字符串控制',
+          theme: 'purple',
+          category: [
+            {
+              align: 'left',
+              content: [
+                {
+                  label: '',
+                  name: 'controlIn',
+                  type: 'input',
+                  socketType: StarmapSocketType.CONTROL
+                },
+                {
+                  label: '输入',
+                  name: 'controlValue',
+                  type: 'input',
+                  socketType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.STRING
+                }
+              ]
+            },
+            {
+              align: 'right',
+              content: [
+                {
+                  label: '',
+                  name: 'controlOut',
+                  type: 'output',
+                  socketType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.STRING
                 }
               ]
             }
@@ -215,6 +338,7 @@ const tabContentList:Record<
                   label: '设置',
                   name: 'set',
                   type: 'input',
+                  socketType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.STRING
                 }
               ]
@@ -226,6 +350,7 @@ const tabContentList:Record<
                   label: '获取',
                   name: 'get',
                   type: 'output',
+                  socketType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.STRING
                 }
               ]
@@ -244,6 +369,7 @@ const tabContentList:Record<
                   label: '设置',
                   name: 'set',
                   type: 'input',
+                  socketType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.STRING
                 }
               ]
@@ -255,7 +381,62 @@ const tabContentList:Record<
                   label: '获取',
                   name: 'get',
                   type: 'output',
+                  socketType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.STRING
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  '6': [
+    {
+      typeName: 'DataType',
+      theme: '#F35353',
+      list: [
+        {
+          name: 'string',
+          label: '字符串',
+          theme: 'red',
+          category: [
+            {
+              align: 'right',
+              content: [
+                {
+                  label: '""',
+                  name: 'get',
+                  type: 'output',
+                  socketType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.STRING
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  '7': [
+    {
+      typeName: 'Event',
+      theme: '#3DB900',
+      list: [
+        {
+          name: 'mounted',
+          label: '初始化完毕',
+          theme: 'green',
+          category: [
+            {
+              align: 'right',
+              content: [
+                {
+                  label: '执行',
+                  name: 'get',
+                  type: 'output',
+                  socketType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.NULL
                 }
               ]
             }
@@ -334,6 +515,18 @@ export function createTabs(execDragStart: DraggingExec) {
       key: '5',
       icon: <NumberOutlined />,
       children: createTabChildren('5', execDragStart)
+    },
+    {
+      label: '数据类型',
+      key: '6',
+      icon: <JavaScriptOutlined />,
+      children: createTabChildren('6', execDragStart)
+    },
+    {
+      label: '全局事件',
+      key: '7',
+      icon: <MessageOutlined />,
+      children: createTabChildren('7', execDragStart)
     }
   ]
 }

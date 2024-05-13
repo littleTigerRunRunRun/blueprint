@@ -8,7 +8,7 @@ import { StarmapNodeDefine } from '@/lib/blueprint/editor'
 
 const { Sider } = Layout
 
-function Prototype() {
+function Prototype2() {
   // const [collapsed, setCollapsed] = useState(false)
   const [dragging, setDragging] = useState<StarmapNodeDefine|null>(null)
 
@@ -26,4 +26,4 @@ function Prototype() {
   )
 }
 
-export default Prototype
+export default Prototype2

@@ -43,7 +43,12 @@ export enum StarmapDataType {
   OBJECT = 'object',
   ARRAY = 'array',
   UNKNOW = 'unknow',
-  NULL = 'null',
+  NULL = 'null'
+}
+
+export enum StarmapSocketType {
+  CONTROL = 'control',
+  DATA = 'data'
 }
 
 // export type StarmapInput = Port & {
@@ -63,10 +68,10 @@ export type StarmapNodeCategory = Array<
   align: 'left' | 'center' | 'right'
   content: Array<
     // dataTypeDecription
-    { label: string, name: string, type: 'input', dataType?: StarmapDataType, control?: StarmapControl } |
+    { label: string, name: string, type: 'input', socketType: StarmapSocketType, dataType?: StarmapDataType, control?: StarmapControl } |
     { label: string, name: string, type: 'control', control: StarmapControl }
   > | Array<
-    { label: string, name: string, type: 'output', dataType?: StarmapDataType, control?: StarmapControl } |
+    { label: string, name: string, type: 'output', socketType: StarmapSocketType,  dataType?: StarmapDataType, control?: StarmapControl } |
     { label: string, name: string, type: 'control', control: StarmapControl }
   >
 }
@@ -165,6 +170,8 @@ export type StarmapConnection = {
   sourceOutput: string // output name of source
   target: NodeId
   targetInput: string // input name of target
+  socketType?: StarmapSocketType
+  dataType?: StarmapDataType
   status?: {
     log: boolean
   }

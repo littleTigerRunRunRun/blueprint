@@ -27,6 +27,17 @@ function Blueprint(props:BlueprintProps) {
             props.checkInstanceNumChange(node.name, 1)
           }
         }
+      }, {
+        getImportData: async () => {
+          const namespace = location.search.split('?')[1].split('=')[1] || ''
+          const dataString = localStorage[`starmap_data_${namespace}`]
+          return dataString ? JSON.parse(dataString) : { nodes: [], connections: [], transform: { x: 0, y: 0, scale: 1 } }
+        },
+        exportCallback: (data) => {
+          const namespace = location.search.split('?')[1].split('=')[1] || ''
+          console.log(`starmap_data_${namespace}:`, data)
+          localStorage[`starmap_data_${namespace}`] = JSON.stringify(data)
+        }
       }).then((edit) => {
         setOpening(true)
         setEditor(edit)
@@ -35,7 +46,7 @@ function Blueprint(props:BlueprintProps) {
     }
 
     if (editor) {
-      editor.callExec(StarmapExec.IMPORT)
+      editor.callExec[StarmapExec.IMPORT]()
     }
     
     return () => {

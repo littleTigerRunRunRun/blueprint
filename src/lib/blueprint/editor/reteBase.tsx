@@ -1,11 +1,11 @@
-import { NodeEditor, ClassicPreset } from "rete"
+import { NodeEditor, ClassicPreset, getUID } from "rete"
 import { ReactPlugin, Presets } from "rete-react-plugin"
 import { getDOMSocketPosition } from 'rete-render-utils'
 import { AreaPlugin, AreaExtensions } from "rete-area-plugin"
 import type { SelectorEntity } from 'rete-area-plugin/_types/extensions/selectable.d'
-import { ConnectionPlugin, Presets as ConnectionPresets, SocketData, getSourceTarget, Context, makeConnection } from "rete-connection-plugin"
+import { ConnectionPlugin, Presets as ConnectionPresets, SocketData, Context, getSourceTarget, makeConnection } from "rete-connection-plugin"
 import { ScopesPlugin, Presets as ScopesPresets } from 'rete-scopes-plugin'
-import type { Size } from "rete-scopes-plugin/_types/types"
+// import type { Size } from "rete-scopes-plugin/_types/types"
 import { DropAddPlugin} from './plugin/drop-add-plugin'
 // import { ScopesPlugin, Presets as ScopesPresets } from 'rete-scopes-plugin'
 // import { structures } from 'rete-structures'
@@ -14,8 +14,8 @@ import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-
 import { createRoot } from 'react-dom/client'
 
 import type { Schemes, AreaExtra, StarmapEditorConfig, StarmapGraph, StarmapNode, StarmapConnection, StarmapNodeDefine } from './define'
-import { StarmapAbility } from './define'
-import { NodeView, GroupView, ConnectionView, SocketView } from './view'
+import { StarmapAbility, StarmapSocketType, Connection } from './define'
+import { NodeView, GroupView, ConnectionView, ControlSocket, DataSocket } from './view'
 import { scopeElder, getCreateUniNode, UniNode } from './tool/uniNode'
 import { setThemes, computeNodeSizeByDefine } from './defaultTheme'
 import { createTransformer } from './tool/transformer'
@@ -74,8 +74,9 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           }
           return NodeView
         },
-        socket(_context) {
-          return SocketView
+        socket(context) {
+          if (context.payload && context.payload.socketType === StarmapSocketType.CONTROL) return ControlSocket
+          return DataSocket
         },
         connection(_context) {
           return function bindConnectionProps(props: { data: Schemes["Connection"] }) {
@@ -106,30 +107,20 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
   )
   scopes.addPreset(ScopesPresets.classic.setup())
   connection.addPreset(ConnectionPresets.classic.setup<Schemes>({
-    // canMakeConnection: (initial: SocketData, socket: SocketData) => {
-    //   if (!getSourceTarget(initial, socket)) return false
-    //   // console.log('can make connection', initial, socket)
-    //   const source = editor.getNode(initial.nodeId)
-    //   const sourceOutput = source.outputs[initial.key]
-    //   const target = editor.getNode(socket.nodeId)
-    //   const targetInput = target.inputs[socket.key]
-    //   if (sourceOutput?.socket.dataType !== targetInput?.socket.dataType) {
-    //     // do transformer
-    //     // alert('格式匹配错误')
-    //     return false
-    //   }
-    //   return true
-    // }
     makeConnection: (initial: SocketData, socket: SocketData, context: Context<Schemes, Array<unknown>>) => {
       const source = editor.getNode(initial.nodeId)
       const sourceOutput = source.outputs[initial.key]
       const target = editor.getNode(socket.nodeId)
       const targetInput = target.inputs[socket.key]
       if (!sourceOutput || !targetInput) return
+      if (sourceOutput.socket.socketType !== targetInput.socket.socketType) {
+        alert('锚点类型不一致！（后续会补充自动转换逻辑）')
+        return
+      }
       if (sourceOutput.socket.dataType !== targetInput.socket.dataType) {
         // do transformer
         // alert('格式匹配错误')
-        const { transformer, inputName, outputName } = createTransformer(sourceOutput.socket.dataType, targetInput.socket.dataType)
+        const { transformer, inputName, outputName } = createTransformer(sourceOutput.socket, targetInput.socket)
         const { width, height } = computeNodeSizeByDefine(transformer.category)
         const transformerNode = createUniNode({
           ...transformer,
@@ -159,6 +150,21 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
         }
         createAndConnectTransformer()
         return false
+      }
+      // 定制makeConnection，以返回带有连线类型的连线
+      const [sourceSocket, targetSocket] = getSourceTarget(initial, socket) || [null, null]
+
+      if (sourceSocket && targetSocket) {
+        context.editor.addConnection({
+          id: getUID(),
+          source: sourceSocket.nodeId,
+          sourceOutput: sourceSocket.key,
+          target: targetSocket.nodeId,
+          targetInput: targetSocket.key,
+          socketType: sourceOutput.socket.socketType,
+          dataType: sourceOutput.socket.dataType
+        })
+        return true
       }
       return makeConnection(initial, socket, context)
     }
@@ -253,18 +259,21 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
         await area.translate(nodeData.id, nodeData.position)
       }
       for (const connectionData of data.connections) {
-        await editor.addConnection(new ClassicPreset.Connection(
+        const connection = new Connection(
           editor.getNode(connectionData.source),
           connectionData.sourceOutput,
           editor.getNode(connectionData.target),
           connectionData.targetInput
-        ))
+        )
+        connection.socketType = connectionData.socketType
+        connection.dataType = connectionData.dataType
+        await editor.addConnection(connection)
       }
       await area.area.zoom(data.transform.scale, data.transform.x, data.transform.y)
     },
     export: () => {
-      console.log('nodes', editor.getNodes())
-      console.log('connections', editor.getConnections())
+      // console.log('nodes', editor.getNodes())
+      // console.log('connections', editor.getConnections())
       // console.log('transform', area.area.transform)
       const nodes:Array<UniNode> = editor.getNodes()
       const transform = area.area.transform
@@ -298,7 +307,9 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           source: connection.source,
           sourceOutput: connection.sourceOutput,
           target: connection.target,
-          targetInput: connection.targetInput
+          targetInput: connection.targetInput,
+          socketType: connection.socketType,
+          dataType: connection.dataType
         }))
       } as StarmapGraph<StarmapNode, StarmapConnection>
     },

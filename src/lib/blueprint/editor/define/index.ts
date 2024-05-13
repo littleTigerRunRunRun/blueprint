@@ -1,16 +1,19 @@
 import { type GetSchemes, ClassicPreset } from "rete"
 import type { ReactArea2D } from "rete-react-plugin"
 import { type SelectorEntity } from 'rete-area-plugin/_types/extensions/selectable.d'
-import type { StarmapConnection, StarmapNode, StarmapGraph, StarmapNodeCategory, StarmapDataType } from './data'
+import type { StarmapConnection, StarmapNode, StarmapGraph, StarmapNodeCategory, StarmapDataType, StarmapSocketType } from './data'
 import { UniNode } from '../tool/uniNode'
 
 export * from './data'
 
 export interface StarmapSocket extends ClassicPreset.Socket {
+  socketType: StarmapSocketType
   dataType: StarmapDataType
 }
 
-class Connection<A extends UniNode, B extends UniNode> extends ClassicPreset.Connection<A, B> {
+export class Connection<A extends UniNode, B extends UniNode> extends ClassicPreset.Connection<A, B> {
+  socketType?: StarmapSocketType
+  dataType?: StarmapDataType
   isLoop?: boolean
   selected?: boolean
 }
@@ -95,10 +98,19 @@ export interface StarmapEditorConfig {
   }
 }
 
+export interface StarmapEditorCallExec {
+  // get data from other way, data:StarmapGraph<StarmapNode, StarmapConnection>
+  [StarmapExec.IMPORT]: () => Promise<void>
+  [StarmapExec.EXPORT]: () => StarmapGraph<StarmapNode, StarmapConnection>
+  [StarmapExec.DELETE_SELECT]: () => Promise<void>
+  [StarmapExec.CLEAR]: () => Promise<void>
+}
+
+
 export interface StarmapEditor {
   destroy: () => void
   export: () => StarmapGraph<StarmapNode, StarmapConnection>
   import: (data:StarmapGraph<StarmapNode, StarmapConnection>) => void
   dropAdd: (item: StarmapNodeDefine|null) => void
-  callExec(exec:StarmapExec):void
+  callExec: StarmapEditorCallExec
 }

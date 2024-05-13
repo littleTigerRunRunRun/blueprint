@@ -86,7 +86,10 @@ export function NodeView(props: Props) {
               {
                 cate.content.map((item, ii) => {
                   const port = item.type === 'input' ? inputs[item.name] : outputs[item.name]
-                  if (port && 'dataType' in item) port.socket.dataType = item.dataType || StarmapDataType.UNKNOW
+                  if (port) {
+                    if ('dataType' in item) port.socket.dataType = item.dataType || StarmapDataType.UNKNOW
+                    if ('socketType' in item) port.socket.socketType = item.socketType
+                  }
                   return <div
                     className="content-socket-line"
                     key={`content_${ci}_${ii}`}

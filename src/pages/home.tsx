@@ -1,11 +1,17 @@
 import {} from 'react'
 import { Link } from 'react-router-dom'
 import './home.scss'
+import proto1 from '../assets/prototype_1.png'
 
 function Home() {
   const examples = [{
-    label: '蓝图编辑器原型工具',
-    path: '/prototype'
+    label: '蓝图编辑器原型V1-datav+数据格式',
+    path: '/prototype?data=data1',
+    img: proto1
+  }, {
+    label: '蓝图编辑器原型V2-数据流和控制流',
+    path: '/prototype2?data=data2',
+    img: proto1
   }]
 
   return (
@@ -20,7 +26,7 @@ function Home() {
         {examples.map((block, index) => {
           return <div className="content-block" key={`block_${index}`}>
             <Link to={block.path} className="content-block">
-              <div className="image-alternate" />
+              <img src={proto1} className="image-alternate" />
               <span>{ block.label }</span>
             </Link>
           </div>

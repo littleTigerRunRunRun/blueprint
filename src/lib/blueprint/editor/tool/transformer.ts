@@ -1,5 +1,5 @@
 // 当Port存在格式问题时，就需要中间格式转换节点
-import { StarmapDataType, StarmapNodeDefine } from '../define'
+import { StarmapDataType, StarmapNodeDefine, StarmapSocketType } from '../define'
 
 const TRANSFORMER_THEME_NAME = 'purple'
 
@@ -20,7 +20,13 @@ const StarmapDataTypeLabelMapping = {
  */
 
 // 生成格式转换节点
-export function createTransformer(from: StarmapDataType, to: StarmapDataType):{
+export function createTransformer(from: {
+  dataType: StarmapDataType,
+  socketType: StarmapSocketType
+}, to: {
+  dataType: StarmapDataType,
+  socketType: StarmapSocketType
+}):{
   inputName: string
   outputName: string
   transformer: StarmapNodeDefine
@@ -30,7 +36,7 @@ export function createTransformer(from: StarmapDataType, to: StarmapDataType):{
     outputName: 'output',
     transformer: {
       name: `transformer_${from}_${to}`,
-      label: `${StarmapDataTypeLabelMapping[from]}转为${StarmapDataTypeLabelMapping[to]}`,
+      label: `${StarmapDataTypeLabelMapping[from.dataType]}转为${StarmapDataTypeLabelMapping[to.dataType]}`,
       theme: TRANSFORMER_THEME_NAME,
       category: [
         {
@@ -40,7 +46,8 @@ export function createTransformer(from: StarmapDataType, to: StarmapDataType):{
               label: '输入',
               name: 'input',
               type: 'input',
-              dataType: from
+              dataType: from.dataType,
+              socketType: from.socketType
             }
           ]
         },
@@ -51,7 +58,8 @@ export function createTransformer(from: StarmapDataType, to: StarmapDataType):{
               label: '输出',
               name: 'output',
               type: 'output',
-              dataType: to
+              dataType: to.dataType,
+              socketType: to.socketType
             }
           ]
         }

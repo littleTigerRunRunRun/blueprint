@@ -1,12 +1,12 @@
 import keyboardJS from 'keyboardjs'
-import { Callback, AbilityHotKeyConfig, StarmapExec } from '../define'
+import { Callback, AbilityHotKeyConfig, StarmapExec, StarmapEditorCallExec } from '../define'
 
 export interface KeyBind {
 
 }
 
 // 键盘监听模块属于一个输入辅助类型的功能模块，因此不适宜做到蓝图内部插件，因为不参与图编辑的事件流
-export function BlueprintKeyboard(config:Array<AbilityHotKeyConfig>, callExec:(exec:StarmapExec) => void) {
+export function BlueprintKeyboard(config:Array<AbilityHotKeyConfig>, callExec:StarmapEditorCallExec) {
   const auxiliary = {
     ctrl: false,
     alt: false,
@@ -31,7 +31,7 @@ export function BlueprintKeyboard(config:Array<AbilityHotKeyConfig>, callExec:(e
 
   const commonBind = (event:keyboardJS.KeyEvent|undefined) => {
     const key = event?.key.toLowerCase()
-    if (key && keyExec[key]) callExec(keyExec[key])
+    if (key && keyExec[key]) callExec[keyExec[key]]()
   }
 
   keyboardJS.bind('ctrl', keyPress, keyRelease)
