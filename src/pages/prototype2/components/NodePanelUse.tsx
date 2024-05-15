@@ -1,12 +1,21 @@
-import { PieChartOutlined, MergeOutlined, DeploymentUnitOutlined, ApiOutlined, NumberOutlined, JavaScriptOutlined, MessageOutlined } from '@ant-design/icons'
+import {
+  PieChartOutlined,
+  MergeOutlined,
+  DeploymentUnitOutlined,
+  ApiOutlined,
+  NumberOutlined,
+  JavaScriptOutlined,
+  MessageOutlined,
+  ToolOutlined
+} from '@ant-design/icons'
 import type { StarmapNodeDefine } from '@/lib/blueprint/editor'
-import { StarmapDataType, StarmapSocketType } from '@/lib/blueprint/editor'
+import { StarmapControlType, StarmapDataType, StarmapSocketType } from '@/lib/blueprint/editor'
 import { useState } from 'react'
 
 export type DraggingExec = (item:StarmapNodeDefine) => void
 
 // 这个数据正常应该被持久化
-const tabContentList:Record<
+export const tabContentList:Record<
   string,
   Array<{
     typeName: string,
@@ -106,6 +115,7 @@ const tabContentList:Record<
           category: [
             {
               align: 'left',
+              halfline: true,
               content: [
                 {
                   label: '判断条件',
@@ -186,6 +196,7 @@ const tabContentList:Record<
           category: [
             {
               align: 'left',
+              halfline: true,
               content: [
                 {
                   label: '输入',
@@ -231,12 +242,13 @@ const tabContentList:Record<
           ]
         },
         {
-          name: 'temp_transformer_1',
+          name: 'temp_transformer_2',
           label: '转换器：组合布尔控制',
           theme: 'purple',
           category: [
             {
               align: 'left',
+              halfline: true,
               content: [
                 {
                   label: '',
@@ -268,12 +280,13 @@ const tabContentList:Record<
           ]
         },
         {
-          name: 'temp_transformer_1',
+          name: 'temp_transformer_3',
           label: '转换器：组合字符串控制',
           theme: 'purple',
           category: [
             {
               align: 'left',
+              halfline: true,
               content: [
                 {
                   label: '',
@@ -444,6 +457,113 @@ const tabContentList:Record<
         }
       ]
     }
+  ],
+  '8': [
+    {
+      typeName: 'Temp',
+      theme: '#444444',
+      list: [
+        {
+          name: 'temp1',
+          label: '数字',
+          theme: 'gray',
+          category: [
+            {
+              align: 'right',
+              content: [
+                {
+                  label: '',
+                  name: '',
+                  type: 'output',
+                  socketType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.NUMBER,
+                  control: {
+                    type: StarmapControlType.INPUTNUMBER,
+                    initial: 0
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'temp2',
+          label: '数字2',
+          theme: 'gray',
+          category: [
+            {
+              align: 'right',
+              content: [
+                {
+                  label: '2',
+                  name: '2',
+                  type: 'output',
+                  socketType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.NUMBER
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'add',
+          label: '加法',
+          theme: 'gray',
+          category: [
+            {
+              align: 'left',
+              content: [
+                {
+                  label: '参数1',
+                  name: 'param1',
+                  type: 'input',
+                  socketType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.NUMBER
+                },
+                {
+                  label: '参数2',
+                  name: 'param2',
+                  type: 'input',
+                  socketType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.NUMBER
+                }
+              ]
+            },
+            {
+              align: 'right',
+              content: [
+                {
+                  label: '输出:3',
+                  name: 'output',
+                  type: 'output',
+                  socketType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.NUMBER
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'console',
+          label: '打印信息',
+          theme: 'gray',
+          category: [
+            {
+              align: 'left',
+              content: [
+                {
+                  label: '打印',
+                  name: 'console',
+                  type: 'input',
+                  socketType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.OBJECT
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
   ]
 }
 
@@ -499,7 +619,7 @@ export function createTabs(execDragStart: DraggingExec) {
       children: createTabChildren('2', execDragStart)
     },
     {
-      label: '转换节点',
+      label: '数据转换',
       key: '3',
       icon: <ApiOutlined />,
       children: createTabChildren('3', execDragStart)
@@ -517,7 +637,7 @@ export function createTabs(execDragStart: DraggingExec) {
       children: createTabChildren('5', execDragStart)
     },
     {
-      label: '数据类型',
+      label: '常量',
       key: '6',
       icon: <JavaScriptOutlined />,
       children: createTabChildren('6', execDragStart)
@@ -527,6 +647,12 @@ export function createTabs(execDragStart: DraggingExec) {
       key: '7',
       icon: <MessageOutlined />,
       children: createTabChildren('7', execDragStart)
+    },
+    {
+      label: '临时节点',
+      key: '8',
+      icon: <ToolOutlined />,
+      children: createTabChildren('8', execDragStart)
     }
   ]
 }

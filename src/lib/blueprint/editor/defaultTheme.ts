@@ -140,9 +140,10 @@ export const defaultTheme:StarmapTheme = {
 
 let customTheme:StarmapTheme|undefined
 
-export function computeNodeSizeByDefine(category:StarmapNodeCategory) {
+export function computeNodeSizeByDefine(category:Array<StarmapNodeCategory>) {
   const style = getThemes().node.style
   let height = parseFloat(style.title.height)
+  let debtHeight = 0 // 由于设置了halfLine而出现的高度降低
   category.forEach((cate, i) => {
     height += (category[i + 1] && !category[i + 1].label) ? 0 : parseFloat(style.category.paddingVeritical)
     if (cate.label) {
@@ -150,15 +151,32 @@ export function computeNodeSizeByDefine(category:StarmapNodeCategory) {
       if (i !== category.length) height += parseFloat(style.main.border.split(' ')[0]) // style.main.border
     } else if (!category[i - 1] || category[i - 1].label) height += parseFloat(style.category.paddingVeritical)
     // height += (cate.label ? parseFloat(style.blockTitle.height) : parseFloat(style.category.paddingVeritical))
-    cate.content.forEach(() => {
-      // 遇到控件的情况，要根据一个控件高度计算工具，来具体计算高度
-      height += parseFloat(style.blockLine.height)
-    })
+    const blockHeight = computeBlockHeight(cate)
+    if (debtHeight) {
+      debtHeight -= blockHeight
+      if (debtHeight < 0) {
+        height -= debtHeight
+        debtHeight = 0
+      }
+    } else height += blockHeight
+    if (cate.halfline) debtHeight += blockHeight
   })
+  // if (debtHeight) height += debtHeight
   return {
     width: parseFloat(style.main.width),
     height: Math.max(parseFloat(style.main.minHeight), height)
   }
+}
+
+// to do: 检查调用次数
+export function computeBlockHeight(cate:StarmapNodeCategory) {
+  const style = getThemes().node.style
+  let height = 0
+  cate.content.forEach(() => {
+    // 遇到控件的情况，要根据一个控件高度计算工具，来具体计算高度
+    height += parseFloat(style.blockLine.height)
+  })
+  return height
 }
 
 export function setThemes(theme:StarmapTheme) {

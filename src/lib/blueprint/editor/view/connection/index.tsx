@@ -16,7 +16,7 @@ export function ConnectionView(props: {
   const { style } = getThemes().connection
   const socketTheme = props.data.dataType ? getSocketTheme(props.data.dataType || StarmapDataType.NULL) : null
   // 打开log就会发现这里有严重的多重渲染bug
-  // console.log(props.data.dataType, socketTheme.theme.main)
+  // console.log(props.data.dataType, socketTheme?.theme.main)
 
   return (
     <svg

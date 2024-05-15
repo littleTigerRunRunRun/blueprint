@@ -14,11 +14,24 @@ import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-
 import { createRoot } from 'react-dom/client'
 
 import type { Schemes, AreaExtra, StarmapEditorConfig, StarmapGraph, StarmapNode, StarmapConnection, StarmapNodeDefine } from './define'
-import { StarmapAbility, StarmapSocketType, Connection } from './define'
+import { StarmapAbility, StarmapSocketType, Connection, StarmapControlType } from './define'
 import { NodeView, GroupView, ConnectionView, ControlSocket, DataSocket } from './view'
 import { scopeElder, getCreateUniNode, UniNode } from './tool/uniNode'
 import { setThemes, computeNodeSizeByDefine } from './defaultTheme'
 import { createTransformer } from './tool/transformer'
+import { InputControlView, InputNumberControlView } from './view/control'
+
+// 这个引用其实是不合法的，只是在调试中使用（正常不可能出现核心库调用业务）
+import { tabContentList } from '@/pages/prototype2/components/NodePanelUse'
+const nodeDefine:Record<string, StarmapNodeDefine> = {}
+for (const key in tabContentList) {
+  for (const cate of tabContentList[key]) {
+    for (const node of cate.list) {
+      if (nodeDefine[node.name]) console.error('duplicate node, name:', node.name)
+      nodeDefine[node.name] = node
+    }
+  }
+}
 
 const createUniNode = getCreateUniNode({})
 
@@ -101,8 +114,15 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
               }}
             />
           }
+        },
+        control(data) {
+          switch (data.payload.type) {
+            case StarmapControlType.INPUT: return InputControlView
+            case StarmapControlType.INPUTNUMBER: return InputNumberControlView
+            default: return null
+          }
         }
-      }
+      } 
     })
   )
   scopes.addPreset(ScopesPresets.classic.setup())
@@ -245,15 +265,18 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
 
       // to do:根据节点间的父子级关系分顺序加入节点
       for (const nodeData of data.nodes) {
+        const { width, height } = computeNodeSizeByDefine(nodeData.category)
         const node = createUniNode({
           id: nodeData.id,
           label: nodeData.label,
           name: nodeData.name,
           type: 'common',
           theme: nodeData.theme,
-          width: nodeData.width,
-          height: nodeData.height,
-          category: nodeData.category || []
+          // width: nodeData.width,
+          // height: nodeData.height,
+          width,
+          height,
+          category: nodeDefine[nodeData.name] ? nodeDefine[nodeData.name].category : (nodeData.category || [])
         })
         await editor.addNode(node)
         await area.translate(nodeData.id, nodeData.position)

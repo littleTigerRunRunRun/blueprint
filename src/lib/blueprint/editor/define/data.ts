@@ -2,39 +2,60 @@
 export enum StarmapControlType {
   INPUT = 'input',
   INPUTNUMBER = 'inputNumber',
-  SELECT = 'select',
-  COLOR = 'color',
-  SWITCH = 'switch',
+  // SELECT = 'select',
+  // COLOR = 'color',
+  // SWITCH = 'switch',
 }
 
 export const StarmapControlDataTypeMapping = {
   [StarmapControlType.INPUT]: 'string',
   [StarmapControlType.INPUTNUMBER]: 'number',
-  [StarmapControlType.SELECT]: 'unknow',
-  [StarmapControlType.COLOR]: ['number', 'string'],
-  [StarmapControlType.SWITCH]: 'boolean',
+  // [StarmapControlType.SELECT]: 'unknown',
+  // [StarmapControlType.COLOR]: 'string',
+  // [StarmapControlType.SWITCH]: 'boolean',
 }
 
 // control在节点上显示为一个可交互控件，而在将节点拆解为逻辑组合后能看到Control是一个变量节点
-interface BaseControl {
-  type: StarmapControlType
-  initial?: string | number | boolean | unknown
-  readonly?:boolean
-  change?:() => void
-}
+// interface BaseControl {
+//   type: StarmapControlType
+//   initial?: string | number //  | boolean | unknown
+//   readonly?:boolean
+//   change?:() => void
+// }
 
-export interface InputControl extends BaseControl {
-  type: StarmapControlType.INPUT
-  initial: string
-}
 
-export interface InputNumberControl extends BaseControl {
-  type: StarmapControlType.INPUTNUMBER
-  initial: number
-}
+// export interface SelectControl extends BaseControl {
+//   type: StarmapControlType.SELECT
+//   initial: unknown
+// }
+
+// export interface ColorControl extends BaseControl {
+//   type: StarmapControlType.COLOR
+//   initial: string
+// }
+// export interface SwitchControl extends BaseControl {
+//   type: StarmapControlType.SWITCH
+//   initial: boolean
+// }
 
 // 这个Control类型需要能被扩展
-export type StarmapControl = InputControl | InputNumberControl
+// export type StarmapControl<T extends StarmapControlType, K = T extends StarmapControlType.INPUT ? string : number> = {
+export type StarmapControl<T extends StarmapControlType, K extends string | number> = {
+  type: T
+  initial?: K
+  readonly?: boolean
+  change?: (value: K) => void
+}
+
+// export interface InputControl extends BaseControl {
+//   type: StarmapControlType.INPUT
+//   initial: string
+// }
+
+// export interface InputNumberControl extends BaseControl {
+//   type: StarmapControlType.INPUTNUMBER
+//   initial: number
+// }
 
 export enum StarmapDataType {
   STRING = 'string',
@@ -60,22 +81,20 @@ export enum StarmapSocketType {
 // }
 
 type NodeId = string
-
 // 
-export type StarmapNodeCategory = Array<
-{
+export type StarmapNodeCategory = {
   label?: string
   align: 'left' | 'center' | 'right'
+  halfline?: boolean // 视图上占据整行还是只占据半行（是否会影响后续非本align侧内容的竖直位置基准）
   content: Array<
     // dataTypeDecription
-    { label: string, name: string, type: 'input', socketType: StarmapSocketType, dataType?: StarmapDataType, control?: StarmapControl } |
-    { label: string, name: string, type: 'control', control: StarmapControl }
-  > | Array<
-    { label: string, name: string, type: 'output', socketType: StarmapSocketType,  dataType?: StarmapDataType, control?: StarmapControl } |
-    { label: string, name: string, type: 'control', control: StarmapControl }
+    { label: string, name: string, type: 'input', socketType: StarmapSocketType, dataType?: StarmapDataType, control?: StarmapControl<StarmapControlType, string | number> } |
+    { label: string, name: string, type: 'control', control: StarmapControl<StarmapControlType, string | number> }
+    > | Array<
+    { label: string, name: string, type: 'output', socketType: StarmapSocketType,  dataType?: StarmapDataType, control?: StarmapControl<StarmapControlType, string | number> } |
+    { label: string, name: string, type: 'control', control: StarmapControl<StarmapControlType, string | number> }
   >
 }
->
 
 // type NestConfig = {
 //   innerInputs: {
@@ -97,11 +116,11 @@ export type StarmapNode = {
   height: number
   theme: string
   parent?: string
-  nest?: StarmapNodeCategory // 可否成为容器节点
+  nest?: Array<StarmapNodeCategory> // 可否成为容器节点
   children?: Array<NodeId>
   label: string // 节点名称
   position: { x: number, y: number }
-  category: StarmapNodeCategory
+  category: Array<StarmapNodeCategory>
   status: {
     error: boolean // 错误节点，比如画布中已经删除但是在蓝图中仍然存在的节点
   }

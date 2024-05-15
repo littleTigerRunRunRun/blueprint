@@ -1,0 +1,20 @@
+.output-control{
+  display: inline-block;
+  vertical-align: top;
+  height: 24px;
+  >span{
+    display: inline-block;
+    vertical-align: top;
+    height: 24px;
+    .starmap-view-input-number{
+      display: inline-block;
+      vertical-align: top;
+      height: 24px;
+      input {
+        height: 24px;
+        line-height: 16px;
+        font-size: 10px;
+      }
+    }
+  }
+}

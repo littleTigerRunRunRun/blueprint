@@ -1,8 +1,8 @@
 // retejs里的节点，有很多可以配置的内容，这导致其自动化生成的方法，有些复杂，这里我们需要用一个函数，来描述这个节点的类型，以及返回对应的类
 // 统一化节点，用一种统一数据结构描述多种节点
 
-import { ClassicPreset } from 'rete'
-import { StarmapNodeCategory, StarmapSocket, StarmapDataType, StarmapSocketType } from '../define'
+import { ClassicPreset, getUID } from 'rete'
+import { StarmapNodeCategory, StarmapSocket, StarmapDataType, StarmapSocketType, StarmapControlType, StarmapControl } from '../define'
 
 export class UniSocket extends ClassicPreset.Socket {
   constructor(
@@ -11,6 +11,42 @@ export class UniSocket extends ClassicPreset.Socket {
     public socketType: StarmapSocketType = StarmapSocketType.DATA
   ) {
     super(name)
+  }
+}
+
+export class UniControl<T extends StarmapControlType, N extends string | number = T extends StarmapControlType.INPUT ? string : number> extends ClassicPreset.Control {
+  // (
+  //   T extends StarmapControlType.INPUTNUMBER ? number : never
+  //   // (
+  //   //   T extends StarmapControlType.SELECT ? unknown : (
+  //   //     T extends StarmapControlType.COLOR ? string : (
+  //   //       T extends StarmapControlType.SWITCH ? boolean : never
+  //   //     )
+  //   //   )
+  //   // )
+  // )
+  type: T
+  value?: N
+  readonly: boolean
+  constructor(public options: StarmapControl<T, N>) {
+    super()
+    this.type = options.type
+    this.id = getUID()
+    this.readonly = options?.readonly || false
+
+    // if (options?.initial && options.initial !== undefined) {
+      
+    // }
+    this.value = options?.initial
+  }
+
+  /**
+   * Set control value
+   * @param value Value to set
+   */
+  setValue(value: N) {
+    this.value = value
+    if (this.options?.change) this.options.change(value)
   }
 }
 
@@ -31,7 +67,7 @@ export type UniNodeConfig = {
   hasChildren?:boolean
   width:number
   height:number // todo:更希望高度可以传入一个计算标准来自适应计算
-  category:StarmapNodeCategory
+  category:Array<StarmapNodeCategory>
   dataOperation?:(inputs: Record<string, Array<unknown>>, self:UniNode) => { [key:string]: unknown }
   executeOperation?:(forward: (output:string) => void, self:UniNode) => void
 }
@@ -39,8 +75,9 @@ export type UniNodeConfig = {
 export class UniNode extends ClassicPreset.Node<
   Record<string, StarmapSocket>,
   Record<string, StarmapSocket>,
-  Record<string, ClassicPreset.InputControl<'number'|'text'>>
+  Record<string, UniControl<StarmapControlType.INPUT> | UniControl<StarmapControlType.INPUTNUMBER>>
 > {
+  outputs: Record<string, ClassicPreset.Input<StarmapSocket>> = {}
   name:string
   width:number
   height:number
@@ -48,7 +85,7 @@ export class UniNode extends ClassicPreset.Node<
   hasChildren:boolean = false
   parent?:string
   theme:string = ''
-  category:StarmapNodeCategory
+  category:Array<StarmapNodeCategory>
   updateOutputControls?:(controlIds:Array<string>) => void
   dataOperation?:(inputs: Record<string, Array<unknown>>, self:UniNode) => { [key:string]: unknown }
   executeOperation?:(forward: (output:string) => void, self:UniNode) => void
@@ -82,19 +119,21 @@ export class UniNode extends ClassicPreset.Node<
             this.inputKeys.push(element.name)
             const input = new ClassicPreset.Input(new UniSocket(element.name), element.label, true)
             // 需要一个中间件来解决element.control.type的匹配问题
-            if (element.control) input.addControl(new ClassicPreset.InputControl<'number'|'text'>('number', { initial: element.control.initial, change: element.control.change, readonly: element.control.readonly }))
+            if (element.control) input.addControl(new UniControl({ type: element.control.type, initial: element.control.initial, change: element.control.change, readonly: element.control.readonly }))
             this.addInput(element.name, input)
             break
           }
           case 'output':{
             this.outputKeys.push(element.name)
-            if (element.control) this.addControl(element.name, new ClassicPreset.InputControl<'number'|'text'>('number', { initial: element.control.initial, readonly: element.control.readonly, change: element.control.change }))
-            this.addOutput(element.name, new ClassicPreset.Output(new UniSocket(element.name), element.label, true))
+            const output = new ClassicPreset.Input(new UniSocket(element.name), element.label, true)
+            if (element.control) output.addControl(new UniControl({ type: element.control.type, initial: element.control.initial, readonly: element.control.readonly, change: element.control.change }))
+            this.addOutput(element.name, output)
             break
           }
           case 'control':{
             this.controlKeys.push(element.name)
-            this.addControl(element.name, new ClassicPreset.InputControl<'number'|'text'>('number', { initial: element.control.initial, readonly: element.control.readonly, change: element.control.change }))
+            // @ts-expect-error: 这里的类型其实是正确的，但是类型定义上和rete的要求有些出入，暂时无法解决
+            this.addControl(element.name, new UniControl({ type: element.control.type, initial: element.control.initial, readonly: element.control.readonly, change: element.control.change }))
             break
           }
         }
@@ -110,7 +149,7 @@ export class UniNode extends ClassicPreset.Node<
     }
     return {}
   }
-  execute(input:string, forward: (output:string) => void):void {
+  execute(_input:string, forward: (output:string) => void):void {
     if (this.executeOperation) this.executeOperation(forward, this)
   }
 }

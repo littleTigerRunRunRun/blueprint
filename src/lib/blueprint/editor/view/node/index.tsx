@@ -3,10 +3,12 @@ import { UniNode } from '../../tool/uniNode'
 import { Schemes, StarmapDataType } from '../../define'
 import { RenderEmit, Presets } from 'rete-react-plugin'
 // import { Tooltip } from 'antd'
-import { getNodeTheme } from '../../defaultTheme'
+import { getNodeTheme, computeBlockHeight } from '../../defaultTheme'
 import { Control } from 'rete/_types/presets/classic'
 
 const { RefSocket, RefControl } = Presets.classic
+const MySocket = RefSocket<Schemes>
+const MyControl = RefControl<Schemes>
 
 type Props = {
   data: UniNode
@@ -53,6 +55,7 @@ export function NodeView(props: Props) {
       className="customized-content"
       style={{
         backgroundColor: theme.content,
+        height: `${height - parseFloat(style.title.height)}px`,
         borderRadius: `0 0 ${style.main.borderRadius} ${style.main.borderRadius}`
       }}
     >
@@ -70,7 +73,8 @@ export function NodeView(props: Props) {
                   ${cate.align === 'left' ? style.category.paddingHorizontal : '0'}
                 `,
                 borderBottom: (ci !== category.length - 1 && cate.label) ?style.category.borderBottomNotLast : '',
-                '--socket-offset': style.category.socketOffset
+                '--socket-offset': style.category.socketOffset,
+                marginBottom: cate.halfline ? `-${(computeBlockHeight(cate))}px` : 0
               } as React.CSSProperties}
               key={`cate_${ci}`}
             >
@@ -90,6 +94,7 @@ export function NodeView(props: Props) {
                     if ('dataType' in item) port.socket.dataType = item.dataType || StarmapDataType.UNKNOW
                     if ('socketType' in item) port.socket.socketType = item.socketType
                   }
+                  console.log(item, item.type === 'output', outputs[item.name])
                   return <div
                     className="content-socket-line"
                     key={`content_${ci}_${ii}`}
@@ -108,7 +113,7 @@ export function NodeView(props: Props) {
                     >
                       {
                         item.type === 'control' ?
-                          <RefControl
+                          <MyControl
                             key={item.name}
                             name="control"
                             emit={props.emit}
@@ -117,7 +122,7 @@ export function NodeView(props: Props) {
                         : (
                           <>
                             {/* {`${item.type}_${item.name}_${item.dataType}`} */}
-                            <RefSocket
+                            <MySocket
                               name={`${item.type}-socket`}
                               side={item.type}
                               emit={props.emit}
@@ -126,22 +131,30 @@ export function NodeView(props: Props) {
                               payload={(item.type === 'input' ? inputs[item.name]!.socket : outputs[item.name]!.socket)}
                               data-testid={`${item.type}-socket`}
                             />
-                            {
-                              item.type === 'input' && inputs[item.name]?.control && inputs[item.name]?.showControl ? (
-                                <span className="input-control">
-                                  <RefControl
-                                    key={item.name}
-                                    name="input-control"
-                                    emit={props.emit}
-                                    payload={inputs[item.name]!.control as Control}
-                                  />
-                                </span>
-                              ) : ''
-                            }
                           </>
                         )
                       }
                     </div>
+                    {
+                      item.type === 'input' && inputs[item.name]?.control && inputs[item.name]?.showControl ? (
+                        <MyControl
+                          key={item.name}
+                          name="input-control"
+                          emit={props.emit}
+                          payload={inputs[item.name]!.control as Control}
+                        />
+                      ) : ''
+                    }
+                    {
+                      item.type === 'output' && outputs[item.name]?.control && outputs[item.name]?.showControl ? (
+                        <MyControl
+                          key={item.name}
+                          name="output-control"
+                          emit={props.emit}
+                          payload={outputs[item.name]!.control as Control}
+                        />
+                      ) : ''
+                    }
                   </div>
                 })
               }

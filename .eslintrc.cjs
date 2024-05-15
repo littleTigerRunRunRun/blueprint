@@ -19,6 +19,7 @@ module.exports = {
       "caughtErrorsIgnorePattern": "^_",
       "destructuredArrayIgnorePattern": "^_",
       "varsIgnorePattern": "^_"
-    }]
+    }],
+    "@typescript-eslint/ban-ts-comment": "warn"
   },
 }
