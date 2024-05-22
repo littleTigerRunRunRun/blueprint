@@ -22,10 +22,10 @@ const StarmapDataTypeLabelMapping = {
 // 生成格式转换节点
 export function createTransformer(from: {
   dataType: StarmapDataType,
-  socketType: StarmapSocketType
+  flowType: StarmapSocketType
 }, to: {
   dataType: StarmapDataType,
-  socketType: StarmapSocketType
+  flowType: StarmapSocketType
 }):{
   inputName: string
   outputName: string
@@ -47,7 +47,7 @@ export function createTransformer(from: {
               name: 'input',
               type: 'input',
               dataType: from.dataType,
-              socketType: from.socketType
+              flowType: from.flowType
             }
           ]
         },
@@ -59,7 +59,7 @@ export function createTransformer(from: {
               name: 'output',
               type: 'output',
               dataType: to.dataType,
-              socketType: to.socketType
+              flowType: to.flowType
             }
           ]
         }

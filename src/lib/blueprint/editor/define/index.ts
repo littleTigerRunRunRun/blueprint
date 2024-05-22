@@ -7,12 +7,12 @@ import { UniNode } from '../tool/uniNode'
 export * from './data'
 
 export interface StarmapSocket extends ClassicPreset.Socket {
-  socketType: StarmapSocketType
+  flowType: StarmapSocketType
   dataType: StarmapDataType
 }
 
 export class Connection<A extends UniNode, B extends UniNode> extends ClassicPreset.Connection<A, B> {
-  socketType?: StarmapSocketType
+  flowType?: StarmapSocketType
   dataType?: StarmapDataType
   isLoop?: boolean
   selected?: boolean

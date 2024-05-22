@@ -7,6 +7,7 @@ export interface KeyBind {
 
 // 键盘监听模块属于一个输入辅助类型的功能模块，因此不适宜做到蓝图内部插件，因为不参与图编辑的事件流
 export function BlueprintKeyboard(config:Array<AbilityHotKeyConfig>, callExec:StarmapEditorCallExec) {
+  // 辅助键，用于响应组合键指令，例如ctrl + c复制等等
   const auxiliary = {
     ctrl: false,
     alt: false,
@@ -14,6 +15,7 @@ export function BlueprintKeyboard(config:Array<AbilityHotKeyConfig>, callExec:St
     space: false
   }
   const keyExec:Record<string, StarmapExec> = {}
+  const bindings:Array<[string, Callback, Callback|undefined]> = []
 
   const keyPress = (event:keyboardJS.KeyEvent|undefined) => {
     if (event && event.key === 'Control') auxiliary.ctrl = true
@@ -52,18 +54,24 @@ export function BlueprintKeyboard(config:Array<AbilityHotKeyConfig>, callExec:St
     // 绑定按键事件
     bindKey(key:string, keyPressBind:Callback, keyReleaseBind?:Callback) {
       keyboardJS.bind(key, keyPressBind, keyReleaseBind)
+      bindings.push([key, keyPressBind, keyReleaseBind])
     },
     unbindKey(key:string, keyPressBind:Callback, keyReleaseBind?:Callback) {
       keyboardJS.unbind(key, keyPressBind, keyReleaseBind)
     },
-    // 整个按键系统的注销
+    // 恢复sleep状态
     awake() {
 
     },
+    // 让整个按键系统不响应交互
     sleep() {
 
     },
     destroy() {
+      for (const binding of bindings) {
+        keyboardJS.unbind(binding[0], binding[1], binding[2])
+      }
+      bindings.splice(0, bindings.length)
       keyboardJS.unbind('ctrl', keyPress, keyRelease)
       keyboardJS.unbind('alt', keyPress, keyRelease)
       keyboardJS.unbind('shift', keyPress, keyRelease)

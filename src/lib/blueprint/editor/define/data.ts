@@ -88,10 +88,10 @@ export type StarmapNodeCategory = {
   halfline?: boolean // 视图上占据整行还是只占据半行（是否会影响后续非本align侧内容的竖直位置基准）
   content: Array<
     // dataTypeDecription
-    { label: string, name: string, type: 'input', socketType: StarmapSocketType, dataType?: StarmapDataType, control?: StarmapControl<StarmapControlType, string | number> } |
+    { label: string, name: string, type: 'input', flowType: StarmapSocketType, dataType?: StarmapDataType, control?: StarmapControl<StarmapControlType, string | number> } |
     { label: string, name: string, type: 'control', control: StarmapControl<StarmapControlType, string | number> }
     > | Array<
-    { label: string, name: string, type: 'output', socketType: StarmapSocketType,  dataType?: StarmapDataType, control?: StarmapControl<StarmapControlType, string | number> } |
+    { label: string, name: string, type: 'output', flowType: StarmapSocketType,  dataType?: StarmapDataType, control?: StarmapControl<StarmapControlType, string | number> } |
     { label: string, name: string, type: 'control', control: StarmapControl<StarmapControlType, string | number> }
   >
 }
@@ -189,7 +189,7 @@ export type StarmapConnection = {
   sourceOutput: string // output name of source
   target: NodeId
   targetInput: string // input name of target
-  socketType?: StarmapSocketType
+  flowType?: StarmapSocketType
   dataType?: StarmapDataType
   status?: {
     log: boolean

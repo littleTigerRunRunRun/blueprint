@@ -17,10 +17,13 @@ function Blueprint(props:BlueprintProps) {
 
   useEffect(() => {
     if (container.current && !editor) {
+      // 初始化蓝图
       starmap({
         container: container.current,
+        // 回调事件响应
         eventHandlers: {
           onNodeAdd: (node) => {
+            // 这里改变了有限次数节点的调用次数，当调用次数为0时，对应的节点将无法被拖拽
             props.checkInstanceNumChange(node.name, -1)
           },
           onNodeRemove: (node) => {
@@ -28,6 +31,7 @@ function Blueprint(props:BlueprintProps) {
           }
         }
       }, {
+        // 这两个工具方法，提供了为用户自定义导入导出后续的入口
         getImportData: async () => {
           const namespace = location.search.split('?')[1].split('=')[1] || ''
           const dataString = localStorage[`starmap_data_${namespace}`]
@@ -39,6 +43,7 @@ function Blueprint(props:BlueprintProps) {
           localStorage[`starmap_data_${namespace}`] = JSON.stringify(data)
         }
       }).then((edit) => {
+        // 这里代表画布已经准备完毕了
         setOpening(true)
         setEditor(edit)
         // editor = edit
@@ -46,6 +51,7 @@ function Blueprint(props:BlueprintProps) {
     }
 
     if (editor) {
+      // 当editor创建完毕时，可以导入数据了
       editor.callExec[StarmapExec.IMPORT]()
     }
     
@@ -59,6 +65,7 @@ function Blueprint(props:BlueprintProps) {
     editor?.dropAdd(props.dragging)
   }
 
+  // 拖拽加入内容
   useEffect(() => {
     dropAdd()
     // eslint-disable-next-line react-hooks/exhaustive-deps

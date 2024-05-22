@@ -1,5 +1,6 @@
 import { StarmapTheme, Level2StringInfo, StarmapDataType, StarmapNodeCategory } from "./define"
 
+// 主题theme包含了：style和themes，style表示节点、连线、锚点等内容的样式风格，themes则是一个控制其不同主题的配置表
 export const defaultTheme:StarmapTheme = {
   node: {
     style: {
@@ -140,6 +141,7 @@ export const defaultTheme:StarmapTheme = {
 
 let customTheme:StarmapTheme|undefined
 
+// 通过样式配置和节点配置，计算出节点的高度
 export function computeNodeSizeByDefine(category:Array<StarmapNodeCategory>) {
   const style = getThemes().node.style
   let height = parseFloat(style.title.height)

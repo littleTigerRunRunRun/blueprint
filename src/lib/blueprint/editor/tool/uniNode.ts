@@ -8,7 +8,7 @@ export class UniSocket extends ClassicPreset.Socket {
   constructor(
     name:string,
     public dataType: StarmapDataType = StarmapDataType.NULL,
-    public socketType: StarmapSocketType = StarmapSocketType.DATA
+    public flowType: StarmapSocketType = StarmapSocketType.DATA
   ) {
     super(name)
   }
@@ -72,6 +72,7 @@ export type UniNodeConfig = {
   executeOperation?:(forward: (output:string) => void, self:UniNode) => void
 }
 
+// 通用节点
 export class UniNode extends ClassicPreset.Node<
   Record<string, StarmapSocket>,
   Record<string, StarmapSocket>,
@@ -140,6 +141,7 @@ export class UniNode extends ClassicPreset.Node<
       })
     })
   }
+  // data函数是retejs设计的数据流遍历的一环
   data(inputs: Record<string, Array<unknown>>):{ [key:string]: unknown } {
     if (this.dataOperation) {
       const returnValue = this.dataOperation(inputs, this)
@@ -149,6 +151,7 @@ export class UniNode extends ClassicPreset.Node<
     }
     return {}
   }
+  // execute函数是retejs设计的控制流遍历的一环
   execute(_input:string, forward: (output:string) => void):void {
     if (this.executeOperation) this.executeOperation(forward, this)
   }
@@ -160,6 +163,7 @@ type createUniNodeFactor = {
   updateOutputControls?:(controlIds:Array<string>) => void
 }
 
+// 这一层的作用是通过闭包，生成一些效果不一样的工厂函数
 export function getCreateUniNode(factor:createUniNodeFactor) {
   // if (node.executeOperation) {
   //   node.execute = (function(input:string, forward: (output:string) => void):void {

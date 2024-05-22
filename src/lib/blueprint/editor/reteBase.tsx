@@ -21,18 +21,6 @@ import { setThemes, computeNodeSizeByDefine } from './defaultTheme'
 import { createTransformer } from './tool/transformer'
 import { InputControlView, InputNumberControlView } from './view/control'
 
-// 这个引用其实是不合法的，只是在调试中使用（正常不可能出现核心库调用业务）
-import { tabContentList } from '@/pages/prototype2/components/NodePanelUse'
-const nodeDefine:Record<string, StarmapNodeDefine> = {}
-for (const key in tabContentList) {
-  for (const cate of tabContentList[key]) {
-    for (const node of cate.list) {
-      if (nodeDefine[node.name]) console.error('duplicate node, name:', node.name)
-      nodeDefine[node.name] = node
-    }
-  }
-}
-
 const createUniNode = getCreateUniNode({})
 
 export async function createEditor(config: Required<StarmapEditorConfig>) {
@@ -88,7 +76,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           return NodeView
         },
         socket(context) {
-          if (context.payload && context.payload.socketType === StarmapSocketType.CONTROL) return ControlSocket
+          if (context.payload && context.payload.flowType === StarmapSocketType.CONTROL) return ControlSocket
           return DataSocket
         },
         connection(_context) {
@@ -133,7 +121,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
       const target = editor.getNode(socket.nodeId)
       const targetInput = target.inputs[socket.key]
       if (!sourceOutput || !targetInput) return
-      if (sourceOutput.socket.socketType !== targetInput.socket.socketType) {
+      if (sourceOutput.socket.flowType !== targetInput.socket.flowType) {
         alert('锚点类型不一致！（后续会补充自动转换逻辑）')
         return
       }
@@ -181,7 +169,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           sourceOutput: sourceSocket.key,
           target: targetSocket.nodeId,
           targetInput: targetSocket.key,
-          socketType: sourceOutput.socket.socketType,
+          flowType: sourceOutput.socket.flowType,
           dataType: sourceOutput.socket.dataType
         })
         return true
@@ -276,7 +264,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           // height: nodeData.height,
           width,
           height,
-          category: nodeDefine[nodeData.name] ? nodeDefine[nodeData.name].category : (nodeData.category || [])
+          category: nodeData.category || []
         })
         await editor.addNode(node)
         await area.translate(nodeData.id, nodeData.position)
@@ -288,7 +276,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           editor.getNode(connectionData.target),
           connectionData.targetInput
         )
-        connection.socketType = connectionData.socketType
+        connection.flowType = connectionData.flowType
         connection.dataType = connectionData.dataType
         await editor.addConnection(connection)
       }
@@ -331,7 +319,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           sourceOutput: connection.sourceOutput,
           target: connection.target,
           targetInput: connection.targetInput,
-          socketType: connection.socketType,
+          flowType: connection.flowType,
           dataType: connection.dataType
         }))
       } as StarmapGraph<StarmapNode, StarmapConnection>

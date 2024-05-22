@@ -2,6 +2,7 @@ import { Button, Tooltip } from 'antd'
 import { ImportOutlined, ExportOutlined, RestOutlined } from '@ant-design/icons'
 import { StarmapExec, StarmapEditorCallExec } from './editor'
 
+// 工具栏配置
 const toolbarList = [
   {
     name: StarmapExec.IMPORT,

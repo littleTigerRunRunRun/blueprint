@@ -6,7 +6,8 @@ import {
   NumberOutlined,
   JavaScriptOutlined,
   MessageOutlined,
-  ToolOutlined
+  ToolOutlined,
+  PlusOutlined
 } from '@ant-design/icons'
 import type { StarmapNodeDefine } from '@/lib/blueprint/editor'
 import { StarmapControlType, StarmapDataType, StarmapSocketType } from '@/lib/blueprint/editor'
@@ -42,8 +43,8 @@ export const tabContentList:Record<
                   label: '更新数据',
                   name: 'updateData',
                   type: 'input',
-                  socketType: StarmapSocketType.CONTROL,
-                  dataType: StarmapDataType.OBJECT
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.NULL
                 }
               ]
             },
@@ -55,7 +56,14 @@ export const tabContentList:Record<
                   label: '点击扇形',
                   name: 'clickItem',
                   type: 'output',
-                  socketType: StarmapSocketType.CONTROL,
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.NULL
+                },
+                {
+                  label: '扇形数据',
+                  name: 'clickData',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.OBJECT
                 }
               ]
@@ -76,13 +84,13 @@ export const tabContentList:Record<
                   label: '显示',
                   name: 'show',
                   type: 'input',
-                  socketType: StarmapSocketType.CONTROL
+                  flowType: StarmapSocketType.CONTROL
                 },
                 {
                   label: '隐藏',
                   name: 'hide',
                   type: 'input',
-                  socketType: StarmapSocketType.CONTROL
+                  flowType: StarmapSocketType.CONTROL
                 }
               ]
             },
@@ -94,7 +102,7 @@ export const tabContentList:Record<
                   label: '点击按钮',
                   name: 'click',
                   type: 'output',
-                  socketType: StarmapSocketType.CONTROL
+                  flowType: StarmapSocketType.CONTROL
                 }
               ]
             }
@@ -118,10 +126,17 @@ export const tabContentList:Record<
               halfline: true,
               content: [
                 {
-                  label: '判断条件',
-                  name: 'judgement',
+                  label: '执行',
+                  name: 'judge',
                   type: 'input',
-                  socketType: StarmapSocketType.CONTROL,
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.NULL
+                },
+                {
+                  label: '判断条件',
+                  name: 'judgeBasis',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.BOOLEAN
                 }
               ]
@@ -133,13 +148,13 @@ export const tabContentList:Record<
                   label: '真',
                   name: 'true',
                   type: 'output',
-                  socketType: StarmapSocketType.CONTROL
+                  flowType: StarmapSocketType.CONTROL
                 },
                 {
                   label: '假',
                   name: 'false',
                   type: 'output',
-                  socketType: StarmapSocketType.CONTROL
+                  flowType: StarmapSocketType.CONTROL
                 }
               ]
             }
@@ -157,7 +172,7 @@ export const tabContentList:Record<
         //           label: '判断条件',
         //           name: 'judgement',
         //           type: 'input',
-        //           socketType: StarmapSocketType.CONTROL,
+        //           flowType: StarmapSocketType.CONTROL,
         //           dataType: StarmapDataType.BOOLEAN
         //         }
         //       ]
@@ -169,13 +184,13 @@ export const tabContentList:Record<
         //           label: '真',
         //           name: 'true',
         //           type: 'output',
-        //           socketType: StarmapSocketType.CONTROL
+        //           flowType: StarmapSocketType.CONTROL
         //         },
         //         {
         //           label: '假',
         //           name: 'false',
         //           type: 'output',
-        //           socketType: StarmapSocketType.CONTROL
+        //           flowType: StarmapSocketType.CONTROL
         //         }
         //       ]
         //     }
@@ -202,7 +217,7 @@ export const tabContentList:Record<
                   label: '输入',
                   name: 'input',
                   type: 'input',
-                  socketType: StarmapSocketType.CONTROL,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.OBJECT
                 }
               ]
@@ -211,30 +226,24 @@ export const tabContentList:Record<
               align: 'right',
               content: [
                 {
-                  label: '',
-                  name: 'controlOut',
-                  type: 'output',
-                  socketType: StarmapSocketType.CONTROL
-                },
-                {
                   label: 'x',
                   name: 'value_1',
                   type: 'output',
-                  socketType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.STRING
                 },
                 {
                   label: 'y',
                   name: 'value_2',
                   type: 'output',
-                  socketType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.NUMBER
                 },
                 {
                   label: 'canDig',
                   name: 'value_3',
                   type: 'output',
-                  socketType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.BOOLEAN
                 }
               ]
@@ -254,13 +263,13 @@ export const tabContentList:Record<
                   label: '',
                   name: 'controlIn',
                   type: 'input',
-                  socketType: StarmapSocketType.CONTROL
+                  flowType: StarmapSocketType.CONTROL
                 },
                 {
                   label: '输入',
                   name: 'controlValue',
                   type: 'input',
-                  socketType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.BOOLEAN
                 }
               ]
@@ -272,7 +281,7 @@ export const tabContentList:Record<
                   label: '',
                   name: 'controlOut',
                   type: 'output',
-                  socketType: StarmapSocketType.CONTROL,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.BOOLEAN
                 }
               ]
@@ -292,13 +301,13 @@ export const tabContentList:Record<
                   label: '',
                   name: 'controlIn',
                   type: 'input',
-                  socketType: StarmapSocketType.CONTROL
+                  flowType: StarmapSocketType.CONTROL
                 },
                 {
                   label: '输入',
                   name: 'controlValue',
                   type: 'input',
-                  socketType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.STRING
                 }
               ]
@@ -310,7 +319,7 @@ export const tabContentList:Record<
                   label: '',
                   name: 'controlOut',
                   type: 'output',
-                  socketType: StarmapSocketType.CONTROL,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.STRING
                 }
               ]
@@ -351,7 +360,14 @@ export const tabContentList:Record<
                   label: '设置',
                   name: 'set',
                   type: 'input',
-                  socketType: StarmapSocketType.CONTROL,
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.NULL
+                },
+                {
+                  label: '设置',
+                  name: ' value',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.STRING
                 }
               ]
@@ -363,7 +379,7 @@ export const tabContentList:Record<
                   label: '获取',
                   name: 'get',
                   type: 'output',
-                  socketType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.STRING
                 }
               ]
@@ -382,7 +398,14 @@ export const tabContentList:Record<
                   label: '设置',
                   name: 'set',
                   type: 'input',
-                  socketType: StarmapSocketType.CONTROL,
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.NULL
+                },
+                {
+                  label: '值',
+                  name: ' value',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.STRING
                 }
               ]
@@ -394,7 +417,7 @@ export const tabContentList:Record<
                   label: '获取',
                   name: 'get',
                   type: 'output',
-                  socketType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.STRING
                 }
               ]
@@ -421,7 +444,7 @@ export const tabContentList:Record<
                   label: '""',
                   name: 'get',
                   type: 'output',
-                  socketType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.STRING
                 }
               ]
@@ -448,7 +471,7 @@ export const tabContentList:Record<
                   label: '执行',
                   name: 'get',
                   type: 'output',
-                  socketType: StarmapSocketType.CONTROL,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.NULL
                 }
               ]
@@ -459,6 +482,52 @@ export const tabContentList:Record<
     }
   ],
   '8': [
+    {
+      typeName: 'operation',
+      theme: '#444444',
+      list: [
+        {
+          name: 'compare',
+          label: '比较',
+          theme: 'gray',
+          category: [
+            {
+              align: 'left',
+              content: [
+                {
+                  label: '输入',
+                  name: 'input',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.NUMBER
+                },
+                {
+                  label: '100',
+                  name: 'number',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.NUMBER
+                }
+              ]
+            },
+            {
+              align: 'right',
+              content: [
+                {
+                  label: '>',
+                  name: 'result',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.BOOLEAN
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  '9': [
     {
       typeName: 'Temp',
       theme: '#444444',
@@ -475,7 +544,7 @@ export const tabContentList:Record<
                   label: '',
                   name: '',
                   type: 'output',
-                  socketType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.NUMBER,
                   control: {
                     type: StarmapControlType.INPUTNUMBER,
@@ -498,7 +567,7 @@ export const tabContentList:Record<
                   label: '2',
                   name: '2',
                   type: 'output',
-                  socketType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.NUMBER
                 }
               ]
@@ -517,14 +586,14 @@ export const tabContentList:Record<
                   label: '参数1',
                   name: 'param1',
                   type: 'input',
-                  socketType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.NUMBER
                 },
                 {
                   label: '参数2',
                   name: 'param2',
                   type: 'input',
-                  socketType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.NUMBER
                 }
               ]
@@ -536,7 +605,7 @@ export const tabContentList:Record<
                   label: '输出:3',
                   name: 'output',
                   type: 'output',
-                  socketType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.NUMBER
                 }
               ]
@@ -555,7 +624,7 @@ export const tabContentList:Record<
                   label: '打印',
                   name: 'console',
                   type: 'input',
-                  socketType: StarmapSocketType.CONTROL,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.OBJECT
                 }
               ]
@@ -649,8 +718,14 @@ export function createTabs(execDragStart: DraggingExec) {
       children: createTabChildren('7', execDragStart)
     },
     {
-      label: '临时节点',
+      label: '运算符',
       key: '8',
+      icon: <PlusOutlined />,
+      children: createTabChildren('8', execDragStart)
+    },
+    {
+      label: '临时节点',
+      key: '9',
       icon: <ToolOutlined />,
       children: createTabChildren('8', execDragStart)
     }

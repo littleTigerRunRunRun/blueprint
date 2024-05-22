@@ -92,9 +92,9 @@ export function NodeView(props: Props) {
                   const port = item.type === 'input' ? inputs[item.name] : outputs[item.name]
                   if (port) {
                     if ('dataType' in item) port.socket.dataType = item.dataType || StarmapDataType.UNKNOW
-                    if ('socketType' in item) port.socket.socketType = item.socketType
+                    if ('flowType' in item) port.socket.flowType = item.flowType
                   }
-                  console.log(item, item.type === 'output', outputs[item.name])
+                  // console.log(item, item.type === 'output', outputs[item.name])
                   return <div
                     className="content-socket-line"
                     key={`content_${ci}_${ii}`}

@@ -10,13 +10,14 @@ export function ConnectionView(props: {
   click?: () => void
 }) {
 
+  // rete-react-plugin插件的这个方法有bug，，它会导致任何一个connection变更时，所有的connection全都触发重计算。。
   const { path } = useConnection()
   if (!path) return
 
   const { style } = getThemes().connection
   const socketTheme = props.data.dataType ? getSocketTheme(props.data.dataType || StarmapDataType.NULL) : null
   // 打开log就会发现这里有严重的多重渲染bug
-  // console.log(props.data.dataType, socketTheme?.theme.main)
+  // console.log(props.data.id)
 
   return (
     <svg
@@ -26,7 +27,7 @@ export function ConnectionView(props: {
       onClick={props.click}
     >
       <path
-        className={`view-path ${props.data.socketType ? (props.data.socketType === 'data' ? 'data-path' : 'control-path') : ''}`}
+        className={`view-path ${props.data.flowType ? (props.data.flowType === 'data' ? 'data-path' : 'control-path') : ''}`}
         d={path}
         style={{
           stroke: socketTheme ? socketTheme.theme.main : (props.data.selected ? style.selected.stroke : style.main.stroke),

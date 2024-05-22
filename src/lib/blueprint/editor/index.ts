@@ -11,6 +11,7 @@ interface ToolArgument {
   exportCallback(data:StarmapGraph<StarmapNode, StarmapConnection>): void
 }
 
+// 这一层组件的目的，是为了为蓝图编辑器注入默认配置项以及准备对外暴露的接口
 export async function starmap(config:StarmapEditorConfig, tools:ToolArgument):Promise<StarmapEditor> {
   // 向配置中融入默认配置
   const abilities = (config && config?.abilities) || [
