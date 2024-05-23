@@ -1,5 +1,5 @@
 import { NodeEditor, ClassicPreset, getUID } from "rete"
-import { ReactPlugin, Presets } from "rete-react-plugin"
+import { ReactPlugin, Presets, type Position } from "rete-react-plugin"
 import { getDOMSocketPosition } from 'rete-render-utils'
 import { AreaPlugin, AreaExtensions } from "rete-area-plugin"
 import type { SelectorEntity } from 'rete-area-plugin/_types/extensions/selectable.d'
@@ -58,7 +58,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
   
   arrange.addPreset(ArrangePresets.classic.setup())
   render.addPreset(
-    Presets.classic.setup({
+    Presets.classic.setup<Schemes, AreaExtra>({
       socketPositionWatcher: getDOMSocketPosition({
         offset: (position, _nodeId, side, _key) => {
           return {
@@ -80,9 +80,11 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           return DataSocket
         },
         connection(_context) {
-          return function bindConnectionProps(props: { data: Schemes["Connection"] }) {
+          return function bindConnectionProps(props: { data: Schemes["Connection"], path: string | null, start: Position | null, end: Position | null }) {
             return <ConnectionView
-              { ...props }
+              {
+                ...props
+              }
               click={() => {
                 selector.add(
                   {
