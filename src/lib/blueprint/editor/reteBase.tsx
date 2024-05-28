@@ -80,7 +80,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           return DataSocket
         },
         connection(_context) {
-          return function bindConnectionProps(props: { data: Schemes["Connection"], path: string | null, start: Position | null, end: Position | null }) {
+          return function bindConnectionProps(props: { data: Schemes["Connection"] }) {
             return <ConnectionView
               {
                 ...props

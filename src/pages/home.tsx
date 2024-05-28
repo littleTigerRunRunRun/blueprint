@@ -5,12 +5,8 @@ import proto1 from '../assets/prototype_1.png'
 
 function Home() {
   const examples = [{
-    label: '蓝图编辑器原型V1-datav+数据格式',
-    path: '/prototype?data=data1',
-    img: proto1
-  }, {
-    label: '蓝图编辑器原型V2-数据流和控制流',
-    path: '/prototype2?data=data2',
+    label: '蓝图编辑器原型',
+    path: '/prototype?data=data2',
     img: proto1
   }]
 

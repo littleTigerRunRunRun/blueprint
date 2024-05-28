@@ -1,8 +1,0 @@
-@import '@/index.scss';
-
-.prototype-main{
-  @include fullsize;
-  * {
-    user-select: none;
-  }
-}
