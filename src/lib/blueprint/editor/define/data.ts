@@ -2,7 +2,7 @@
 export enum StarmapControlType {
   INPUT = 'input',
   INPUTNUMBER = 'inputNumber',
-  // SELECT = 'select',
+  SELECT = 'select',
   // COLOR = 'color',
   // SWITCH = 'switch',
 }
@@ -10,7 +10,7 @@ export enum StarmapControlType {
 export const StarmapControlDataTypeMapping = {
   [StarmapControlType.INPUT]: 'string',
   [StarmapControlType.INPUTNUMBER]: 'number',
-  // [StarmapControlType.SELECT]: 'unknown',
+  [StarmapControlType.SELECT]: 'string', // 以前是unknow
   // [StarmapControlType.COLOR]: 'string',
   // [StarmapControlType.SWITCH]: 'boolean',
 }
@@ -37,6 +37,10 @@ export const StarmapControlDataTypeMapping = {
 //   type: StarmapControlType.SWITCH
 //   initial: boolean
 // }
+
+export interface StarmapControlOption {
+  
+}
 
 // 这个Control类型需要能被扩展
 // export type StarmapControl<T extends StarmapControlType, K = T extends StarmapControlType.INPUT ? string : number> = {
@@ -84,16 +88,19 @@ type NodeId = string
 // 
 export type StarmapNodeCategory = {
   label?: string
-  align: 'left' | 'center' | 'right'
   halfline?: boolean // 视图上占据整行还是只占据半行（是否会影响后续非本align侧内容的竖直位置基准）
   content: Array<
     // dataTypeDecription
-    { label: string, name: string, type: 'input', flowType: StarmapSocketType, dataType?: StarmapDataType, control?: StarmapControl<StarmapControlType, string | number> } |
-    { label: string, name: string, type: 'control', control: StarmapControl<StarmapControlType, string | number> }
-    > | Array<
-    { label: string, name: string, type: 'output', flowType: StarmapSocketType,  dataType?: StarmapDataType, control?: StarmapControl<StarmapControlType, string | number> } |
+    { label: string, name: string, type: 'input' | 'output' | 'both', flowType: StarmapSocketType, anthorFlowType?: StarmapSocketType, dataType?: StarmapDataType, anthorDataType?: StarmapDataType, control?: StarmapControl<StarmapControlType, string | number> } |
     { label: string, name: string, type: 'control', control: StarmapControl<StarmapControlType, string | number> }
   >
+  extend?: {
+    activate: boolean
+    content: Array<
+      { label: string, name: string, type: 'input' | 'output' | 'both', flowType: StarmapSocketType, anthorFlowType?: StarmapSocketType, dataType?: StarmapDataType, anthorDataType?: StarmapDataType, control?: StarmapControl<StarmapControlType, string | number> } |
+      { label: string, name: string, type: 'control', control: StarmapControl<StarmapControlType, string | number> }
+    >
+  }
 }
 
 // type NestConfig = {

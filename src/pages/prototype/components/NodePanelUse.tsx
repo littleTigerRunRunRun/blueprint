@@ -9,52 +9,8 @@ import {
   ToolOutlined,
   PlusOutlined
 } from '@ant-design/icons'
-import type { StarmapNodeDefine } from '@/lib/blueprint/editor'
-import { StarmapControlType, StarmapDataType, StarmapSocketType } from '@/lib/blueprint/editor'
 import { useState } from 'react'
-
-export type DraggingExec = (item:StarmapNodeDefine) => void
-
-// 这个数据正常应该被持久化
-export const tabContentList:Record<
-  string,
-  Array<{
-    background: string,
-    list: Array<StarmapNodeDefine>
-  }>
-> = {
-  graphic: [
-    {
-      background: '#444444',
-      list: [
-        {
-          name: 'pie',
-          label: '扇形',
-          theme: 'gray',
-          category: []
-        }
-      ]
-    }
-  ],
-  dataDeal: [
-    {
-      background: '#009EF1',
-      list: []
-    }
-  ],
-  flowControl: [
-    {
-      background: '#3DB900',
-      list: []
-    }
-  ],
-  globalEvent: [
-    {
-      background: '#F35353',
-      list: []
-    }
-  ]
-}
+import { DraggingExec, tabContentList } from './nodeDefine'
 
 const instanceCounter:Record<string, { num: number, setNum: React.Dispatch<React.SetStateAction<number>>}> = {}
 

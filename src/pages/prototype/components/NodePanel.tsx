@@ -33,7 +33,7 @@ function NodePanel(props:NodePanelProps) {
       tabPosition="left"
       type="card"
       items={createTabs(onDragStart)}
-      defaultActiveKey='1'
+      defaultActiveKey='dataDeal'
     />
   )
 }

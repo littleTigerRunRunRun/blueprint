@@ -23,7 +23,6 @@ export const defaultTheme:StarmapTheme = {
       },
       category: {
         paddingVeritical: '8px',
-        paddingHorizontal: '8px',
         borderBottomNotLast: '1px solid #333333',
         socketOffset: '-12px'
       },
@@ -37,7 +36,9 @@ export const defaultTheme:StarmapTheme = {
         height: '24px',
         fontSize: '12px',
         letterSpacing: '2px',
-        color: '#efefef'
+        color: '#efefef',
+        indent: '8px',
+        extendIndent: '12px'
       },
       socket: {
         top: '8px',
@@ -178,6 +179,12 @@ export function computeBlockHeight(cate:StarmapNodeCategory) {
     // 遇到控件的情况，要根据一个控件高度计算工具，来具体计算高度
     height += parseFloat(style.blockLine.height)
   })
+  if (cate.extend && cate.extend.activate) {
+    cate.extend.content.forEach(() => {
+      // 遇到控件的情况，要根据一个控件高度计算工具，来具体计算高度
+      height += parseFloat(style.blockLine.height)
+    })
+  }
   return height
 }
 

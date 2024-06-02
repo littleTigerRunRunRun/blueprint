@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { starmap, type StarmapEditor } from './editor'
 import './index.scss'
 import { BlueprintToolbar } from './tools'
-import { StarmapExec, StarmapNodeDefine } from './editor/define'
+import { StarmapExec, StarmapNodeDefine, StarmapNodeCategory } from './editor/define'
 
 declare interface BlueprintProps {
   dragging: StarmapNodeDefine|null

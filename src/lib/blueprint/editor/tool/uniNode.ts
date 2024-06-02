@@ -114,29 +114,24 @@ export class UniNode extends ClassicPreset.Node<
     this.category = category
     // console.log('category', category)
     category.forEach((item) => {
-      item.content.forEach((element) => {
-        switch(element.type) {
-          case 'input':{
-            this.inputKeys.push(element.name)
-            const input = new ClassicPreset.Input(new UniSocket(element.name), element.label, true)
-            // 需要一个中间件来解决element.control.type的匹配问题
-            if (element.control) input.addControl(new UniControl({ type: element.control.type, initial: element.control.initial, change: element.control.change, readonly: element.control.readonly }))
-            this.addInput(element.name, input)
-            break
-          }
-          case 'output':{
-            this.outputKeys.push(element.name)
-            const output = new ClassicPreset.Input(new UniSocket(element.name), element.label, true)
-            if (element.control) output.addControl(new UniControl({ type: element.control.type, initial: element.control.initial, readonly: element.control.readonly, change: element.control.change }))
-            this.addOutput(element.name, output)
-            break
-          }
-          case 'control':{
-            this.controlKeys.push(element.name)
-            // @ts-expect-error: 这里的类型其实是正确的，但是类型定义上和rete的要求有些出入，暂时无法解决
-            this.addControl(element.name, new UniControl({ type: element.control.type, initial: element.control.initial, readonly: element.control.readonly, change: element.control.change }))
-            break
-          }
+      [...item.content, ...(item.extend?.content || [])].forEach((element) => {
+        if (element.type === 'input' || element.type === 'both') {
+          this.inputKeys.push(element.name)
+          const input = new ClassicPreset.Input(new UniSocket(element.name), element.label, true)
+          // 需要一个中间件来解决element.control.type的匹配问题
+          if (element.control) input.addControl(new UniControl({ type: element.control.type, initial: element.control.initial, change: element.control.change, readonly: element.control.readonly }))
+          this.addInput(element.name, input)
+        }
+        if (element.type === 'output' || element.type === 'both') {
+          this.outputKeys.push(element.name)
+          const output = new ClassicPreset.Input(new UniSocket(element.name), element.label, true)
+          if (element.control) output.addControl(new UniControl({ type: element.control.type, initial: element.control.initial, readonly: element.control.readonly, change: element.control.change }))
+          this.addOutput(element.name, output)
+        }
+        if (element.type === 'control') {
+          this.controlKeys.push(element.name)
+          // @ts-expect-error: 这里的类型其实是正确的，但是类型定义上和rete的要求有些出入，暂时无法解决
+          this.addControl(element.name, new UniControl({ type: element.control.type, initial: element.control.initial, readonly: element.control.readonly, change: element.control.change }))
         }
       })
     })

@@ -19,7 +19,10 @@ function Prototype2() {
           <NodePanel setDragging={setDragging} />
         </Sider>
         <Layout>
-          <Blueprint dragging={dragging} checkInstanceNumChange={checkInstanceNumChange} />
+          <Blueprint
+            dragging={dragging}
+            checkInstanceNumChange={checkInstanceNumChange}
+          />
         </Layout>
       </Layout>
     </div>
