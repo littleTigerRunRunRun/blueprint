@@ -19,7 +19,7 @@ import { NodeView, GroupView, ConnectionView, ControlSocket, DataSocket } from '
 import { scopeElder, getCreateUniNode, UniNode } from './tool/uniNode'
 import { setThemes, computeNodeSizeByDefine } from './defaultTheme'
 import { createTransformer } from './tool/transformer'
-import { InputControlView, InputNumberControlView } from './view/control'
+import { InputControlView, InputNumberControlView, SelectControlView } from './view/control'
 
 const createUniNode = getCreateUniNode({})
 
@@ -109,6 +109,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           switch (data.payload.type) {
             case StarmapControlType.INPUT: return InputControlView
             case StarmapControlType.INPUTNUMBER: return InputNumberControlView
+            case StarmapControlType.SELECT: return SelectControlView
             default: return null
           }
         }

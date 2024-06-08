@@ -115,14 +115,6 @@ const rawTabContentList:Record<
                   dataType: StarmapDataType.NUMBER
                 },
                 {
-                  label: '操作符',
-                  name: 'operator',
-                  type: 'control',
-                  control: {
-                    type: StarmapControlType.SELECT
-                  }
-                },
-                {
                   label: '输出',
                   name: 'output',
                   type: 'output',
@@ -156,6 +148,22 @@ const rawTabContentList:Record<
                   dataType: StarmapDataType.NUMBER,
                   control: {
                     type: StarmapControlType.INPUTNUMBER
+                  }
+                },
+                {
+                  label: '操作符',
+                  name: 'operator',
+                  type: 'control',
+                  control: {
+                    type: StarmapControlType.SELECT,
+                    options: [
+                      { value: '>', label: '大于' },
+                      { value: '<', label: '小于' },
+                      { value: '<=', label: '小于等于' },
+                      { value: '>=', label: '大于等于' },
+                      { value: '==', label: '等于' },
+                      { value: '!=', label: '不等于' }
+                    ]
                   }
                 },
                 {

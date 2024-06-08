@@ -134,7 +134,7 @@ export function NodeView(props: Props) {
                       padding: item.type === 'both' ? '' : `0 ${(!cate.content.includes(item as any) ? style.blockLine.extendIndent : style.blockLine.indent)}`
                     }}
                   >
-                    { item.label }
+                    { item.type === 'control' ? '' : item.label }
                     { ii === 0 && !cate.label && cate.extend ? <div
                         className={`content-extend-btn ${cate.extend.activate ? 'extended' : ''}`}
                         style={{
@@ -158,45 +158,46 @@ export function NodeView(props: Props) {
                         name="control"
                         emit={props.emit}
                         payload={controls[item.name]}
-                      /> : ''
-                    }
-                    {
-                      item.type !== 'output' ? <div
-                        className="socket-container input-container"
-                        style={{
-                          '--socket-size': style.socket.size,
-                          top: style.socket.top
-                        } as React.CSSProperties}
-                      >
-                        <MySocket
-                          name="input-socket"
-                          side="input"
-                          emit={props.emit}
-                          socketKey={item.name}
-                          nodeId={id || ''}
-                          payload={inputs[item.name]!.socket}
-                          data-testid="input-socket"
-                        /> 
-                      </div> : ''
-                    }
-                    {
-                      item.type !== 'input' ? <div
-                        className="socket-container output-container"
-                        style={{
-                          '--socket-size': style.socket.size,
-                          top: style.socket.top
-                        } as React.CSSProperties}
-                      >
-                        <MySocket
-                          name="output-socket"
-                          side="output"
-                          emit={props.emit}
-                          socketKey={item.name}
-                          nodeId={id || ''}
-                          payload={outputs[item.name]!.socket}
-                          data-testid="output-socket"
-                        /> 
-                      </div>: ''
+                      /> : <>
+                        {
+                          item.type !== 'output' ? <div
+                            className="socket-container input-container"
+                            style={{
+                              '--socket-size': style.socket.size,
+                              top: style.socket.top
+                            } as React.CSSProperties}
+                          >
+                            <MySocket
+                              name="input-socket"
+                              side="input"
+                              emit={props.emit}
+                              socketKey={item.name}
+                              nodeId={id || ''}
+                              payload={inputs[item.name]!.socket}
+                              data-testid="input-socket"
+                            /> 
+                          </div> : ''
+                        }
+                        {
+                          item.type !== 'input' ? <div
+                            className="socket-container output-container"
+                            style={{
+                              '--socket-size': style.socket.size,
+                              top: style.socket.top
+                            } as React.CSSProperties}
+                          >
+                            <MySocket
+                              name="output-socket"
+                              side="output"
+                              emit={props.emit}
+                              socketKey={item.name}
+                              nodeId={id || ''}
+                              payload={outputs[item.name]!.socket}
+                              data-testid="output-socket"
+                            /> 
+                          </div>: ''
+                        }
+                      </>
                     }
                     {/* {
                       item.type === 'input' && inputs[item.name]?.control && inputs[item.name]?.showControl ? (

@@ -14,21 +14,11 @@ export class UniSocket extends ClassicPreset.Socket {
   }
 }
 
-export class UniControl<T extends StarmapControlType, N extends string | number = T extends StarmapControlType.INPUT ? string : number> extends ClassicPreset.Control {
-  // (
-  //   T extends StarmapControlType.INPUTNUMBER ? number : never
-  //   // (
-  //   //   T extends StarmapControlType.SELECT ? unknown : (
-  //   //     T extends StarmapControlType.COLOR ? string : (
-  //   //       T extends StarmapControlType.SWITCH ? boolean : never
-  //   //     )
-  //   //   )
-  //   // )
-  // )
-  type: T
-  value?: N
+export class UniControl extends ClassicPreset.Control {
+  type: StarmapControlType
+  value?: StarmapControl['initial']
   readonly: boolean
-  constructor(public options: StarmapControl<T, N>) {
+  constructor(public options: StarmapControl) {
     super()
     this.type = options.type
     this.id = getUID()
@@ -44,7 +34,7 @@ export class UniControl<T extends StarmapControlType, N extends string | number 
    * Set control value
    * @param value Value to set
    */
-  setValue(value: N) {
+  setValue(value: never) {
     this.value = value
     if (this.options?.change) this.options.change(value)
   }
@@ -76,7 +66,7 @@ export type UniNodeConfig = {
 export class UniNode extends ClassicPreset.Node<
   Record<string, StarmapSocket>,
   Record<string, StarmapSocket>,
-  Record<string, UniControl<StarmapControlType.INPUT> | UniControl<StarmapControlType.INPUTNUMBER>>
+  Record<string, UniControl>
 > {
   outputs: Record<string, ClassicPreset.Input<StarmapSocket>> = {}
   name:string
@@ -119,19 +109,18 @@ export class UniNode extends ClassicPreset.Node<
           this.inputKeys.push(element.name)
           const input = new ClassicPreset.Input(new UniSocket(element.name), element.label, true)
           // 需要一个中间件来解决element.control.type的匹配问题
-          if (element.control) input.addControl(new UniControl({ type: element.control.type, initial: element.control.initial, change: element.control.change, readonly: element.control.readonly }))
+          if (element.control) input.addControl(new UniControl(element.control))
           this.addInput(element.name, input)
         }
         if (element.type === 'output' || element.type === 'both') {
           this.outputKeys.push(element.name)
           const output = new ClassicPreset.Input(new UniSocket(element.name), element.label, true)
-          if (element.control) output.addControl(new UniControl({ type: element.control.type, initial: element.control.initial, readonly: element.control.readonly, change: element.control.change }))
+          if (element.control) output.addControl(new UniControl(element.control))
           this.addOutput(element.name, output)
         }
         if (element.type === 'control') {
           this.controlKeys.push(element.name)
-          // @ts-expect-error: 这里的类型其实是正确的，但是类型定义上和rete的要求有些出入，暂时无法解决
-          this.addControl(element.name, new UniControl({ type: element.control.type, initial: element.control.initial, readonly: element.control.readonly, change: element.control.change }))
+          this.addControl(element.name, new UniControl(element.control))
         }
       })
     })

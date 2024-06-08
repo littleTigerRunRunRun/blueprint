@@ -16,12 +16,13 @@ export const StarmapControlDataTypeMapping = {
 }
 
 // control在节点上显示为一个可交互控件，而在将节点拆解为逻辑组合后能看到Control是一个变量节点
-// interface BaseControl {
-//   type: StarmapControlType
-//   initial?: string | number //  | boolean | unknown
-//   readonly?:boolean
-//   change?:() => void
-// }
+interface BaseControl<T extends StarmapControlType, K extends string | number> {
+  type: T
+  initial?: K //  | boolean | unknown
+  readonly?:boolean
+  change?:(value: K) => void
+  options?: Array<{ value:string, label: string }>
+}
 
 
 // export interface SelectControl extends BaseControl {
@@ -44,22 +45,24 @@ export interface StarmapControlOption {
 
 // 这个Control类型需要能被扩展
 // export type StarmapControl<T extends StarmapControlType, K = T extends StarmapControlType.INPUT ? string : number> = {
-export type StarmapControl<T extends StarmapControlType, K extends string | number> = {
-  type: T
-  initial?: K
-  readonly?: boolean
-  change?: (value: K) => void
+// export type StarmapControl<T extends StarmapControlType, K extends string | number> = {
+//   type: T
+//   initial?: K
+//   readonly?: boolean
+//   change?: (value: K) => void
+// }
+
+export interface InputControl extends BaseControl<StarmapControlType.INPUT, string> {
 }
 
-// export interface InputControl extends BaseControl {
-//   type: StarmapControlType.INPUT
-//   initial: string
-// }
+export interface InputNumberControl extends BaseControl<StarmapControlType.INPUTNUMBER, number> {
+}
 
-// export interface InputNumberControl extends BaseControl {
-//   type: StarmapControlType.INPUTNUMBER
-//   initial: number
-// }
+export interface SelectControl extends BaseControl<StarmapControlType.SELECT, string> {
+  options: Array<{ value:string, label: string }>
+}
+
+export type StarmapControl = InputControl | InputNumberControl | SelectControl
 
 export enum StarmapDataType {
   STRING = 'string',
@@ -91,14 +94,14 @@ export type StarmapNodeCategory = {
   halfline?: boolean // 视图上占据整行还是只占据半行（是否会影响后续非本align侧内容的竖直位置基准）
   content: Array<
     // dataTypeDecription
-    { label: string, name: string, type: 'input' | 'output' | 'both', flowType: StarmapSocketType, anthorFlowType?: StarmapSocketType, dataType?: StarmapDataType, anthorDataType?: StarmapDataType, control?: StarmapControl<StarmapControlType, string | number> } |
-    { label: string, name: string, type: 'control', control: StarmapControl<StarmapControlType, string | number> }
+    { label: string, name: string, type: 'input' | 'output' | 'both', flowType: StarmapSocketType, anthorFlowType?: StarmapSocketType, dataType?: StarmapDataType, anthorDataType?: StarmapDataType, control?: StarmapControl } |
+    { label: string, name: string, type: 'control', control: StarmapControl }
   >
   extend?: {
     activate: boolean
     content: Array<
-      { label: string, name: string, type: 'input' | 'output' | 'both', flowType: StarmapSocketType, anthorFlowType?: StarmapSocketType, dataType?: StarmapDataType, anthorDataType?: StarmapDataType, control?: StarmapControl<StarmapControlType, string | number> } |
-      { label: string, name: string, type: 'control', control: StarmapControl<StarmapControlType, string | number> }
+      { label: string, name: string, type: 'input' | 'output' | 'both', flowType: StarmapSocketType, anthorFlowType?: StarmapSocketType, dataType?: StarmapDataType, anthorDataType?: StarmapDataType, control?: StarmapControl } |
+      { label: string, name: string, type: 'control', control: StarmapControl }
     >
   }
 }
