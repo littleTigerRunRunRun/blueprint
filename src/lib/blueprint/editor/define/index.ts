@@ -80,6 +80,7 @@ export interface StarmapTheme {
     style: Level2StringInfo
     themes: Level2StringInfo
   }
+  control: Record<string, Level2StringInfo>
   globalStyle: Level2StringInfo
 }
 

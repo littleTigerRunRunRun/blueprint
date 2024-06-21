@@ -19,6 +19,7 @@ export const StarmapControlDataTypeMapping = {
 interface BaseControl<T extends StarmapControlType, K extends string | number> {
   type: T
   initial?: K //  | boolean | unknown
+  placeholder?: string
   readonly?:boolean
   change?:(value: K) => void
   options?: Array<{ value:string, label: string }>

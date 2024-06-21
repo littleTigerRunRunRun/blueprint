@@ -283,7 +283,8 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
         connection.dataType = connectionData.dataType
         await editor.addConnection(connection)
       }
-      await area.area.zoom(data.transform.scale, data.transform.x, data.transform.y)
+      await area.area.zoom(data.transform.scale)
+      await area.area.translate(data.transform.x, data.transform.y)
     },
     export: () => {
       // console.log('nodes', editor.getNodes())

@@ -1,3 +1,20 @@
 .starmap-view-input{
-
+  height: var(--input-height);
+  line-height: var(--input-line-height);
+  background: var(--input-background-color);
+  border: var(--input-normal-border);
+  border-radius: var(--input-border-radius);
+  font-size: var(--input-font-size);
+  color: var(--input-font-color);
+  padding: var(--input-padding);
+  filter: drop-shadow(0 0 1px var(--input-normal-shadow));
+  &::placeholder {
+    color: var(--input-placeholder-color);
+  }
+  &:hover, &:focus {
+    border: var(--input-focus-border);
+    background: var(--input-background-color);
+    box-shadow: none;
+    filter: drop-shadow(0 0 2px var(--input-normal-shadow));
+  }
 }

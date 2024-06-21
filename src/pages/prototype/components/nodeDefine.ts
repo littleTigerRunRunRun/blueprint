@@ -94,7 +94,7 @@ const rawTabContentList:Record<
         },
         {
           name: 'Mathematical',
-          label: '数学运算',
+          label: '四则运算',
           theme: 'blue',
           category: [
             {
@@ -113,6 +113,23 @@ const rawTabContentList:Record<
                   type: 'input',
                   flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.NUMBER
+                },
+                {
+                  label: '操作符',
+                  name: 'operator',
+                  type: 'control',
+                  control: {
+                    type: StarmapControlType.SELECT,
+                    options: [
+                      { value: '+', label: '加法' },
+                      { value: '-', label: '减法' },
+                      { value: '*', label: '乘法' },
+                      { value: '/', label: '除法' },
+                      // { value: 'ln', label: '对数' },
+                      // { value: 'sqrt', label: '平方根' },
+                      // { value: 'Abs', label: '绝对值' },
+                    ]
+                  }
                 },
                 {
                   label: '输出',
@@ -165,6 +182,251 @@ const rawTabContentList:Record<
                       { value: '!=', label: '不等于' }
                     ]
                   }
+                },
+                {
+                  label: '输出',
+                  name: 'output',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.BOOLEAN
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'Contain',
+          label: '包含',
+          theme: 'blue',
+          category: [
+            {
+              label: '',
+              content: [
+                {
+                  label: '输入',
+                  name: 'input',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.UNKNOW
+                  // 这个类型刚进来时输入是UNKNOW，但是接入检测列表后需要能检测出包含的输入类型
+                },
+                {
+                  label: '检测列表',
+                  name: 'list',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.ARRAY
+                },
+                {
+                  label: '输出',
+                  name: 'output',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.BOOLEAN
+                }
+              ]
+            }
+          ]
+        },
+        {
+          // 需要做容器
+          name: 'Sort',
+          label: '排序',
+          theme: 'blue',
+          category: [
+            {
+              label: '',
+              content: [
+                {
+                  label: '输入',
+                  name: 'input',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.ARRAY
+                },
+                {
+                  label: '输出',
+                  name: 'output',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.ARRAY
+                }
+              ]
+            }
+          ]
+        },
+        {
+          // 需要做容器
+          name: 'Filter',
+          label: '过滤',
+          theme: 'blue',
+          category: [
+            {
+              label: '',
+              content: [
+                {
+                  label: '输入',
+                  name: 'input',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.ARRAY
+                },
+                {
+                  label: '输出',
+                  name: 'output',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.ARRAY
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'RegExp',
+          label: '正则表达式',
+          theme: 'blue',
+          category: [
+            {
+              label: '',
+              content: [
+                {
+                  label: '输入',
+                  name: 'input',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.STRING
+                },
+                {
+                  label: '正则表达式',
+                  name: 'input',
+                  type: 'control',
+                  control: {
+                    type: StarmapControlType.INPUT,
+                    placeholder: '正则表达式'
+                  }
+                },
+                {
+                  label: '输出',
+                  name: 'output',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.STRING
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'Join',
+          label: '字符串拼接',
+          theme: 'blue',
+          category: [
+            {
+              label: '',
+              content: [
+                {
+                  label: '输入',
+                  name: 'input',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.ARRAY
+                },
+                {
+                  label: '分隔符',
+                  name: 'input',
+                  type: 'control',
+                  control: {
+                    type: StarmapControlType.INPUT,
+                    placeholder: '分隔符'
+                  }
+                },
+                {
+                  label: '输出',
+                  name: 'output',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.STRING
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'Split',
+          label: '字符串分割',
+          theme: 'blue',
+          category: [
+            {
+              label: '',
+              content: [
+                {
+                  label: '输入',
+                  name: 'input',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.STRING
+                },
+                {
+                  label: '分隔符',
+                  name: 'input',
+                  type: 'control',
+                  control: {
+                    type: StarmapControlType.INPUT,
+                    placeholder: '分隔符'
+                  }
+                },
+                {
+                  label: '输出',
+                  name: 'output',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.ARRAY
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'Assert',
+          label: '未知类型断言',
+          theme: 'blue',
+          category: [
+            {
+              label: '',
+              content: [
+                {
+                  label: '输入',
+                  name: 'input',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.UNKNOW
+                },
+                {
+                  label: '输出',
+                  name: 'output',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.UNKNOW
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'NullJudge',
+          label: '空值判断',
+          theme: 'blue',
+          category: [
+            {
+              label: '',
+              content: [
+                {
+                  label: '输入',
+                  name: 'input',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.UNKNOW
                 },
                 {
                   label: '输出',

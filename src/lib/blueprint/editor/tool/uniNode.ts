@@ -18,6 +18,7 @@ export class UniControl extends ClassicPreset.Control {
   type: StarmapControlType
   value?: StarmapControl['initial']
   readonly: boolean
+  placeholder: string = ''
   constructor(public options: StarmapControl) {
     super()
     this.type = options.type
@@ -28,6 +29,8 @@ export class UniControl extends ClassicPreset.Control {
       
     // }
     this.value = options?.initial
+
+    if (options.placeholder) this.placeholder = options.placeholder
   }
 
   /**

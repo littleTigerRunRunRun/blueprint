@@ -137,6 +137,48 @@ export const defaultTheme:StarmapTheme = {
       }
     }
   },
+  control: {
+    select: {
+      color: {
+        background: '#121212',
+        popupBackground: '#121212',
+        popupHoverBackground: '#444',
+        normalBorder: '#000',
+        focusBorder: '#666',
+        font: '#999',
+        focusFont: '#bbb',
+        arrow: '#666',
+        normalShadow: 'rgba(255, 255, 255, 0.1)'
+      },
+      size: {
+        paddingLeft: '6px',
+        border: '1px',
+        borderRadius: '4px',
+        font: '10px',
+        height: '24px',
+        arrow: '10px',
+        arrowStart: '38px',
+        arrowEnd: '6px'
+      }
+    },
+    input: {
+      color: {
+        font: '#999',
+        placeholder: '#444',
+        background: '#121212',
+        normalBorder: '#000',
+        focusBorder: '#666',
+        normalShadow: 'rgba(255, 255, 255, 0.1)'
+      },
+      size: {
+        paddingLeft: '6px',
+        height: '24px',
+        border: '1px',
+        font: '10px',
+        borderRadius: '4px',
+      }
+    }
+  },
   globalStyle: {}
 }
 
@@ -217,4 +259,8 @@ export function getSocketTheme(dataType:StarmapDataType = StarmapDataType.UNKNOW
     style: socketThemes.style,
     theme: themes[dataType] || themes.unknown
   }
+}
+
+export function getControlTheme(name:string) {
+  return getThemes().control[name]
 }
