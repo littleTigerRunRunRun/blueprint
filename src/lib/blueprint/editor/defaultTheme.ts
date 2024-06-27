@@ -6,9 +6,13 @@ export const defaultTheme:StarmapTheme = {
     style: {
       main: {
         width: '150px',
+        groupWidth: '250px',
+        groupBorder: '6px',
         minHeight: '60px',
         borderRadius: '4px',
-        border: '1px solid rgba(0, 0, 0, 0.6)'
+        border: '1px solid rgba(0, 0, 0, 0.6)',
+        groupInnerBackground: '#444',
+        groupInnerRadius: '3px'
       },
       selected: {
         border: '2px solid #0772ff',
@@ -177,6 +181,23 @@ export const defaultTheme:StarmapTheme = {
         font: '10px',
         borderRadius: '4px',
       }
+    },
+    inputNumber: {
+      color: {
+        font: '#999',
+        placeholder: '#444',
+        background: '#121212',
+        normalBorder: '#000',
+        focusBorder: '#666',
+        normalShadow: 'rgba(255, 255, 255, 0.1)'
+      },
+      size: {
+        paddingLeft: '6px',
+        height: '24px',
+        border: '1px',
+        font: '10px',
+        borderRadius: '4px',
+      }
     }
   },
   globalStyle: {}
@@ -209,7 +230,19 @@ export function computeNodeSizeByDefine(category:Array<StarmapNodeCategory>) {
   // if (debtHeight) height += debtHeight
   return {
     width: parseFloat(style.main.width),
-    height: Math.max(parseFloat(style.main.minHeight), height)
+    height: Math.max(parseFloat(style.main.minHeight), height),
+    title: parseFloat(style.title.height)
+  }
+}
+
+export function computeGroupSizeByDefine(category:Array<StarmapNodeCategory>, nest:Array<StarmapNodeCategory>) {
+  const style = getThemes().node.style
+  const outer = computeNodeSizeByDefine(category)
+  const inner = computeNodeSizeByDefine(nest)
+  return {
+    width: parseFloat(style.main.groupWidth),
+    height: outer.height + inner.height - inner.title,
+    title: outer.title
   }
 }
 

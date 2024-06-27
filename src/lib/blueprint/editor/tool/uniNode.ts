@@ -57,10 +57,10 @@ export type UniNodeConfig = {
   label:string
   type?:string
   theme?:string
-  hasChildren?:boolean
   width:number
   height:number // todo:更希望高度可以传入一个计算标准来自适应计算
   category:Array<StarmapNodeCategory>
+  nest?:Array<StarmapNodeCategory>
   dataOperation?:(inputs: Record<string, Array<unknown>>, self:UniNode) => { [key:string]: unknown }
   executeOperation?:(forward: (output:string) => void, self:UniNode) => void
 }
@@ -76,7 +76,7 @@ export class UniNode extends ClassicPreset.Node<
   width:number
   height:number
   type?:string
-  hasChildren:boolean = false
+  nest?:Array<StarmapNodeCategory>
   parent?:string
   theme:string = ''
   category:Array<StarmapNodeCategory>
@@ -86,7 +86,7 @@ export class UniNode extends ClassicPreset.Node<
   inputKeys:Array<string> = []
   outputKeys:Array<string> = []
   controlKeys:Array<string> = []
-  constructor({ id, label, name, width = 180, height = 150, type, theme, hasChildren, category, dataOperation, executeOperation }:UniNodeConfig) {
+  constructor({ id, label, name, width = 180, height = 150, type, theme, nest, category, dataOperation, executeOperation }:UniNodeConfig) {
     super(label)
 
     // nodeList[this.id] = true
@@ -99,14 +99,14 @@ export class UniNode extends ClassicPreset.Node<
     if (theme) this.theme = theme
     this.dataOperation = dataOperation
     this.executeOperation = executeOperation
-    if (hasChildren) {
-      this.hasChildren = true
+    if (nest) {
+      this.nest = nest
       if (!canUseAsParent.includes(this.id)) canUseAsParent.push(this.id)
     }
     
     this.category = category
     // console.log('category', category)
-    category.forEach((item) => {
+    ;([...category, ...(nest || [])]).forEach((item) => {
       [...item.content, ...(item.extend?.content || [])].forEach((element) => {
         if (element.type === 'input' || element.type === 'both') {
           this.inputKeys.push(element.name)

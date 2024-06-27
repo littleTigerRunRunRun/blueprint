@@ -16,6 +16,7 @@ const rawTabContentList:Record<
       label: string
       theme: string
       category: Array<StarmapNodeCategory | string>
+      nest?: Array<StarmapNodeCategory | string>
     }>
   }>
 > = {
@@ -263,6 +264,7 @@ const rawTabContentList:Record<
           category: [
             {
               label: '',
+              halfline: true,
               content: [
                 {
                   label: '输入',
@@ -270,13 +272,61 @@ const rawTabContentList:Record<
                   type: 'input',
                   flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.ARRAY
-                },
+                }
+              ]
+            },
+            {
+              label: '',
+              halfline: true,
+              content: [
                 {
                   label: '输出',
                   name: 'output',
                   type: 'output',
                   flowType: StarmapSocketType.DATA,
                   dataType: StarmapDataType.ARRAY
+                }
+              ]
+            }
+          ],
+          nest: [
+            {
+              label: '',
+              halfline: true,
+              content: [
+                {
+                  label: '过滤函数',
+                  name: 'inner_excute',
+                  type: 'output',
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.NULL
+                },
+                {
+                  label: '项',
+                  name: 'inner_item',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.UNKNOW
+                },
+                {
+                  label: '序号',
+                  name: 'inner_index',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.NUMBER
+                }
+              ]
+            },
+            {
+              label: '',
+              halfline: true,
+              content: [
+                {
+                  label: '输出',
+                  name: 'inner_output',
+                  type: 'input',
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.BOOLEAN
                 }
               ]
             }

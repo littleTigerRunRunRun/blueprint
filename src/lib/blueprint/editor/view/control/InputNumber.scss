@@ -1,19 +1,51 @@
-.output-control{
-  display: inline-block;
-  vertical-align: top;
-  height: 24px;
-  >span{
-    display: inline-block;
-    vertical-align: top;
-    height: 24px;
-    .starmap-view-input-number{
-      display: inline-block;
-      vertical-align: top;
-      height: 24px;
-      input {
-        height: 24px;
-        line-height: 16px;
-        font-size: 10px;
+.starmap-view-input-number{
+  height: var(--number-height);
+  background: var(--number-background-color);
+  border: var(--number-normal-border);
+  border-radius: var(--number-border-radius);
+  filter: drop-shadow(0 0 1px var(--number-normal-shadow));
+  font-size: 0px;
+  &:hover, &:focus, &:focus-within {
+    border: var(--number-focus-border);
+    background: var(--number-background-color);
+    box-shadow: none;
+  }
+  .ant-input-number-handler-wrap{
+    width: 18px;
+    top: 1px;
+    right: 1px;
+    height: calc(var(--number-line-height) - 2px);
+    border-start-end-radius: var(--number-border-radius);
+    border-end-end-radius: var(--number-border-radius);
+    background-color: transparent;
+    opacity: 1;
+    .ant-input-number-handler {
+      border: none;
+      height: 50%;
+      &:hover{
+        height: 50%;
+        color:#fff;
+      }
+      svg {
+        color: #999;
+        transform: scale(1, 0.8);
+      }
+    }
+  }
+  .ant-input-number-input-wrap{
+    .ant-input-number-input {
+      height: var(--number-line-height);
+      padding: var(--number-padding);
+      line-height: var(--number-line-height);
+      background: var(--number-background-color);
+      font-size: var(--number-font-size);
+      color: var(--number-font-color);
+      border: none;
+      border-radius: var(--number-border-radius);
+      &::placeholder {
+        color: var(--number-placeholder-color);
+      }
+      &:hover, &:focus {
       }
     }
   }

@@ -15,11 +15,10 @@ import { createRoot } from 'react-dom/client'
 
 import type { Schemes, AreaExtra, StarmapEditorConfig, StarmapGraph, StarmapNode, StarmapConnection, StarmapNodeDefine } from './define'
 import { StarmapAbility, StarmapSocketType, Connection, StarmapControlType } from './define'
-import { NodeView, GroupView, ConnectionView, ControlSocket, DataSocket } from './view'
+import { NodeView, ConnectionView, ControlSocket, DataSocket, InputControlView, InputNumberControlView, SelectControlView } from './view'
 import { scopeElder, getCreateUniNode, UniNode } from './tool/uniNode'
-import { setThemes, computeNodeSizeByDefine } from './defaultTheme'
+import { setThemes, computeNodeSizeByDefine, computeGroupSizeByDefine } from './defaultTheme'
 import { createTransformer } from './tool/transformer'
-import { InputControlView, InputNumberControlView, SelectControlView } from './view/control'
 
 const createUniNode = getCreateUniNode({})
 
@@ -68,11 +67,11 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
         }
       }),
       customize: {
-        node(context) {
-          switch (context.payload.type) {
-            case 'common': return NodeView
-            case 'group': return GroupView
-          }
+        node(_context) {
+          // switch (context.payload.type) {
+          //   case 'common': return NodeView
+          //   case 'group': return GroupView
+          // }
           return NodeView
         },
         socket(context) {
@@ -132,7 +131,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
         // do transformer
         // alert('格式匹配错误')
         const { transformer, inputName, outputName } = createTransformer(sourceOutput.socket, targetInput.socket)
-        const { width, height } = computeNodeSizeByDefine(transformer.category)
+        const { width, height } = transformer.nest ? computeGroupSizeByDefine(transformer.category, transformer.nest) : computeNodeSizeByDefine(transformer.category)
         const transformerNode = createUniNode({
           ...transformer,
           width,
@@ -256,7 +255,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
 
       // to do:根据节点间的父子级关系分顺序加入节点
       for (const nodeData of data.nodes) {
-        const { width, height } = computeNodeSizeByDefine(nodeData.category)
+        // const { width, height } = nodeData.nest ? computeGroupSizeByDefine(nodeData.category, nodeData.nest) : computeNodeSizeByDefine(nodeData.category)
         const node = createUniNode({
           id: nodeData.id,
           label: nodeData.label,
@@ -265,8 +264,9 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           theme: nodeData.theme,
           // width: nodeData.width,
           // height: nodeData.height,
-          width,
-          height,
+          width: nodeData.width,
+          height: nodeData.height,
+          nest: nodeData.nest,
           category: nodeData.category || []
         })
         await editor.addNode(node)
@@ -308,7 +308,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
             width: node.width,
             height: node.height,
             // parent?: string
-            // nest?: NestConfig // 可否成为容器节点
+            nest: node.nest, // 可否成为容器节点
             // children?: Array<NodeId>
             position: view?.position,
             label: node.label,
@@ -331,15 +331,16 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
     dropAdd: (item:StarmapNodeDefine|null) => {
       if (item) {
         dropAdd.add(() => {
-          const { width, height } = computeNodeSizeByDefine(item.category)
+          const { width, height } = item.nest ? computeGroupSizeByDefine(item.category, item.nest) : computeNodeSizeByDefine(item.category)
           return createUniNode({
             id: item?.id,
             name: item.name,
             label: item.label,
-            type: 'common',
+            type: 'common', 
             theme: item.theme,
             width,
             height,
+            nest: item.nest,
             category: item.category || []
           })
         })
