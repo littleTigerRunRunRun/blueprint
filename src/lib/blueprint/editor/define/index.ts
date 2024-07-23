@@ -1,8 +1,9 @@
 import { type GetSchemes, ClassicPreset } from "rete"
-import type { ReactArea2D } from "rete-react-plugin"
+import type { ClassicScheme, ReactArea2D } from "rete-react-plugin"
 import { type SelectorEntity } from 'rete-area-plugin/_types/extensions/selectable.d'
 import type { StarmapConnection, StarmapNode, StarmapGraph, StarmapNodeCategory, StarmapDataType, StarmapSocketType } from './data'
 import { UniNode } from '../tool/uniNode'
+import { extraEvent } from '../plugin'
 
 export * from './data'
 
@@ -23,7 +24,11 @@ export type Schemes = GetSchemes<
   Connection<UniNode, UniNode>
 >
 
+type MyArea2D<T extends ClassicScheme> = ReactArea2D<T> | extraEvent
+
 export type AreaExtra = ReactArea2D<Schemes>
+
+export type MyAreaExtra = MyArea2D<Schemes>
 
 export type Callback = (...argus: unknown[]) => void
 

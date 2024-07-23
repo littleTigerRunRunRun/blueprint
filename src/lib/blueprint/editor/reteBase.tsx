@@ -6,14 +6,14 @@ import type { SelectorEntity } from 'rete-area-plugin/_types/extensions/selectab
 import { ConnectionPlugin, Presets as ConnectionPresets, SocketData, Context, getSourceTarget, makeConnection } from "rete-connection-plugin"
 import { ScopesPlugin, Presets as ScopesPresets } from 'rete-scopes-plugin'
 // import type { Size } from "rete-scopes-plugin/_types/types"
-import { DropAddPlugin} from './plugin/drop-add-plugin'
+import { DropAddPlugin, NodeScalablePlugin } from './plugin'
 // import { ScopesPlugin, Presets as ScopesPresets } from 'rete-scopes-plugin'
 // import { structures } from 'rete-structures'
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin'
 // import { structures } from 'rete-structures'
 import { createRoot } from 'react-dom/client'
 
-import type { Schemes, AreaExtra, StarmapEditorConfig, StarmapGraph, StarmapNode, StarmapConnection, StarmapNodeDefine } from './define'
+import type { Schemes, AreaExtra, MyAreaExtra, StarmapEditorConfig, StarmapGraph, StarmapNode, StarmapConnection, StarmapNodeDefine } from './define'
 import { StarmapAbility, StarmapSocketType, Connection, StarmapControlType } from './define'
 import { NodeView, ConnectionView, ControlSocket, DataSocket, InputControlView, InputNumberControlView, SelectControlView } from './view'
 import { scopeElder, getCreateUniNode, UniNode } from './tool/uniNode'
@@ -27,7 +27,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
   setThemes(config.theme)
 
   const editor = new NodeEditor<Schemes>()
-  const area = new AreaPlugin<Schemes, AreaExtra>(config.container, {
+  const area = new AreaPlugin<Schemes, MyAreaExtra>(config.container, {
     zoom: {
       dblclick: (_delta) => 0
     }
@@ -51,9 +51,22 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
   })
   const arrange = new AutoArrangePlugin<Schemes>()
   const dropAdd = new DropAddPlugin<Schemes>(undefined, {
-    onNodeAdd: config.eventHandlers.onNodeAdd,
-    onNodeRemove: config.eventHandlers.onNodeRemove
+    onNodeAdd: (node:UniNode) => {
+      if (config.eventHandlers.onNodeAdd) config.eventHandlers.onNodeAdd(node)
+
+      // if (node.type === 'group') {
+
+      // }
+    },
+    onNodeRemove: (node:UniNode) => {
+      if (config.eventHandlers.onNodeRemove) config.eventHandlers.onNodeRemove(node)
+
+      // if (node.type === 'group') {
+        
+      // }
+    }
   })
+  const nodeScale = new NodeScalablePlugin<Schemes>()
   
   arrange.addPreset(ArrangePresets.classic.setup())
   render.addPreset(
@@ -186,6 +199,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
   area.use(scopes)
   area.use(arrange)
   area.use(dropAdd)
+  area.use(nodeScale)
 
   // 能力注册：
   class MySelector<E extends SelectorEntity> extends AreaExtensions.Selector<E> {
@@ -260,7 +274,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           id: nodeData.id,
           label: nodeData.label,
           name: nodeData.name,
-          type: 'common',
+          type: nodeData.nest ? 'group' : 'common', 
           theme: nodeData.theme,
           // width: nodeData.width,
           // height: nodeData.height,
@@ -336,7 +350,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
             id: item?.id,
             name: item.name,
             label: item.label,
-            type: 'common', 
+            type: item.nest ? 'group' : 'common', 
             theme: item.theme,
             width,
             height,

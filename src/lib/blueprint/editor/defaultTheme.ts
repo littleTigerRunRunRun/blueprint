@@ -7,7 +7,7 @@ export const defaultTheme:StarmapTheme = {
       main: {
         width: '150px',
         groupWidth: '250px',
-        groupBorder: '6px',
+        groupBorder: '8px',
         minHeight: '60px',
         borderRadius: '4px',
         border: '1px solid rgba(0, 0, 0, 0.6)',
@@ -210,14 +210,19 @@ export function computeNodeSizeByDefine(category:Array<StarmapNodeCategory>) {
   const style = getThemes().node.style
   let height = parseFloat(style.title.height)
   let debtHeight = 0 // 由于设置了halfLine而出现的高度降低
+  let minHeight = 0
+  const padding = parseFloat(style.category.paddingVeritical)
   category.forEach((cate, i) => {
-    height += (category[i + 1] && !category[i + 1].label) ? 0 : parseFloat(style.category.paddingVeritical)
+    // 如果无标题且但是上方有标题或者无上方内容，则需要补充一个上部padding
     if (cate.label) {
       height += parseFloat(style.blockTitle.height)
       if (i !== category.length) height += parseFloat(style.main.border.split(' ')[0]) // style.main.border
-    } else if (!category[i - 1] || category[i - 1].label) height += parseFloat(style.category.paddingVeritical)
-    // height += (cate.label ? parseFloat(style.blockTitle.height) : parseFloat(style.category.paddingVeritical))
+    } else if (!category[i - 1] || category[i - 1].label) height += padding
+    // 如果下一块有内容且无标题，下部将不添加padding以表现更加紧凑
+    height += (category[i + 1] && !category[i + 1].label) ? 0 : padding
+    // height += (cate.label ? parseFloat(style.blockTitle.height) : padding
     const blockHeight = computeBlockHeight(cate)
+    minHeight = Math.max(minHeight, blockHeight + padding * 2 + parseFloat(style.title.height))
     if (debtHeight) {
       debtHeight -= blockHeight
       if (debtHeight < 0) {
@@ -226,11 +231,11 @@ export function computeNodeSizeByDefine(category:Array<StarmapNodeCategory>) {
       }
     } else height += blockHeight
     if (cate.halfline) debtHeight += blockHeight
-  })
+  }) 
   // if (debtHeight) height += debtHeight
   return {
     width: parseFloat(style.main.width),
-    height: Math.max(parseFloat(style.main.minHeight), height),
+    height: Math.max(minHeight, Math.max(parseFloat(style.main.minHeight), height)),
     title: parseFloat(style.title.height)
   }
 }
@@ -241,7 +246,7 @@ export function computeGroupSizeByDefine(category:Array<StarmapNodeCategory>, ne
   const inner = computeNodeSizeByDefine(nest)
   return {
     width: parseFloat(style.main.groupWidth),
-    height: outer.height + inner.height - inner.title,
+    height: outer.height + inner.height - inner.title + parseFloat(style.main.groupBorder),
     title: outer.title
   }
 }

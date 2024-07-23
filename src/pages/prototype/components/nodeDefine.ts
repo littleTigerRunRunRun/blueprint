@@ -207,7 +207,7 @@ const rawTabContentList:Record<
                   label: '输入',
                   name: 'input',
                   type: 'input',
-                  flowType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.UNKNOW
                   // 这个类型刚进来时输入是UNKNOW，但是接入检测列表后需要能检测出包含的输入类型
                 },
@@ -222,7 +222,7 @@ const rawTabContentList:Record<
                   label: '输出',
                   name: 'output',
                   type: 'output',
-                  flowType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.BOOLEAN
                 }
               ]
@@ -242,14 +242,14 @@ const rawTabContentList:Record<
                   label: '输入',
                   name: 'input',
                   type: 'input',
-                  flowType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.ARRAY
                 },
                 {
                   label: '输出',
                   name: 'output',
                   type: 'output',
-                  flowType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.ARRAY
                 }
               ]
@@ -270,7 +270,7 @@ const rawTabContentList:Record<
                   label: '输入',
                   name: 'input',
                   type: 'input',
-                  flowType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.ARRAY
                 }
               ]
@@ -283,7 +283,7 @@ const rawTabContentList:Record<
                   label: '输出',
                   name: 'output',
                   type: 'output',
-                  flowType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.ARRAY
                 }
               ]
@@ -379,7 +379,7 @@ const rawTabContentList:Record<
                   label: '输入',
                   name: 'input',
                   type: 'input',
-                  flowType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.ARRAY
                 },
                 {
@@ -395,7 +395,7 @@ const rawTabContentList:Record<
                   label: '输出',
                   name: 'output',
                   type: 'output',
-                  flowType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.STRING
                 }
               ]
@@ -414,7 +414,7 @@ const rawTabContentList:Record<
                   label: '输入',
                   name: 'input',
                   type: 'input',
-                  flowType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.STRING
                 },
                 {
@@ -430,7 +430,7 @@ const rawTabContentList:Record<
                   label: '输出',
                   name: 'output',
                   type: 'output',
-                  flowType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.ARRAY
                 }
               ]
@@ -547,4 +547,4 @@ for (const k1 in rawTabContentList) {
   tabContentList[k1] = tab
 }
 
-console.log(tabContentList)
+// console.log(tabContentList)
