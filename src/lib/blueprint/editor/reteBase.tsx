@@ -73,6 +73,15 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
     Presets.classic.setup<Schemes, AreaExtra>({
       socketPositionWatcher: getDOMSocketPosition({
         offset: (position, _nodeId, side, _key) => {
+          // to do: 是否有闭包导致的内存泄漏风险?
+          const node = editor.getNode(_nodeId)
+          if (node && node.nest && node.innerMap.includes(_key)) {
+            // console.log(node, side, _key)
+            return {
+              x: position.x + (side === 'output' ? -5 : 5),
+              y: position.y
+            }
+          }
           return {
             x: position.x + (side === 'output' ? 5 : -5),
             y: position.y
@@ -135,44 +144,17 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
       const sourceOutput = source.outputs[initial.key]
       const target = editor.getNode(socket.nodeId)
       const targetInput = target.inputs[socket.key]
+      let error = false
+      let errorInfo = ''
       if (!sourceOutput || !targetInput) return
+      // 更换策略：以前旧的策略是，如果入口和出口类型（包括流类型和数据类型）不同，则自动补全，而事实是这种补全行为非常困难且无效，因此，用户的连线只要是满足入口连出口，即令用户连线成功，但是格式错误会以warning提示，调试报错后转为报错
       if (sourceOutput.socket.flowType !== targetInput.socket.flowType) {
-        alert('锚点类型不一致！（后续会补充自动转换逻辑）')
-        return
+        error = true
+        errorInfo = ''
       }
       if (sourceOutput.socket.dataType !== targetInput.socket.dataType) {
-        // do transformer
-        // alert('格式匹配错误')
-        const { transformer, inputName, outputName } = createTransformer(sourceOutput.socket, targetInput.socket)
-        const { width, height } = transformer.nest ? computeGroupSizeByDefine(transformer.category, transformer.nest) : computeNodeSizeByDefine(transformer.category)
-        const transformerNode = createUniNode({
-          ...transformer,
-          width,
-          height
-        })
-        const createAndConnectTransformer = async () => {
-          await editor.addNode(transformerNode)
-          const sourceView = area.nodeViews.get(source.id)
-          const targetView = area.nodeViews.get(target.id)
-          await area.translate(transformerNode.id, {
-            x: (sourceView?.position.x || 0) * 0.5 + (targetView?.position.x || 0) * 0.5,
-            y: (sourceView?.position.y || 0) * 0.5 + (targetView?.position.y || 0) * 0.5
-          })
-          await editor.addConnection(new ClassicPreset.Connection(
-            source,
-            initial.key,
-            transformerNode,
-            inputName
-          ))
-          await editor.addConnection(new ClassicPreset.Connection(
-            transformerNode,
-            outputName,
-            target,
-            socket.key
-          ))
-        }
-        createAndConnectTransformer()
-        return false
+        error = true
+        errorInfo = ''
       }
       // 定制makeConnection，以返回带有连线类型的连线
       const [sourceSocket, targetSocket] = getSourceTarget(initial, socket) || [null, null]
@@ -276,6 +258,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           name: nodeData.name,
           type: nodeData.nest ? 'group' : 'common', 
           theme: nodeData.theme,
+          parent: nodeData.parent,
           // width: nodeData.width,
           // height: nodeData.height,
           width: nodeData.width,
@@ -321,7 +304,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
             theme: node.theme,
             width: node.width,
             height: node.height,
-            // parent?: string
+            parent: node.parent,
             nest: node.nest, // 可否成为容器节点
             // children?: Array<NodeId>
             position: view?.position,

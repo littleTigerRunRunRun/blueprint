@@ -13,7 +13,7 @@ export function ConnectionView(props: {
   if (!path) return
 
   const { style } = getThemes().connection
-  const socketTheme = props.data.dataType ? getSocketTheme(props.data.dataType || StarmapDataType.NULL) : null
+  const socketTheme = props.data.dataType ? getSocketTheme(props.data.dataType || StarmapDataType.NULL) : null 
   // 打开log就会发现这里有严重的多重渲染bug, 但是暂时没有找到合适的解决方法
   // console.log(props.data.id)
 

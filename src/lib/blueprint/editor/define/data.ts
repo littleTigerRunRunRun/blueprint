@@ -95,13 +95,15 @@ export type StarmapNodeCategory = {
   halfline?: boolean // 视图上占据整行还是只占据半行（是否会影响后续非本align侧内容的竖直位置基准）
   content: Array<
     // dataTypeDecription
-    { label: string, name: string, type: 'input' | 'output' | 'both', flowType: StarmapSocketType, anthorFlowType?: StarmapSocketType, dataType?: StarmapDataType, anthorDataType?: StarmapDataType, control?: StarmapControl } |
+    // another的设计，已忘记设计为何，只在output且非control的情况下生效
+    // , anotherFlowType?: StarmapSocketType, anotherDataType?: StarmapDataType
+    { label: string, name: string, type: 'input' | 'output' | 'both', flowType: StarmapSocketType, dataType?: StarmapDataType, control?: StarmapControl } |
     { label: string, name: string, type: 'control', control: StarmapControl }
   >
   extend?: {
     activate: boolean
     content: Array<
-      { label: string, name: string, type: 'input' | 'output' | 'both', flowType: StarmapSocketType, anthorFlowType?: StarmapSocketType, dataType?: StarmapDataType, anthorDataType?: StarmapDataType, control?: StarmapControl } |
+      { label: string, name: string, type: 'input' | 'output' | 'both', flowType: StarmapSocketType, dataType?: StarmapDataType, control?: StarmapControl } |
       { label: string, name: string, type: 'control', control: StarmapControl }
     >
   }

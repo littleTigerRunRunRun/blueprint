@@ -21,7 +21,7 @@ export function NodeView(props: Props) {
   const { id, label, width, height, category, inputs, outputs, controls, nest } = props.data
   const { theme, style } = getNodeTheme(props.data.theme)
   const [count, setCount] = useState(0) // 触发更新
-  if (props.data.label === '过滤') console.log(props.data)
+  // if (props.data.label === '过滤') console.log(props.data)
 
   const outerSize = props.data.nest ? computeNodeSizeByDefine(category) : { width: props.data.width, height: props.data.height }
 
@@ -52,7 +52,7 @@ export function NodeView(props: Props) {
         lineHeight: style.title.height,
         ...style.title
       }}
-    >{ label }</div>
+    >{ id }</div>
     <div
       className="customized-content"
       style={{
@@ -119,16 +119,17 @@ export function NodeView(props: Props) {
                   if (item.type !== 'input' && item.type !== 'control') {
                     const outputPort = outputs[item.name]
                     if (outputPort) {
-                      outputPort.socket.dataType = item.anthorDataType || item.dataType || StarmapDataType.UNKNOW
-                      outputPort.socket.flowType = item.anthorFlowType || item.flowType
+                      // item.anotherDataType || item.anotherFlowType || 
+                      outputPort.socket.dataType = item.dataType || StarmapDataType.UNKNOW
+                      outputPort.socket.flowType = item.flowType
                     }
                   }
                   return <div
                     className="content-socket-line"
                     key={`content_${ci}_${ii}`}
                     style={{
-                      lineHeight: style.blockLine.height,
                       ...style.blockLine,
+                      lineHeight: style.blockLine.height,
                       textAlign: (item.type === 'input' ? 'left' : (item.type === 'both' ? 'center' : 'right')),
                       padding: item.type === 'both' ? '' : `0 ${(!cate.content.includes(item as any) ? style.blockLine.extendIndent : style.blockLine.indent)}`
                     }}
@@ -299,8 +300,9 @@ export function NodeView(props: Props) {
                           if (item.type !== 'input' && item.type !== 'control') {
                             const outputPort = outputs[item.name]
                             if (outputPort) {
-                              outputPort.socket.dataType = item.anthorDataType || item.dataType || StarmapDataType.UNKNOW
-                              outputPort.socket.flowType = item.anthorFlowType || item.flowType
+                              // item.anotherDataType || item.anotherFlowType || 
+                              outputPort.socket.dataType = item.dataType || StarmapDataType.UNKNOW
+                              outputPort.socket.flowType = item.flowType
                             }
                           }
                           return <div

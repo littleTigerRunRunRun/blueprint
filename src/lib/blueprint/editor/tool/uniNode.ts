@@ -58,6 +58,7 @@ export type UniNodeConfig = {
   type?:string
   theme?:string
   width:number
+  parent?:string
   height:number // todo:更希望高度可以传入一个计算标准来自适应计算
   category:Array<StarmapNodeCategory>
   nest?:Array<StarmapNodeCategory>
@@ -80,13 +81,14 @@ export class UniNode extends ClassicPreset.Node<
   parent?:string
   theme:string = ''
   category:Array<StarmapNodeCategory>
+  innerMap:Array<string> = []
   updateOutputControls?:(controlIds:Array<string>) => void
   dataOperation?:(inputs: Record<string, Array<unknown>>, self:UniNode) => { [key:string]: unknown }
   executeOperation?:(forward: (output:string) => void, self:UniNode) => void
   inputKeys:Array<string> = []
   outputKeys:Array<string> = []
   controlKeys:Array<string> = []
-  constructor({ id, label, name, width = 180, height = 150, type, theme, nest, category, dataOperation, executeOperation }:UniNodeConfig) {
+  constructor({ id, label, name, width = 180, height = 150, type, theme, nest, parent, category, dataOperation, executeOperation }:UniNodeConfig) {
     super(label)
 
     // nodeList[this.id] = true
@@ -96,6 +98,7 @@ export class UniNode extends ClassicPreset.Node<
     this.width = width
     this.height = height
     this.type = type
+    this.parent = parent
     if (theme) this.theme = theme
     this.dataOperation = dataOperation
     this.executeOperation = executeOperation
@@ -106,6 +109,11 @@ export class UniNode extends ClassicPreset.Node<
     
     this.category = category
     // console.log('category', category)
+    nest?.forEach((cate) => {
+      cate.content.forEach((socket) => {
+        this.innerMap.push(socket.name)
+      })
+    })
     ;([...category, ...(nest || [])]).forEach((item) => {
       [...item.content, ...(item.extend?.content || [])].forEach((element) => {
         if (element.type === 'input' || element.type === 'both') {
