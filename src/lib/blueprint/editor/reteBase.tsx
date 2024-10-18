@@ -180,6 +180,12 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
       // 定制makeConnection，以返回带有连线类型的连线
       const [sourceSocket, targetSocket] = getSourceTarget(initial, socket) || [null, null]
 
+      const sn = editor.getNode(sourceSocket!.nodeId)
+      const p1 = sourceSocket && sn?.innerMap.includes(sourceSocket.key) ? sourceSocket!.nodeId : sn?.parent
+      const tn = editor.getNode(targetSocket!.nodeId)
+      const p2 = targetSocket && tn?.innerMap.includes(targetSocket.key) ? targetSocket!.nodeId : tn?.parent
+      if (p1 !== p2) return false
+
       if (sourceSocket && targetSocket) {
         context.editor.addConnection({
           id: getUID(),
