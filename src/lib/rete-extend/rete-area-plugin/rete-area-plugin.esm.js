@@ -278,11 +278,14 @@ var Zoom = /*#__PURE__*/function () {
       });
     });
     _defineProperty(this, "dblclick", function (e) {
+      var _this$filter;
       e.preventDefault();
       var _this$element$getBoun3 = _this.element.getBoundingClientRect(),
         left = _this$element$getBoun3.left,
         top = _this$element$getBoun3.top;
-      var delta = _this.filter.dblclick(4 * _this.intensity);
+      var delta = (((_this$filter = _this.filter) === null || _this$filter === void 0 ? void 0 : _this$filter.dblclick) || function (n) {
+        return n;
+      })(4 * _this.intensity);
       if (delta === 0) return;
       var ox = (left - e.clientX) * delta;
       var oy = (top - e.clientY) * delta;
@@ -384,11 +387,12 @@ var Area = /*#__PURE__*/function () {
     this.container = container;
     this.events = events;
     this.guards = guards;
+    this.filter = filter;
     this.content = new Content(function (element) {
       return _this.events.reordered(element);
     });
     this.content.holder.style.transformOrigin = '0 0';
-    this.setZoomHandler(new Zoom(0.1, filter.zoom));
+    this.setZoomHandler(new Zoom(0.1, filter === null || filter === void 0 ? void 0 : filter.zoom));
     this.setDragHandler(new Drag());
     this.container.addEventListener('pointerdown', this.pointerdown);
     this.container.addEventListener('pointermove', this.pointermove);
@@ -1129,7 +1133,9 @@ function selectableNodes(base, core, options) {
       if (core.isPicked({
         id: id,
         label: 'node'
-      })) core.translate(_dx, _dy);
+      })) {
+        core.translate(_dx, _dy);
+      }
     } else if (context.type === 'pointerdown') {
       twitch = 0;
     } else if (context.type === 'pointermove') {
@@ -1431,13 +1437,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
           data: params
         });
       }
-    }, filter || {
-      zoom: {
-        dblclick: function dblclick(num) {
-          return num;
-        }
-      }
-    });
+    }, filter || {});
     return _this;
   }
   _inherits(AreaPlugin, _BaseAreaPlugin);
@@ -1492,6 +1492,10 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
         }
       }, {
         translate: function translate(data) {
+          var _this2$area$filter$mo;
+          if ((_this2$area$filter$mo = _this2.area.filter.move) !== null && _this2$area$filter$mo !== void 0 && _this2$area$filter$mo.limit) {
+            data.position = _this2.area.filter.move.limit(data.position.x, data.position.y, id);
+          }
           return _this2.emit({
             type: 'nodetranslate',
             data: _objectSpread({

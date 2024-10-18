@@ -247,6 +247,7 @@ export function computeGroupSizeByDefine(category:Array<StarmapNodeCategory>, ne
   return {
     width: parseFloat(style.main.groupWidth),
     height: outer.height + inner.height - inner.title + parseFloat(style.main.groupBorder),
+    outerHeight: outer.height,
     title: outer.title
   }
 }

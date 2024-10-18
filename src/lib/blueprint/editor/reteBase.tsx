@@ -17,7 +17,7 @@ import type { Schemes, AreaExtra, MyAreaExtra, StarmapEditorConfig, StarmapGraph
 import { StarmapAbility, StarmapSocketType, Connection, StarmapControlType } from './define'
 import { NodeView, ConnectionView, ControlSocket, DataSocket, InputControlView, InputNumberControlView, SelectControlView } from './view'
 import { scopeElder, getCreateUniNode, UniNode } from './tool/uniNode'
-import { setThemes, computeNodeSizeByDefine, computeGroupSizeByDefine } from './defaultTheme'
+import { setThemes, getThemes, computeNodeSizeByDefine, computeGroupSizeByDefine } from './defaultTheme'
 import { createTransformer } from './tool/transformer'
 
 const createUniNode = getCreateUniNode({})
@@ -30,6 +30,27 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
   const area = new AreaPlugin<Schemes, MyAreaExtra>(config.container, {
     zoom: {
       dblclick: (_delta) => 0
+    },
+    move: {
+      limit: (x, y, id) => {
+        const node = editor.getNode(id)
+
+        const nodeView = area.nodeViews.get(id)
+
+        if (!node?.parent || !nodeView) return { x, y }
+
+        const parent = editor.getNode(node.parent)
+        const parentView = area.nodeViews.get(node.parent)
+        
+        const result = { x, y }
+        const border = parseFloat(getThemes().node.style.main.groupBorder)
+        if (x < parentView!.position.x + border) result.x = parentView!.position.x + border
+        if (x + node.width > parentView!.position.x + parent!.width - border) result.x = parentView!.position.x + parent!.width - border - node.width
+        if (y < parentView!.position.y + (parent!.outerHeight || 0)) result.y = parentView!.position.y + (parent!.outerHeight || 0)
+        if (y + node.height > parentView!.position.y + parent!.height - border) result.y = parentView!.position.y + parent!.height - border - node.height
+
+        return result
+      }
     }
   })
   const connection = new ConnectionPlugin<Schemes, AreaExtra>({
@@ -141,9 +162,9 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
   connection.addPreset(ConnectionPresets.classic.setup<Schemes>({
     makeConnection: (initial: SocketData, socket: SocketData, context: Context<Schemes, Array<unknown>>) => {
       const source = editor.getNode(initial.nodeId)
-      const sourceOutput = source.outputs[initial.key]
+      const sourceOutput = source!.outputs[initial.key]
       const target = editor.getNode(socket.nodeId)
-      const targetInput = target.inputs[socket.key]
+      const targetInput = target!.inputs[socket.key]
       let error = false
       let errorInfo = ''
       if (!sourceOutput || !targetInput) return
@@ -189,7 +210,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
       super.add(entity, accumulate)
       
       if (config.eventHandlers?.onNodeSelected) config.eventHandlers?.onNodeSelected({
-        node: editor.getNode(entity.id),
+        node: editor.getNode(entity.id) as UniNode,
         ...entity
       })
     }
@@ -198,7 +219,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
       super.remove(entity)
       
       if (config.eventHandlers?.onNodeUnselected) config.eventHandlers?.onNodeUnselected({
-        node: editor.getNode(entity.id),
+        node: editor.getNode(entity.id) as UniNode,
         ...entity
       })
     }
@@ -210,7 +231,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
     switch (name) {
       case StarmapAbility.NODE_SELECTABLE: {
         const selectableNodes = AreaExtensions.selectableNodes(area, selector, {
-          accumulating: AreaExtensions.accumulateOnCtrl()
+          accumulating: AreaExtensions.accumulateOnCtrl(),
         })
         // selectNode = selectableNodes.select
         // unselectNode = selectableNodes.unselect
@@ -264,6 +285,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
           width: nodeData.width,
           height: nodeData.height,
           nest: nodeData.nest,
+          outerHeight: nodeData.outerHeight,
           category: nodeData.category || []
         })
         await editor.addNode(node)
@@ -271,9 +293,9 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
       }
       for (const connectionData of data.connections) {
         const connection = new Connection(
-          editor.getNode(connectionData.source),
+          editor.getNode(connectionData.source) as UniNode,
           connectionData.sourceOutput,
-          editor.getNode(connectionData.target),
+          editor.getNode(connectionData.target) as UniNode,
           connectionData.targetInput
         )
         connection.flowType = connectionData.flowType
@@ -306,6 +328,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
             height: node.height,
             parent: node.parent,
             nest: node.nest, // 可否成为容器节点
+            outerHeight: node.outerHeight,
             // children?: Array<NodeId>
             position: view?.position,
             label: node.label,
@@ -328,18 +351,33 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
     dropAdd: (item:StarmapNodeDefine|null) => {
       if (item) {
         dropAdd.add(() => {
-          const { width, height } = item.nest ? computeGroupSizeByDefine(item.category, item.nest) : computeNodeSizeByDefine(item.category)
-          return createUniNode({
-            id: item?.id,
-            name: item.name,
-            label: item.label,
-            type: item.nest ? 'group' : 'common', 
-            theme: item.theme,
-            width,
-            height,
-            nest: item.nest,
-            category: item.category || []
-          })
+          if (item.nest) {
+            const { width, height, outerHeight } = computeGroupSizeByDefine(item.category, item.nest)
+            return createUniNode({
+              id: item?.id,
+              name: item.name,
+              label: item.label,
+              type: 'group', 
+              theme: item.theme,
+              width,
+              height,
+              nest: item.nest,
+              outerHeight,
+              category: item.category || []
+            })
+          } else {
+            const { width, height } = computeNodeSizeByDefine(item.category)
+            return createUniNode({
+              id: item?.id,
+              name: item.name,
+              label: item.label,
+              type: 'common', 
+              theme: item.theme,
+              width,
+              height,
+              category: item.category || []
+            })
+          }
         })
       } else dropAdd.remove()
     },

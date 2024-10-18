@@ -52,7 +52,7 @@ export function NodeView(props: Props) {
         lineHeight: style.title.height,
         ...style.title
       }}
-    >{ id }</div>
+    >{ label }</div>
     <div
       className="customized-content"
       style={{

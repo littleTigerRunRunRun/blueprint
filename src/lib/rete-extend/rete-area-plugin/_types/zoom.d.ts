@@ -10,7 +10,7 @@ export declare type DblclickFilter = (delta: number) => number;
  */
 export declare class Zoom {
     protected intensity: number;
-    private filter;
+    private filter?;
     protected previous: {
         cx: number;
         cy: number;
@@ -20,9 +20,9 @@ export declare class Zoom {
     protected container: HTMLElement;
     protected element: HTMLElement;
     protected onzoom: OnZoom;
-    constructor(intensity: number, filter: {
-        dblclick: DblclickFilter;
-    });
+    constructor(intensity: number, filter?: {
+        dblclick?: DblclickFilter | undefined;
+    } | undefined);
     initialize(container: HTMLElement, element: HTMLElement, onzoom: OnZoom): void;
     protected wheel: (e: WheelEvent) => void;
     private getTouches;

@@ -28,14 +28,21 @@ declare type Guards = {
     zoom: (params: ZoomEventParams) => Promise<unknown | boolean>;
 };
 export declare type AreaFilter = {
-    zoom: {
-        dblclick: DblclickFilter;
+    zoom?: {
+        dblclick?: DblclickFilter;
+    };
+    move?: {
+        limit?: (x: number, y: number, id: string) => {
+            x: number;
+            y: number;
+        };
     };
 };
 export declare class Area {
     private container;
     private events;
     private guards;
+    filter: AreaFilter;
     transform: Transform;
     pointer: Position;
     content: Content;

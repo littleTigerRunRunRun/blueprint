@@ -58,10 +58,11 @@ export type UniNodeConfig = {
   type?:string
   theme?:string
   width:number
-  parent?:string
   height:number // todo:更希望高度可以传入一个计算标准来自适应计算
-  category:Array<StarmapNodeCategory>
+  parent?:string
+  outerHeight?:number
   nest?:Array<StarmapNodeCategory>
+  category:Array<StarmapNodeCategory>
   dataOperation?:(inputs: Record<string, Array<unknown>>, self:UniNode) => { [key:string]: unknown }
   executeOperation?:(forward: (output:string) => void, self:UniNode) => void
 }
@@ -82,13 +83,14 @@ export class UniNode extends ClassicPreset.Node<
   theme:string = ''
   category:Array<StarmapNodeCategory>
   innerMap:Array<string> = []
+  outerHeight?:number
   updateOutputControls?:(controlIds:Array<string>) => void
   dataOperation?:(inputs: Record<string, Array<unknown>>, self:UniNode) => { [key:string]: unknown }
   executeOperation?:(forward: (output:string) => void, self:UniNode) => void
   inputKeys:Array<string> = []
   outputKeys:Array<string> = []
   controlKeys:Array<string> = []
-  constructor({ id, label, name, width = 180, height = 150, type, theme, nest, parent, category, dataOperation, executeOperation }:UniNodeConfig) {
+  constructor({ id, label, name, width = 180, height = 150, outerHeight, type, theme, nest, parent, category, dataOperation, executeOperation }:UniNodeConfig) {
     super(label)
 
     // nodeList[this.id] = true
@@ -97,6 +99,7 @@ export class UniNode extends ClassicPreset.Node<
     if (id) this.id = id
     this.width = width
     this.height = height
+    this.outerHeight = outerHeight
     this.type = type
     this.parent = parent
     if (theme) this.theme = theme

@@ -129,6 +129,7 @@ export type StarmapNode = {
   height: number
   theme: string
   parent?: string
+  outerHeight?: number
   nest?: Array<StarmapNodeCategory> // 可否成为容器节点
   children?: Array<NodeId>
   label: string // 节点名称
