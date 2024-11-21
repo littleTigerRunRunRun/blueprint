@@ -28,8 +28,8 @@
     "rete-connection-plugin": "file:./src/lib/rete-extend/rete-connection-plugin/",
     "rete-context-menu-plugin": "^2.0.2",
     "rete-engine": "^2.0.1",
-    "rete-react-plugin": "^2.0.5",
-    "rete-render-utils": "^2.0.2",
+    "rete-react-plugin": "file:./src/lib/rete-extend/rete-react-plugin/",
+    "rete-render-utils": "file:./src/lib/rete-extend/rete-render-utils/",
     "rete-scopes-plugin": "file:./src/lib/rete-extend/rete-scopes-plugin/",
     "rete-structures": "^2.0.1",
     "styled-components": "^6.1.8"

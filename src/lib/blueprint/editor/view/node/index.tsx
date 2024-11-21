@@ -352,6 +352,7 @@ export function NodeView(props: Props) {
                                     <MySocket
                                       name="input-socket"
                                       side="input"
+                                      inout="in"
                                       emit={props.emit}
                                       socketKey={item.name}
                                       nodeId={id || ''}
@@ -371,6 +372,7 @@ export function NodeView(props: Props) {
                                     <MySocket
                                       name="output-socket"
                                       side="output"
+                                      inout="in"
                                       emit={props.emit}
                                       socketKey={item.name}
                                       nodeId={id || ''}

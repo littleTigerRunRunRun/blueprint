@@ -36,7 +36,6 @@ export class NodeScalablePlugin<Schemes extends StarmapSchemes> extends Scope<ex
     this.editor = this.area.parentScope<NodeEditor<Schemes>>(NodeEditor)
 
     // 为画布容器元素绑定移入、移出时间
-
     this.addPipe(context => {
       if (context.type === 'nsstart') {
         this.nsid = context.data.id
