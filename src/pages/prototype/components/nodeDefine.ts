@@ -4,7 +4,14 @@ import { categoryComponent } from './nodeDefineComponent'
 
 export type DraggingExec = (item:StarmapNodeDefine) => void
 
+const NODE_SIZE = {
+  SHORT: 120,
+  MIDDLE: 150,
+  LONG: 240
+}
+
 // 这个数据正常应该被持久化
+// to do:未来，类似于UE，应该有一个可以自己生成节点的界面，或者界面中本身就可以自定义
 const rawTabContentList:Record<
   string,
   Array<{
@@ -15,6 +22,8 @@ const rawTabContentList:Record<
       name: string
       label: string
       theme: string
+      width?:number,
+      height?:number
       category: Array<StarmapNodeCategory | string>
       nest?: Array<StarmapNodeCategory | string>
     }>
@@ -94,6 +103,29 @@ const rawTabContentList:Record<
           ]
         },
         {
+          name: 'Number',
+          label: '数字',
+          theme: 'blue',
+          width: NODE_SIZE.SHORT,
+          category: [
+            {
+              content: [
+                {
+                  label: '',
+                  name: 'value',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.NUMBER,
+                  control: {
+                    type: StarmapControlType.INPUTNUMBER,
+                    default: 0
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
           name: 'Mathematical',
           label: '四则运算',
           theme: 'blue',
@@ -159,17 +191,7 @@ const rawTabContentList:Record<
                   dataType: StarmapDataType.NUMBER
                 },
                 {
-                  label: '输入二',
-                  name: 'input2',
-                  type: 'input',
-                  flowType: StarmapSocketType.DATA,
-                  dataType: StarmapDataType.NUMBER,
-                  control: {
-                    type: StarmapControlType.INPUTNUMBER
-                  }
-                },
-                {
-                  label: '操作符',
+                  label: '',
                   name: 'operator',
                   type: 'control',
                   control: {
@@ -182,6 +204,16 @@ const rawTabContentList:Record<
                       { value: '==', label: '等于' },
                       { value: '!=', label: '不等于' }
                     ]
+                  }
+                },
+                {
+                  label: '输入二',
+                  name: 'input2',
+                  type: 'input',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.NUMBER,
+                  control: {
+                    type: StarmapControlType.INPUTNUMBER
                   }
                 },
                 {
@@ -232,7 +264,7 @@ const rawTabContentList:Record<
         {
           // 需要做容器
           name: 'Sort',
-          label: '排序',
+          label: '数组排序',
           theme: 'blue',
           category: [
             {
@@ -259,7 +291,7 @@ const rawTabContentList:Record<
         {
           // 需要做容器
           name: 'Filter',
-          label: '过滤',
+          label: '数组过滤',
           theme: 'blue',
           category: [
             {
@@ -295,17 +327,10 @@ const rawTabContentList:Record<
               halfline: true,
               content: [
                 {
-                  label: '过滤函数',
-                  name: 'inner_excute',
-                  type: 'output',
-                  flowType: StarmapSocketType.CONTROL,
-                  dataType: StarmapDataType.NULL
-                },
-                {
-                  label: '项',
+                  label: '输入项',
                   name: 'inner_item',
                   type: 'output',
-                  flowType: StarmapSocketType.DATA,
+                  flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.UNKNOW
                 },
                 {
@@ -327,6 +352,116 @@ const rawTabContentList:Record<
                   type: 'input',
                   flowType: StarmapSocketType.CONTROL,
                   dataType: StarmapDataType.BOOLEAN
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'Map',
+          label: '数组映射',
+          theme: 'blue',
+          category: [
+            {
+              label: '',
+              halfline: true,
+              content: [
+                {
+                  label: '输入',
+                  name: 'input',
+                  type: 'input',
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.ARRAY
+                }
+              ]
+            },
+            {
+              label: '',
+              halfline: true,
+              content: [
+                {
+                  label: '输出',
+                  name: 'output',
+                  type: 'output',
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.ARRAY
+                }
+              ]
+            }
+          ],
+          nest: [
+            {
+              label: '',
+              halfline: true,
+              content: [
+                {
+                  label: '输入项',
+                  name: 'inner_item',
+                  type: 'output',
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.UNKNOW
+                },
+                {
+                  label: '序号',
+                  name: 'inner_index',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.NUMBER
+                }
+              ]
+            },
+            {
+              label: '',
+              halfline: true,
+              content: [
+                {
+                  label: '输出项',
+                  name: 'inner_output',
+                  type: 'input',
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.UNKNOW
+                }
+              ]
+            }
+          ]
+        },
+        {
+          name: 'ForEach',
+          label: '数组轮循',
+          theme: 'blue',
+          category: [
+            {
+              label: '',
+              halfline: true,
+              content: [
+                {
+                  label: '输入',
+                  name: 'input',
+                  type: 'input',
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.ARRAY
+                }
+              ]
+            }
+          ],
+          nest: [
+            {
+              label: '',
+              halfline: true,
+              content: [
+                {
+                  label: '输入项',
+                  name: 'inner_item',
+                  type: 'output',
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.UNKNOW
+                },
+                {
+                  label: '序号',
+                  name: 'inner_index',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.NUMBER
                 }
               ]
             }
@@ -498,10 +633,59 @@ const rawTabContentList:Record<
       list: []
     }
   ],
+  userInput: [
+    {
+      background: 'rgba(20, 93, 73, 0.8)',
+      list: [
+        {
+          name: 'staticArray',
+          label: '静态数组',
+          theme: 'green',
+          width: 240,
+          category: [
+            {
+              content: [
+                {
+                  label: '输出',
+                  name: 'data',
+                  type: 'output',
+                  flowType: StarmapSocketType.DATA,
+                  dataType: StarmapDataType.ARRAY,
+                  control: {
+                    type: StarmapControlType.CODE,
+                    default: '// 输入一个数组类型的静态数据'
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
   globalEvent: [
     {
-      background: '#F35353',
-      list: []
+      background: '#6737ad',
+      list: [
+        {
+          name: 'contextReady',
+          label: '开始',
+          theme: 'purple',
+          category: [
+            {
+              content: [
+                {
+                  label: '执行',
+                  name: 'exec',
+                  type: 'output',
+                  flowType: StarmapSocketType.CONTROL,
+                  dataType: StarmapDataType.NULL
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

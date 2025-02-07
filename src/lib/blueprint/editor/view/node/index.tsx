@@ -2,7 +2,7 @@ import { UniNode } from '../../tool/uniNode'
 import { Schemes, StarmapDataType } from '../../define'
 import { RenderEmit, Presets } from 'rete-react-plugin'
 // import { Tooltip } from 'antd'
-import { getNodeTheme, computeBlockHeight, computeNodeSizeByDefine, computeGroupSizeByDefine } from '../../defaultTheme'
+import { getNodeTheme, computeBlockHeight, computeNodeSizeByDefine, getLineHeight, computeGroupSizeByDefine } from '../../defaultTheme'
 import './index.scss'
 import { useState } from 'react'
 import { type NodeScaleContext } from '../../plugin/node-scale-plugin'
@@ -119,9 +119,8 @@ export function NodeView(props: Props) {
                   if (item.type !== 'input' && item.type !== 'control') {
                     const outputPort = outputs[item.name]
                     if (outputPort) {
-                      // item.anotherDataType || item.anotherFlowType || 
-                      outputPort.socket.dataType = item.dataType || StarmapDataType.UNKNOW
-                      outputPort.socket.flowType = item.flowType
+                      outputPort.socket.dataType = item.anotherDataType || item.dataType || StarmapDataType.UNKNOW
+                      outputPort.socket.flowType = item.anotherFlowType || item.flowType
                     }
                   }
                   return <div
@@ -130,11 +129,15 @@ export function NodeView(props: Props) {
                     style={{
                       ...style.blockLine,
                       lineHeight: style.blockLine.height,
-                      textAlign: (item.type === 'input' ? 'left' : (item.type === 'both' ? 'center' : 'right')),
+                      fontSize: 0,
+                      height: getLineHeight(item),
+                      textAlign: (item.type === 'input' || item.type === 'control' ? 'left' : (item.type === 'both' ? 'center' : 'right')),
                       padding: item.type === 'both' ? '' : `0 ${(!cate.content.includes(item as any) ? style.blockLine.extendIndent : style.blockLine.indent)}`
                     }}
                   >
-                    { item.type === 'control' ? '' : item.label }
+                    {
+                      item.label ? <span className="socket-label" style={{ fontSize: style.blockLine.fontSize }}>{ item.label }</span> : ''
+                    }
                     { ii === 0 && !cate.label && cate.extend ? <div
                         className={`content-extend-btn ${cate.extend.activate ? 'extended' : ''}`}
                         style={{
@@ -175,7 +178,7 @@ export function NodeView(props: Props) {
                               nodeId={id || ''}
                               payload={inputs[item.name]!.socket}
                               data-testid="input-socket"
-                            /> 
+                            />
                           </div> : ''
                         }
                         {
@@ -195,30 +198,20 @@ export function NodeView(props: Props) {
                               payload={outputs[item.name]!.socket}
                               data-testid="output-socket"
                             /> 
-                          </div>: ''
+                          </div> : ''
+                        }
+                        {
+                          item.type !== 'input' && item.control ? (
+                            <MyControl
+                              key={item.name}
+                              name="output-control"
+                              emit={props.emit}
+                              payload={controls[item.name]}
+                            />
+                          ) : ''
                         }
                       </>
                     }
-                    {/* {
-                      item.type === 'input' && inputs[item.name]?.control && inputs[item.name]?.showControl ? (
-                        <MyControl
-                          key={item.name}
-                          name="input-control"
-                          emit={props.emit}
-                          payload={inputs[item.name]!.control as Control}
-                        />
-                      ) : ''
-                    }
-                    {
-                      item.type === 'output' && outputs[item.name]?.control && outputs[item.name]?.showControl ? (
-                        <MyControl
-                          key={item.name}
-                          name="output-control"
-                          emit={props.emit}
-                          payload={outputs[item.name]!.control as Control}
-                        />
-                      ) : ''
-                    } */}
                   </div>
                 })
               }
@@ -300,9 +293,8 @@ export function NodeView(props: Props) {
                           if (item.type !== 'input' && item.type !== 'control') {
                             const outputPort = outputs[item.name]
                             if (outputPort) {
-                              // item.anotherDataType || item.anotherFlowType || 
-                              outputPort.socket.dataType = item.dataType || StarmapDataType.UNKNOW
-                              outputPort.socket.flowType = item.flowType
+                              outputPort.socket.dataType = item.anotherDataType || item.dataType || StarmapDataType.UNKNOW
+                              outputPort.socket.flowType = item.anotherFlowType || item.flowType
                             }
                           }
                           return <div

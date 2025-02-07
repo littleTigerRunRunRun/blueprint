@@ -3,6 +3,7 @@ import {
   MergeOutlined,
   DeploymentUnitOutlined,
   ApiOutlined,
+  EditOutlined,
   NumberOutlined,
   JavaScriptOutlined,
   MessageOutlined,
@@ -20,6 +21,8 @@ export const checkInstanceNumChange = (name:string, change:number) => {
     state.setNum(state.num + change)
   }
 }
+
+console.log('tablist', tabContentList)
 
 const createTabChildren = (key:string, execDragStart: DraggingExec) => {
   return tabContentList[key].map((list, li) => {
@@ -68,6 +71,12 @@ export function createTabs(execDragStart: DraggingExec) {
       key: 'flowControl',
       icon: <MergeOutlined />,
       children: createTabChildren('flowControl', execDragStart)
+    },
+    {
+      label: '用户输入',
+      key: 'userInput',
+      icon: <EditOutlined />,
+      children: createTabChildren('userInput', execDragStart)
     },
     {
       label: '全局事件',

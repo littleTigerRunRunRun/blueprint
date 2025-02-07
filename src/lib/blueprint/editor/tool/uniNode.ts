@@ -123,13 +123,19 @@ export class UniNode extends ClassicPreset.Node<
           this.inputKeys.push(element.name)
           const input = new ClassicPreset.Input(new UniSocket(element.name), element.label, true)
           // 需要一个中间件来解决element.control.type的匹配问题
-          if (element.control) input.addControl(new UniControl(element.control))
+          if (element.control) {
+            this.controlKeys.push(element.name)
+            input.addControl(new UniControl(element.control))
+          }
           this.addInput(element.name, input)
         }
         if (element.type === 'output' || element.type === 'both') {
           this.outputKeys.push(element.name)
           const output = new ClassicPreset.Input(new UniSocket(element.name), element.label, true)
-          if (element.control) output.addControl(new UniControl(element.control))
+          if (element.control) {
+            this.controlKeys.push(element.name)
+            this.addControl(element.name, new UniControl(element.control))
+          }
           this.addOutput(element.name, output)
         }
         if (element.type === 'control') {

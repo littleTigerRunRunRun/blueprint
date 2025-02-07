@@ -1,4 +1,4 @@
-import { StarmapTheme, Level2StringInfo, StarmapDataType, StarmapNodeCategory } from "./define"
+import { StarmapTheme, Level2StringInfo, StarmapDataType, StarmapNodeCategory, StarmapNodeLine } from "./define"
 
 // 主题theme包含了：style和themes，style表示节点、连线、锚点等内容的样式风格，themes则是一个控制其不同主题的配置表
 export const defaultTheme:StarmapTheme = {
@@ -165,6 +165,13 @@ export const defaultTheme:StarmapTheme = {
         arrowEnd: '6px'
       }
     },
+    code: {
+      color: {
+      },
+      size: {
+        height: '120px'
+      }
+    },
     input: {
       color: {
         font: '#999',
@@ -252,18 +259,26 @@ export function computeGroupSizeByDefine(category:Array<StarmapNodeCategory>, ne
   }
 }
 
+export function getLineHeight(line:StarmapNodeLine) {
+  const style = getThemes().node.style
+  if (line.type === 'control') {
+    return parseFloat(defaultTheme.control[line.control.type].size.height) + (line.label ? parseFloat(style.blockLine.height) : 0)
+  } else if (line.control) {
+    if (line.type === 'input') return parseFloat(defaultTheme.control[line.control.type].size.height)
+    console.log(line)
+    return parseFloat(defaultTheme.control[line.control.type].size.height) + (line.label ? parseFloat(style.blockLine.height) : 0)
+  } else return parseFloat(style.blockLine.height)
+}
+
 // to do: 检查调用次数
 export function computeBlockHeight(cate:StarmapNodeCategory) {
-  const style = getThemes().node.style
   let height = 0
-  cate.content.forEach(() => {
-    // 遇到控件的情况，要根据一个控件高度计算工具，来具体计算高度
-    height += parseFloat(style.blockLine.height)
+  cate.content.forEach((item) => {
+    height += getLineHeight(item)
   })
   if (cate.extend && cate.extend.activate) {
-    cate.extend.content.forEach(() => {
-      // 遇到控件的情况，要根据一个控件高度计算工具，来具体计算高度
-      height += parseFloat(style.blockLine.height)
+    cate.extend.content.forEach((item) => {
+      height += getLineHeight(item)
     })
   }
   return height

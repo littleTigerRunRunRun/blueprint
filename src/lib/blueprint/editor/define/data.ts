@@ -3,6 +3,7 @@ export enum StarmapControlType {
   INPUT = 'input',
   INPUTNUMBER = 'inputNumber',
   SELECT = 'select',
+  CODE = 'code'
   // COLOR = 'color',
   // SWITCH = 'switch',
 }
@@ -11,6 +12,7 @@ export const StarmapControlDataTypeMapping = {
   [StarmapControlType.INPUT]: 'string',
   [StarmapControlType.INPUTNUMBER]: 'number',
   [StarmapControlType.SELECT]: 'string', // 以前是unknow
+  [StarmapControlType.CODE]: 'string',
   // [StarmapControlType.COLOR]: 'string',
   // [StarmapControlType.SWITCH]: 'boolean',
 }
@@ -23,6 +25,7 @@ interface BaseControl<T extends StarmapControlType, K extends string | number> {
   readonly?:boolean
   change?:(value: K) => void
   options?: Array<{ value:string, label: string }>
+  default?: K
 }
 
 
@@ -63,7 +66,10 @@ export interface SelectControl extends BaseControl<StarmapControlType.SELECT, st
   options: Array<{ value:string, label: string }>
 }
 
-export type StarmapControl = InputControl | InputNumberControl | SelectControl
+export interface CodeControl extends BaseControl<StarmapControlType.CODE, string> {
+}
+
+export type StarmapControl = InputControl | InputNumberControl | SelectControl | CodeControl
 
 export enum StarmapDataType {
   STRING = 'string',
@@ -89,23 +95,22 @@ export enum StarmapSocketType {
 // }
 
 type NodeId = string
+// dataTypeDecription
+// another的设计，是为了为both类型的连接点设计，用于表示左右不同类型的流类型（比如同时具备setter和getter属性的字段，左侧是set，是控制流，右侧是get，是数据流）
+export type StarmapNodeLine = 
+  // 
+  { label: string, name: string, type: 'input' | 'output' | 'both', flowType: StarmapSocketType, dataType?: StarmapDataType, control?: StarmapControl, anotherFlowType?: StarmapSocketType, anotherDataType?: StarmapDataType } |
+  // control表现上就像是一个无法连接的input
+  // control类型时说明这是一个节点本身需要的控件，不会直接形成输入输出
+  { label: string, name: string, type: 'control', control: StarmapControl }
 // 
 export type StarmapNodeCategory = {
   label?: string
   halfline?: boolean // 视图上占据整行还是只占据半行（是否会影响后续非本align侧内容的竖直位置基准）
-  content: Array<
-    // dataTypeDecription
-    // another的设计，已忘记设计为何，只在output且非control的情况下生效
-    // , anotherFlowType?: StarmapSocketType, anotherDataType?: StarmapDataType
-    { label: string, name: string, type: 'input' | 'output' | 'both', flowType: StarmapSocketType, dataType?: StarmapDataType, control?: StarmapControl } |
-    { label: string, name: string, type: 'control', control: StarmapControl }
-  >
+  content: Array<StarmapNodeLine>
   extend?: {
     activate: boolean
-    content: Array<
-      { label: string, name: string, type: 'input' | 'output' | 'both', flowType: StarmapSocketType, dataType?: StarmapDataType, control?: StarmapControl } |
-      { label: string, name: string, type: 'control', control: StarmapControl }
-    >
+    content: Array<StarmapNodeLine>
   }
 }
 

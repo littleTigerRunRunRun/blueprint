@@ -2,7 +2,7 @@ import { Input } from 'antd'
 import { UniControl } from '../../tool/uniNode'
 import './Input.scss'
 import { getControlTheme } from '../../defaultTheme'
-
+import { customPointerDown } from './tool'
 
 export function InputControlView(props: { data: UniControl }) {
   const theme = getControlTheme('input')
@@ -26,6 +26,7 @@ export function InputControlView(props: { data: UniControl }) {
         '--input-border-radius': `${theme.size.borderRadius}`,
         '--input-normal-shadow': `${theme.color.normalShadow}`
       } as React.CSSProperties}
+      onPointerDown={customPointerDown}
     />
   </>
 }

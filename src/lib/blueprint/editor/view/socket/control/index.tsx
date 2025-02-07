@@ -14,11 +14,12 @@ export function ControlSocketView(props: SocketProps) {
   return <div
     className="control-socket"
   >
-    <svg viewBox="0 0 10 10">
+    <svg viewBox="0 0 12 12">
       <path
         stroke={stroke[0]}
         strokeWidth={stroke[2]}
         fill={theme.main}
+        transform='translate(1, 1)'
         d="M0,0 L5,0 L10,5 L5,10 L0,10 Z"
       />
     </svg>

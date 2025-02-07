@@ -15,7 +15,9 @@ import { createRoot } from 'react-dom/client'
 
 import type { Schemes, AreaExtra, MyAreaExtra, StarmapEditorConfig, StarmapGraph, StarmapNode, StarmapConnection, StarmapNodeDefine } from './define'
 import { StarmapAbility, StarmapSocketType, Connection, StarmapControlType } from './define'
-import { NodeView, ConnectionView, ControlSocket, DataSocket, InputControlView, InputNumberControlView, SelectControlView } from './view'
+import {
+  NodeView, ConnectionView, ControlSocket, DataSocket,
+  InputControlView, InputNumberControlView, SelectControlView, CodeControlView } from './view'
 import { scopeElder, getCreateUniNode, UniNode } from './tool/uniNode'
 import { setThemes, getThemes, computeNodeSizeByDefine, computeGroupSizeByDefine } from './defaultTheme'
 import { createTransformer } from './tool/transformer'
@@ -152,6 +154,7 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
             case StarmapControlType.INPUT: return InputControlView
             case StarmapControlType.INPUTNUMBER: return InputNumberControlView
             case StarmapControlType.SELECT: return SelectControlView
+            case StarmapControlType.CODE : return CodeControlView
             default: return null
           }
         }
@@ -365,8 +368,8 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
               label: item.label,
               type: 'group', 
               theme: item.theme,
-              width,
-              height,
+              width: item.width || width,
+              height: item.height || height,
               nest: item.nest,
               outerHeight,
               category: item.category || []
@@ -379,8 +382,8 @@ export async function createEditor(config: Required<StarmapEditorConfig>) {
               label: item.label,
               type: 'common', 
               theme: item.theme,
-              width,
-              height,
+              width: item.width || width,
+              height: item.height || height,
               category: item.category || []
             })
           }

@@ -62,6 +62,8 @@ export interface StarmapNodeDefine {
   theme: string
   category: Array<StarmapNodeCategory>
   nest?: Array<StarmapNodeCategory> // 可否成为容器节点
+  width?: number
+  height?: number
   // parent?: string
   // nest?: NestConfig // 可否成为容器节点
   // children?: Array<NodeId>

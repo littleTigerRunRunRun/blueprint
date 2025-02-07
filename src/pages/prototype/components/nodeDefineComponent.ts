@@ -23,7 +23,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
         type: 'both',
         flowType: StarmapSocketType.CONTROL,
         dataType: StarmapDataType.OBJECT,
-        anthorFlowType: StarmapSocketType.DATA
+        anotherFlowType: StarmapSocketType.DATA
       }
     ],
     extend: {
@@ -35,7 +35,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.NUMBER,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         },
         {
           label: '纵坐标',
@@ -43,7 +43,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.NUMBER,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         }
       ]
     }
@@ -57,7 +57,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
         type: 'both',
         flowType: StarmapSocketType.CONTROL,
         dataType: StarmapDataType.OBJECT,
-        anthorFlowType: StarmapSocketType.DATA
+        anotherFlowType: StarmapSocketType.DATA
       }
     ],
     extend: {
@@ -69,7 +69,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.NUMBER,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         },
         {
           label: '中心纵坐标',
@@ -77,7 +77,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.NUMBER,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         }
       ]
     }
@@ -91,7 +91,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
         type: 'both',
         flowType: StarmapSocketType.CONTROL,
         dataType: StarmapDataType.OBJECT,
-        anthorFlowType: StarmapSocketType.DATA
+        anotherFlowType: StarmapSocketType.DATA
       }
     ],
     extend: {
@@ -103,7 +103,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.NUMBER,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         },
         {
           label: '结束角度',
@@ -111,7 +111,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.NUMBER,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         }
       ]
     }
@@ -125,7 +125,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
         type: 'both',
         flowType: StarmapSocketType.CONTROL,
         dataType: StarmapDataType.STRING,
-        anthorFlowType: StarmapSocketType.DATA
+        anotherFlowType: StarmapSocketType.DATA
       }
     ],
     extend: {
@@ -137,7 +137,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.NUMBER,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         }
       ]
     }
@@ -151,7 +151,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
         type: 'both',
         flowType: StarmapSocketType.CONTROL,
         dataType: StarmapDataType.OBJECT,
-        anthorFlowType: StarmapSocketType.DATA
+        anotherFlowType: StarmapSocketType.DATA
       }
     ],
     extend: {
@@ -163,7 +163,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.STRING,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         },
         {
           label: '描边透明度',
@@ -171,7 +171,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.NUMBER,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         },
         {
           label: '描边宽度',
@@ -179,7 +179,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.NUMBER,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         }
       ]
     }
@@ -193,7 +193,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
         type: 'both',
         flowType: StarmapSocketType.CONTROL,
         dataType: StarmapDataType.OBJECT,
-        anthorFlowType: StarmapSocketType.DATA
+        anotherFlowType: StarmapSocketType.DATA
       }
     ],
     extend: {
@@ -205,7 +205,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.STRING,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         },
         {
           label: '字号',
@@ -213,7 +213,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.NUMBER,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         },
         {
           label: '加粗',
@@ -221,7 +221,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.BOOLEAN,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         },
         {
           label: '色彩',
@@ -229,7 +229,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.BOOLEAN,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         },
         {
           label: '透明度',
@@ -237,7 +237,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.NUMBER,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         },
         {
           label: '横向对齐',
@@ -245,7 +245,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.STRING,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         }
       ]
     }
@@ -259,7 +259,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
         type: 'both',
         flowType: StarmapSocketType.CONTROL,
         dataType: StarmapDataType.NUMBER,
-        anthorFlowType: StarmapSocketType.DATA
+        anotherFlowType: StarmapSocketType.DATA
       }
     ],
     extend: {
@@ -271,7 +271,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.NUMBER,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         },
         {
           label: '外径',
@@ -279,7 +279,7 @@ export const categoryComponent:Record<string, StarmapNodeCategory> = {
           type: 'both',
           flowType: StarmapSocketType.CONTROL,
           dataType: StarmapDataType.NUMBER,
-          anthorFlowType: StarmapSocketType.DATA
+          anotherFlowType: StarmapSocketType.DATA
         }
       ]
     }

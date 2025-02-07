@@ -69,6 +69,10 @@
       // font-size: 12px;
       // letter-spacing: 2px;
       // color: #efefef;
+      .socket-label {
+        width: 100%;
+        display: block;
+      }
       .socket-container {
         position: absolute;
         width: var(--socket-size);
