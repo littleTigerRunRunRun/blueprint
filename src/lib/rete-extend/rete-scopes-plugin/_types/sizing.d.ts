@@ -19,6 +19,10 @@ declare type Size = {
     height: number;
 };
 export declare function updateNodeSizes<T>(node: ExpectedScheme['Node'], size: Size, { area }: Props<T>): void;
-export declare function resizeParent<T>(parent: ExpectedScheme['Node'], agentParams: AgentParams, props: Props<T>): Promise<void>;
+export declare function resizeParent<T>(parent: ExpectedScheme['Node'], agentParams: AgentParams, props: Props<T>): Promise<{
+    parent: import("./types").NodeScheme;
+    agentParams: AgentParams;
+    props: Props<T>;
+}>;
 export {};
 //# sourceMappingURL=sizing.d.ts.map

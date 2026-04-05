@@ -1,6 +1,15 @@
 <template>
   <!-- <diagram /> -->
   <div class="home">
+    <div class="title">功能预研</div>
+    <div class="content">
+      <router-link to="/graph-basic">
+        <div class="example">
+          <img src="../assets/basic.png" />
+          <span>基础图形编辑</span>
+        </div>
+      </router-link>
+    </div>
     <div class="title">retejs基础案例演示</div>
     <div class="content">
       <router-link to="/rete-basic">
@@ -70,7 +79,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   margin: 0;
@@ -82,14 +92,14 @@ html, body {
   width: 100%;
   height: 100%;
 }
-.home{
+.home {
   width: 100%;
   height: 100%;
-  .title{
+  .title {
     padding: 20px 0 0 40px;
     font-size: 24px;
   }
-  .content{
+  .content {
     margin: 20px 0 0 0;
     padding: 0 40px;
     .example {
@@ -98,7 +108,7 @@ html, body {
       cursor: pointer;
       display: inline-block;
       margin: 0 20px 20px 0;
-      &:hover{
+      &:hover {
         span {
           color: #d33333;
         }
@@ -110,8 +120,7 @@ html, body {
           0 0 5px 1px rgba(0, 0, 0, 0.1),
           0 2px 3px 0px rgba(0, 0, 0, 0.1),
           0 1px 2px 0px rgba(0, 0, 0, 0.2),
-          0 1px 1px 0px rgba(0, 0, 0, 0.3)
-          ;
+          0 1px 1px 0px rgba(0, 0, 0, 0.3);
       }
       span {
         transition: color 0.3s;

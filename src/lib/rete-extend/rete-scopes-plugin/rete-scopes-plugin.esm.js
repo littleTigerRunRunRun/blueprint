@@ -94,102 +94,21 @@ function useOrdering(props) {
   }());
 }
 
-function getNodesBoundingBox(nodes, _ref) {
-  var area = _ref.area;
-  var boxes = nodes.map(function (node) {
-    var view = area.nodeViews.get(node.id);
-    if (!view) throw new Error('view');
-    return {
-      position: view.position,
-      width: node.width,
-      height: node.height
-    };
-  });
-  var left = Math.min.apply(Math, _toConsumableArray(boxes.map(function (b) {
-    return b.position.x;
-  })));
-  var right = Math.max.apply(Math, _toConsumableArray(boxes.map(function (b) {
-    return b.position.x + b.width;
-  })));
-  var top = Math.min.apply(Math, _toConsumableArray(boxes.map(function (b) {
-    return b.position.y;
-  })));
-  var bottom = Math.max.apply(Math, _toConsumableArray(boxes.map(function (b) {
-    return b.position.y + b.height;
-  })));
-  var width = right - left;
-  var height = bottom - top;
-  return {
-    top: top,
-    left: left,
-    right: right,
-    bottom: bottom,
-    width: width,
-    height: height
-  };
-}
-function updateNodeSizes(node, size, _ref2) {
-  var area = _ref2.area;
-  var width = size.width,
-    height = size.height;
-  node.width = width;
-  node.height = height;
-  area.resize(node.id, width, height);
-}
-
 // eslint-disable-next-line max-statements
 function resizeParent(_x, _x2, _x3) {
   return _resizeParent.apply(this, arguments);
 }
 function _resizeParent() {
   _resizeParent = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(parent, agentParams, props) {
-    var id, children, padding, size, _getNodesBoundingBox, top, left, width, height, outerWidth, outerHeight, outerTop, outerLeft, parentsParent;
     return _regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
-          id = parent.id;
-          children = props.editor.getNodes().filter(function (child) {
-            return child.parent === id;
-          }).filter(function (node) {
-            return !agentParams.exclude(node.id);
+          return _context.abrupt("return", {
+            parent: parent,
+            agentParams: agentParams,
+            props: props
           });
-          padding = agentParams.padding(id);
-          if (!(children.length === 0)) {
-            _context.next = 8;
-            break;
-          }
-          size = agentParams.size(id, {
-            width: padding.left + padding.right,
-            height: padding.top + padding.bottom
-          });
-          updateNodeSizes(parent, size, props);
-          _context.next = 16;
-          break;
-        case 8:
-          _getNodesBoundingBox = getNodesBoundingBox(children, props), top = _getNodesBoundingBox.top, left = _getNodesBoundingBox.left, width = _getNodesBoundingBox.width, height = _getNodesBoundingBox.height;
-          outerWidth = width + padding.left + padding.right;
-          outerHeight = height + padding.top + padding.bottom;
-          outerTop = top - padding.top;
-          outerLeft = left - padding.left;
-          updateNodeSizes(parent, agentParams.size(id, {
-            width: outerWidth,
-            height: outerHeight
-          }), props);
-          _context.next = 16;
-          return agentParams.translate(parent.id, outerLeft, outerTop);
-        case 16:
-          if (!parent.parent) {
-            _context.next = 21;
-            break;
-          }
-          parentsParent = props.editor.getNode(parent.parent);
-          if (!parentsParent) {
-            _context.next = 21;
-            break;
-          }
-          _context.next = 21;
-          return resizeParent(parentsParent, agentParams, props);
-        case 21:
+        case 1:
         case "end":
           return _context.stop();
       }

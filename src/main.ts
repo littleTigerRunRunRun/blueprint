@@ -1,5 +1,8 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/reset.css'
+
 import App from './App.vue'
 import Home from './examples/home.vue'
 import ReteBasic from './examples/rete/basic.vue'
@@ -11,6 +14,8 @@ import ReteCustomization from './examples/rete/customization/index.vue'
 import ReteNest from './examples/rete/nest/index.vue'
 
 import ASTBasic from './examples/ast/basic/index.vue'
+
+import GraphBasic from './examples/graph/basic/index.vue'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -59,11 +64,13 @@ const router = createRouter({
       path: '/ast-basic',
       name: 'ASTBasic',
       component: ASTBasic
+    },
+    {
+      path: '/graph-basic',
+      name: 'GraphBasic',
+      component: GraphBasic
     }
   ]
 })
 
-
-createApp(App)
-  .use(router)  
-  .mount('#app')
+createApp(App).use(Antd).use(router).mount('#app')
