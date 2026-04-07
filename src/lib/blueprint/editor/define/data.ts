@@ -3,6 +3,7 @@ export enum StarmapControlType {
   INPUT = 'input',
   INPUTNUMBER = 'inputNumber',
   SELECT = 'select',
+  CODE = 'code'
   // COLOR = 'color',
   // SWITCH = 'switch',
 }
@@ -11,6 +12,7 @@ export const StarmapControlDataTypeMapping = {
   [StarmapControlType.INPUT]: 'string',
   [StarmapControlType.INPUTNUMBER]: 'number',
   [StarmapControlType.SELECT]: 'string', // 以前是unknow
+  [StarmapControlType.CODE]: 'string',
   // [StarmapControlType.COLOR]: 'string',
   // [StarmapControlType.SWITCH]: 'boolean',
 }
@@ -128,6 +130,7 @@ export type StarmapNode = {
   label: string // 节点名称
   position: { x: number, y: number }
   category: Array<StarmapNodeCategory>
+  outerHeight?: number
   status: {
     error: boolean // 错误节点，比如画布中已经删除但是在蓝图中仍然存在的节点
   }
