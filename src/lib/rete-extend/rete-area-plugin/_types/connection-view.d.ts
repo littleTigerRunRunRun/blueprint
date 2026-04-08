@@ -1,4 +1,4 @@
-declare type Events = {
+type Events = {
     contextmenu: (event: MouseEvent) => void;
 };
 export declare class ConnectionView {

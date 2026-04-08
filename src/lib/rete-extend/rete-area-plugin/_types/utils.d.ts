@@ -1,11 +1,11 @@
 import { Position, Size } from './types';
-declare type PointerHandler = (event: PointerEvent) => void;
-declare type PointerListenerHandlers = {
+type PointerHandler = (event: PointerEvent) => void;
+type PointerListenerHandlers = {
     down: PointerHandler;
     move: PointerHandler;
     up: PointerHandler;
 };
-export declare type PointerListener = {
+export type PointerListener = {
     destroy: () => void;
 };
 /**

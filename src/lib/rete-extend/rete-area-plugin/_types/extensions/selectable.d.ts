@@ -1,6 +1,6 @@
 import { BaseSchemes, GetSchemes, NodeId } from 'rete';
 import { BaseAreaPlugin } from '../base';
-declare type Schemes = GetSchemes<BaseSchemes['Node'] & {
+type Schemes = GetSchemes<BaseSchemes['Node'] & {
     selected?: boolean;
 }, any>;
 /**
@@ -10,11 +10,11 @@ export declare function accumulateOnCtrl(): {
     active(): boolean;
     destroy(): void;
 };
-export declare type SelectorEntity = {
+export type SelectorEntity = {
     label: string;
     id: string;
-    unselect(): void;
-    translate(dx: number, dy: number): void;
+    unselect(): void | Promise<void>;
+    translate(dx: number, dy: number): void | Promise<void>;
 };
 /**
  * Selector class. Used to collect selected entities (nodes, connections, etc.) and synchronize them (select, unselect, translate, etc.).
@@ -24,10 +24,10 @@ export declare class Selector<E extends SelectorEntity> {
     entities: Map<string, E>;
     pickId: string | null;
     isSelected(entity: Pick<E, 'label' | 'id'>): boolean;
-    add(entity: E, accumulate: boolean): void;
-    remove(entity: Pick<E, 'label' | 'id'>): void;
-    unselectAll(): void;
-    translate(dx: number, dy: number): void;
+    add(entity: E, accumulate: boolean): Promise<void>;
+    remove(entity: Pick<E, 'label' | 'id'>): Promise<void>;
+    unselectAll(): Promise<void>;
+    translate(dx: number, dy: number): Promise<void>;
     pick(entity: Pick<E, 'label' | 'id'>): void;
     release(): void;
     isPicked(entity: Pick<E, 'label' | 'id'>): boolean;
@@ -40,10 +40,10 @@ export declare function selector<E extends SelectorEntity>(): Selector<E>;
 /**
  * Accumulating interface, used to determine whether to accumulate entities on selection
  */
-export declare type Accumulating = {
+export type Accumulating = {
     active(): boolean;
 };
-export declare type Selectable = ReturnType<typeof selector>;
+export type Selectable = ReturnType<typeof selector>;
 /**
  * Selectable nodes extension. Adds the ability to select nodes in the area.
  * @param base BaseAreaPlugin instance
@@ -58,8 +58,8 @@ export declare type Selectable = ReturnType<typeof selector>;
 export declare function selectableNodes<T>(base: BaseAreaPlugin<Schemes, T>, core: Selectable, options: {
     accumulating: Accumulating;
 }): {
-    select: (nodeId: NodeId, accumulate: boolean) => void;
-    unselect: (nodeId: NodeId) => void;
+    select: (nodeId: NodeId, accumulate: boolean) => Promise<void>;
+    unselect: (nodeId: NodeId) => Promise<void>;
 };
 export {};
 //# sourceMappingURL=selectable.d.ts.map

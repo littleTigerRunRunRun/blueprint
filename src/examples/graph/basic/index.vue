@@ -8,7 +8,7 @@
         :title="t.label"
         color="#35bfff"
       >
-        <a-button type="primary" shape="circle" :icon="h(t.icon)" @click="callExec[t.name]()" />
+        <a-button type="primary" shape="circle" :icon="h(t.icon)" @click="editorExec[t.name]()" />
       </a-tooltip>
     </div>
     <!-- 左侧资产栏 -->
@@ -40,17 +40,17 @@
 import { onMounted, onBeforeUnmount, ref, type Ref, h, watch } from 'vue'
 import { toolbarList, assetsList, assetNode } from './tools'
 import { GraphExec, makeupEditor, GraphAbility } from './editor'
-import type { DataFlowNode, GraphEditor } from './editor'
+import type { GraphExecCallback, RawDataFlowNode, GraphEditor, GraphExecNoParamCallback } from './editor'
 
 const containerRef: Ref<HTMLElement | undefined> = ref(undefined)
 
 // 向渲染器中注入基本的节点、连接的视图模板
-let editor: GraphEditor
-const dragging = ref<DataFlowNode | null>(null)
+let editorExec: GraphExecNoParamCallback & { [GraphExec.DROP_ADD]: GraphEditor['dropAdd'] }
+const dragging = ref<RawDataFlowNode | null>(null)
 watch(
   () => dragging.value,
   () => {
-    if (editor) editor.dropAdd(dragging.value)
+    if (editorExec) editorExec.dropAdd(dragging.value)
   }
 )
 
@@ -60,7 +60,7 @@ const onDragEnd = () => {
 
 onMounted(async () => {
   if (containerRef.value)
-    editor = await makeupEditor({
+    editorExec = await makeupEditor({
       container: containerRef.value,
       eventHandlers: {
         // 回调事件响应
@@ -83,34 +83,21 @@ onMounted(async () => {
 
   document.body.addEventListener('mouseup', onDragEnd)
   document.body.addEventListener('mouseleave', onDragEnd)
+
+  // 测试用
+  editorExec[GraphExec.IMPORT]()
 })
 
 onBeforeUnmount(() => {
   document.body.removeEventListener('mouseup', onDragEnd)
   document.body.removeEventListener('mouseleave', onDragEnd)
 })
-
-const callExec = {
-  [GraphExec.IMPORT]: async (): Promise<void> => {
-    // const data = await tools.getImportData()
-    const data = JSON.parse(localStorage._testSaveGraph)
-    return editor.import(data)
-  },
-  [GraphExec.EXPORT]: () => {
-    const exportData = editor.export()
-    localStorage._testSaveGraph = JSON.stringify(exportData)
-    return exportData
-  },
-  [GraphExec.DELETE_SELECT]: () => {
-    // return editor.deleteSelect()
-  },
-  [GraphExec.CLEAR]: () => {
-    // return editor.clear()
-  }
-}
 </script>
 
 <style lang="scss">
+@use "sass:color";
+@import url('./editor/style/contextmenu.scss');
+
 .graph-basic {
   position: relative;
   width: 100%;
@@ -175,7 +162,7 @@ const callExec = {
           color: #fff;
           border: none;
           outline: none;
-          background-color: lighten(#3c3c3c, 10%);
+          background-color: color.adjust(#3c3c3c, $lightness: 15%);
         }
       }
       .anticon {
@@ -214,7 +201,7 @@ const callExec = {
           color: #fff;
           border: none;
           outline: none;
-          background-color: lighten(#3c3c3c, 10%);
+          background-color: color.adjust(#3c3c3c, $lightness: 15%);
         }
       }
     }

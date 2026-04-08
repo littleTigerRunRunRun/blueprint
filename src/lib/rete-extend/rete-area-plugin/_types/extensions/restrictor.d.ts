@@ -1,10 +1,10 @@
 import { BaseSchemes } from 'rete';
 import { AreaPlugin } from '..';
-declare type ScaleRange = {
+type ScaleRange = {
     min: number;
     max: number;
 };
-declare type TranslateRange = {
+type TranslateRange = {
     left: number;
     top: number;
     right: number;
@@ -13,7 +13,7 @@ declare type TranslateRange = {
 /**
  * Restrictor extension parameters
  */
-export declare type Params = {
+export type Params = {
     /** The scaling range */
     scaling?: ScaleRange | (() => ScaleRange) | boolean;
     /** The translation range */

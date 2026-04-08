@@ -97,7 +97,7 @@ export default defineComponent({
     }
   },
   setup(props) {
-    // console.log(props.data, props.emit, props.seed)
+    console.log(props.data, props.emit, props.seed)
   }
 })
 </script>

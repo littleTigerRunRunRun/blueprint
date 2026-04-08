@@ -1,7 +1,7 @@
 import { BaseSchemes, ClassicPreset as Classic, GetSchemes } from 'rete';
 import { BaseAreaPlugin } from '../base';
-declare type Scheme = GetSchemes<Classic.Node, Classic.Connection<Classic.Node, Classic.Node>>;
-declare type Visible<S extends Scheme> = (props: {
+type Scheme = GetSchemes<Classic.Node, Classic.Connection<Classic.Node, Classic.Node>>;
+type Visible<S extends Scheme> = (props: {
     hasAnyConnection: boolean;
     input: NonNullable<S['Node']['inputs'][string]>;
 }) => boolean;

@@ -2,19 +2,19 @@ import { Content } from './content';
 import { Drag } from './drag';
 import { Position } from './types';
 import { Zoom, ZoomSource, DblclickFilter } from './zoom';
-export declare type Transform = Position & {
+export type Transform = Position & {
     k: number;
 };
-export declare type TranslateEventParams = {
+export type TranslateEventParams = {
     previous: Transform;
     position: Position;
 };
-export declare type ZoomEventParams = {
+export type ZoomEventParams = {
     previous: Transform;
     zoom: number;
     source?: ZoomSource;
 };
-declare type Events = {
+type Events = {
     zoomed: (params: ZoomEventParams) => Promise<unknown>;
     pointerDown: (position: Position, event: PointerEvent) => void;
     pointerMove: (position: Position, event: PointerEvent) => void;
@@ -23,11 +23,11 @@ declare type Events = {
     translated: (params: TranslateEventParams) => Promise<unknown>;
     reordered: (element: HTMLElement) => Promise<unknown>;
 };
-declare type Guards = {
-    translate: (params: TranslateEventParams) => Promise<unknown | boolean>;
-    zoom: (params: ZoomEventParams) => Promise<unknown | boolean>;
+type Guards = {
+    translate: (params: TranslateEventParams) => Promise<unknown>;
+    zoom: (params: ZoomEventParams) => Promise<unknown>;
 };
-export declare type AreaFilter = {
+export type AreaFilter = {
     zoom?: {
         dblclick?: DblclickFilter;
     };

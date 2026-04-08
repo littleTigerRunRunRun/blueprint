@@ -1,22 +1,22 @@
 import { Drag } from './drag';
 import { Position, Size } from './types';
-export declare type NodeTranslateEventParams = {
+export type NodeTranslateEventParams = {
     position: Position;
     previous: Position;
 };
-export declare type NodeResizeEventParams = {
+export type NodeResizeEventParams = {
     size: Size;
 };
-declare type Events = {
+type Events = {
     picked: () => void;
-    translated: (params: NodeTranslateEventParams) => Promise<unknown | boolean>;
+    translated: (params: NodeTranslateEventParams) => Promise<unknown>;
     dragged: () => void;
     contextmenu: (event: MouseEvent) => void;
-    resized: (params: NodeResizeEventParams) => Promise<unknown | boolean>;
+    resized: (params: NodeResizeEventParams) => Promise<unknown>;
 };
-declare type Guards = {
-    resize: (params: NodeResizeEventParams) => Promise<unknown | boolean>;
-    translate: (params: NodeTranslateEventParams) => Promise<unknown | boolean>;
+type Guards = {
+    resize: (params: NodeResizeEventParams) => Promise<unknown>;
+    translate: (params: NodeTranslateEventParams) => Promise<unknown>;
 };
 export declare class NodeView {
     private getZoom;

@@ -6,33 +6,37 @@ import {
   LoginOutlined,
   LogoutOutlined
 } from '@ant-design/icons-vue'
-import { GraphExec, GraphNodeType, type DataFlowNode } from './editor'
+import { GraphNoParamExec, GraphNodeType, type RawDataFlowNode } from './editor'
 
 // 工具栏配置
-export const toolbarList = [
+export const toolbarList:Array<{
+  name: GraphNoParamExec,
+  label: string,
+  icon: any
+}> = [
   {
-    name: GraphExec.IMPORT,
+    name: GraphNoParamExec.IMPORT,
     label: '导入',
     icon: ImportOutlined
   },
   {
-    name: GraphExec.EXPORT,
+    name: GraphNoParamExec.EXPORT,
     label: '导出',
     icon: ExportOutlined
   },
   {
-    name: GraphExec.CLEAR,
+    name: GraphNoParamExec.CLEAR,
     label: '清空',
     icon: RestOutlined
   }
 ]
 
-export const assetNode: Record<GraphNodeType, DataFlowNode> = {
+export const assetNode: Record<GraphNodeType, RawDataFlowNode> = {
   [GraphNodeType.START]: {
     name: 'start',
     label: '开始',
-    width: 60,
-    height: 60
+    width: 40,
+    height: 40
   },
   [GraphNodeType.END]: {
     name: 'end',

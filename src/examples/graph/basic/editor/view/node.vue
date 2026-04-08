@@ -2,12 +2,13 @@
   <div
     class="graph-node"
     :class="{
-      selected: data?.selected
+      selected
     }"
     :style="{
-      width: `${data?.width}px`,
-      height: `${data?.height}px`,
-      lineHeight: `${data?.height}px`
+      // 这里的2对应的是.graph-node的border-width
+      width: `${data!.width + 2}px`,
+      height: `${data!.height + 2}px`,
+      lineHeight: `${data!.height - 2}px`
     }"
   >
     {{ data?.label }}
@@ -15,26 +16,28 @@
 </template>
 
 <script lang="ts" setup>
-import { UniNode } from '../uniNode'
+import { UniNode } from '../tool/uniNode'
 
 const { data } = defineProps({
-  data: UniNode
+  data: UniNode,
+  selected: Boolean
 })
 
-console.log(data)
 </script>
 
 <style lang="scss">
 .graph-node {
+  position: absolute;
+  left: -1px;
+  top: -1px;
   background-color: #fff;
   border: 2px solid #333;
   border-radius: 4px;
   text-align: center;
   color: #333;
   font-size: 14px;
-  cursor: pointer;
   user-select: none;
-  box-sizing: content-box;
+  box-sizing: border-box;
   &.selected {
     border-color: #1890ff;
   }

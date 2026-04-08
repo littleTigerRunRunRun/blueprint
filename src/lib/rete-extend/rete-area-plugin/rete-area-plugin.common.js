@@ -1,6 +1,6 @@
 /*!
-* rete-area-plugin v2.0.4
-* (c) 2024 Vitaliy Stoliarov
+* rete-area-plugin v2.1.5
+* (c) 2026 Vitaliy Stoliarov
 * Released under the MIT license.
 * */
 'use strict';
@@ -62,7 +62,7 @@ var Content = /*#__PURE__*/function () {
   }, {
     key: "reorder",
     value: function () {
-      var _reorder = _asyncToGenerator__default["default"]( /*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee(target, next) {
+      var _reorder = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee(target, next) {
         return _regeneratorRuntime__default["default"].wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
@@ -95,7 +95,9 @@ var Content = /*#__PURE__*/function () {
   }, {
     key: "remove",
     value: function remove(element) {
-      this.holder.removeChild(element);
+      if (this.holder.contains(element)) {
+        this.holder.removeChild(element);
+      }
     }
   }]);
 }();
@@ -108,16 +110,16 @@ function usePointerListener(element, handlers) {
   var move = function move(event) {
     handlers.move(event);
   };
-  var up = function up(event) {
+  var _up = function up(event) {
     window.removeEventListener('pointermove', move);
-    window.removeEventListener('pointerup', up);
-    window.removeEventListener('pointercancel', up);
+    window.removeEventListener('pointerup', _up);
+    window.removeEventListener('pointercancel', _up);
     handlers.up(event);
   };
   var down = function down(event) {
     window.addEventListener('pointermove', move);
-    window.addEventListener('pointerup', up);
-    window.addEventListener('pointercancel', up);
+    window.addEventListener('pointerup', _up);
+    window.addEventListener('pointercancel', _up);
     handlers.down(event);
   };
   element.addEventListener('pointerdown', down);
@@ -125,8 +127,8 @@ function usePointerListener(element, handlers) {
     destroy: function destroy() {
       element.removeEventListener('pointerdown', down);
       window.removeEventListener('pointermove', move);
-      window.removeEventListener('pointerup', up);
-      window.removeEventListener('pointercancel', up);
+      window.removeEventListener('pointerup', _up);
+      window.removeEventListener('pointercancel', _up);
     }
   };
 }
@@ -197,7 +199,7 @@ var Drag = /*#__PURE__*/function () {
       var zoom = _this.config.getZoom();
       var x = _this.startPosition.x + delta.x / zoom;
       var y = _this.startPosition.y + delta.y / zoom;
-      _this.events.translate(x, y, e);
+      void _this.events.translate(x, y, e);
     });
     _defineProperty__default["default"](this, "up", function (e) {
       if (!_this.pointerStart) return;
@@ -300,6 +302,7 @@ var Zoom = /*#__PURE__*/function () {
       var _this$element$getBoun3 = _this.element.getBoundingClientRect(),
         left = _this$element$getBoun3.left,
         top = _this$element$getBoun3.top;
+      // const delta = 4 * this.intensity
       var delta = (((_this$filter = _this.filter) === null || _this$filter === void 0 ? void 0 : _this$filter.dblclick) || function (n) {
         return n;
       })(4 * _this.intensity);
@@ -322,8 +325,8 @@ var Zoom = /*#__PURE__*/function () {
       this.container.addEventListener('dblclick', this.dblclick);
       window.addEventListener('pointermove', this.move);
       window.addEventListener('pointerup', this.up);
-      window.addEventListener('contextmenu', this.contextmenu);
       window.addEventListener('pointercancel', this.up);
+      window.addEventListener('contextmenu', this.contextmenu);
     }
   }, {
     key: "getTouches",
@@ -359,6 +362,7 @@ var Zoom = /*#__PURE__*/function () {
       window.removeEventListener('pointermove', this.move);
       window.removeEventListener('pointerup', this.up);
       window.removeEventListener('pointercancel', this.up);
+      window.removeEventListener('contextmenu', this.contextmenu);
     }
   }]);
 }();
@@ -394,11 +398,12 @@ var Area = /*#__PURE__*/function () {
       _this.events.resize(event);
     });
     _defineProperty__default["default"](this, "onTranslate", function (x, y) {
-      if (_this.zoomHandler && _this.zoomHandler.isTranslating()) return; // lock translation while zoom on multitouch
-      _this.translate(x, y);
+      var _this$zoomHandler;
+      if ((_this$zoomHandler = _this.zoomHandler) !== null && _this$zoomHandler !== void 0 && _this$zoomHandler.isTranslating()) return; // lock translation while zoom on multitouch
+      void _this.translate(x, y);
     });
     _defineProperty__default["default"](this, "onZoom", function (delta, ox, oy, source) {
-      _this.zoom(_this.transform.k * (1 + delta), ox, oy, source);
+      void _this.zoom(_this.transform.k * (1 + delta), ox, oy, source);
       _this.update();
     });
     this.container = container;
@@ -493,7 +498,7 @@ var Area = /*#__PURE__*/function () {
      * @emits translated
      */
     function () {
-      var _translate = _asyncToGenerator__default["default"]( /*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee(x, y) {
+      var _translate = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee(x, y) {
         var position, result;
         return _regeneratorRuntime__default["default"].wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -547,7 +552,7 @@ var Area = /*#__PURE__*/function () {
   }, {
     key: "zoom",
     value: (function () {
-      var _zoom2 = _asyncToGenerator__default["default"]( /*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee2(_zoom) {
+      var _zoom2 = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee2(_zoom) {
         var ox,
           oy,
           source,
@@ -685,7 +690,7 @@ var NodeView = /*#__PURE__*/function () {
     var _this = this;
     _classCallCheck__default["default"](this, NodeView);
     _defineProperty__default["default"](this, "translate", /*#__PURE__*/function () {
-      var _ref = _asyncToGenerator__default["default"]( /*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee(x, y) {
+      var _ref = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee(x, y) {
         var previous, translation;
         return _regeneratorRuntime__default["default"].wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -727,7 +732,7 @@ var NodeView = /*#__PURE__*/function () {
       };
     }());
     _defineProperty__default["default"](this, "resize", /*#__PURE__*/function () {
-      var _ref2 = _asyncToGenerator__default["default"]( /*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee2(width, height) {
+      var _ref2 = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee2(width, height) {
         var size, el;
         return _regeneratorRuntime__default["default"].wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -747,7 +752,7 @@ var NodeView = /*#__PURE__*/function () {
               }
               return _context2.abrupt("return", false);
             case 5:
-              el = _this.element.querySelector('*:not(span)');
+              el = _this.element.querySelector('*:not(span):not([fragment])');
               if (!(!el || !(el instanceof HTMLElement))) {
                 _context2.next = 8;
                 break;
@@ -781,7 +786,7 @@ var NodeView = /*#__PURE__*/function () {
       x: 0,
       y: 0
     };
-    this.translate(0, 0);
+    void this.translate(0, 0);
     this.element.addEventListener('contextmenu', function (event) {
       return _this.events.contextmenu(event);
     });
@@ -950,7 +955,7 @@ function restrictor(plugin, params) {
     }
     if (translation && context.type === 'zoomed') {
       var position = restrictPosition(plugin.area.transform);
-      plugin.area.translate(position.x, position.y);
+      void plugin.area.translate(position.x, position.y);
     }
     if (translation && context.type === 'translate') {
       return _objectSpread$2(_objectSpread$2({}, context), {}, {
@@ -969,10 +974,10 @@ function restrictor(plugin, params) {
 function accumulateOnCtrl() {
   var pressed = false;
   function keydown(e) {
-    if (e.key === 'Control') pressed = true;
+    if (e.key === 'Control' || e.key === 'Meta') pressed = true;
   }
   function keyup(e) {
-    if (e.key === 'Control') pressed = false;
+    if (e.key === 'Control' || e.key === 'Meta') pressed = false;
   }
   document.addEventListener('keydown', keydown);
   document.addEventListener('keyup', keyup);
@@ -1003,36 +1008,104 @@ var Selector = /*#__PURE__*/function () {
     }
   }, {
     key: "add",
-    value: function add(entity, accumulate) {
-      if (!accumulate) this.unselectAll();
-      this.entities.set("".concat(entity.label, "_").concat(entity.id), entity);
-    }
+    value: function () {
+      var _add = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee(entity, accumulate) {
+        return _regeneratorRuntime__default["default"].wrap(function _callee$(_context) {
+          while (1) switch (_context.prev = _context.next) {
+            case 0:
+              if (accumulate) {
+                _context.next = 3;
+                break;
+              }
+              _context.next = 3;
+              return this.unselectAll();
+            case 3:
+              this.entities.set("".concat(entity.label, "_").concat(entity.id), entity);
+            case 4:
+            case "end":
+              return _context.stop();
+          }
+        }, _callee, this);
+      }));
+      function add(_x, _x2) {
+        return _add.apply(this, arguments);
+      }
+      return add;
+    }()
   }, {
     key: "remove",
-    value: function remove(entity) {
-      var id = "".concat(entity.label, "_").concat(entity.id);
-      var item = this.entities.get(id);
-      if (item) {
-        this.entities["delete"](id);
-        item.unselect();
+    value: function () {
+      var _remove = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee2(entity) {
+        var id, item;
+        return _regeneratorRuntime__default["default"].wrap(function _callee2$(_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
+            case 0:
+              id = "".concat(entity.label, "_").concat(entity.id);
+              item = this.entities.get(id);
+              if (!item) {
+                _context2.next = 6;
+                break;
+              }
+              this.entities["delete"](id);
+              _context2.next = 6;
+              return item.unselect();
+            case 6:
+            case "end":
+              return _context2.stop();
+          }
+        }, _callee2, this);
+      }));
+      function remove(_x3) {
+        return _remove.apply(this, arguments);
       }
-    }
+      return remove;
+    }()
   }, {
     key: "unselectAll",
-    value: function unselectAll() {
-      var _this = this;
-      _toConsumableArray__default["default"](Array.from(this.entities.values())).forEach(function (item) {
-        return _this.remove(item);
-      });
-    }
+    value: function () {
+      var _unselectAll = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee3() {
+        var _this = this;
+        return _regeneratorRuntime__default["default"].wrap(function _callee3$(_context3) {
+          while (1) switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.next = 2;
+              return Promise.all(_toConsumableArray__default["default"](Array.from(this.entities.values())).map(function (item) {
+                return _this.remove(item);
+              }));
+            case 2:
+            case "end":
+              return _context3.stop();
+          }
+        }, _callee3, this);
+      }));
+      function unselectAll() {
+        return _unselectAll.apply(this, arguments);
+      }
+      return unselectAll;
+    }()
   }, {
     key: "translate",
-    value: function translate(dx, dy) {
-      var _this2 = this;
-      this.entities.forEach(function (item) {
-        return !_this2.isPicked(item) && item.translate(dx, dy);
-      });
-    }
+    value: function () {
+      var _translate = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee4(dx, dy) {
+        var _this2 = this;
+        return _regeneratorRuntime__default["default"].wrap(function _callee4$(_context4) {
+          while (1) switch (_context4.prev = _context4.next) {
+            case 0:
+              _context4.next = 2;
+              return Promise.all(Array.from(this.entities.values()).map(function (item) {
+                return !_this2.isPicked(item) && item.translate(dx, dy);
+              }));
+            case 2:
+            case "end":
+              return _context4.stop();
+          }
+        }, _callee4, this);
+      }));
+      function translate(_x4, _x5) {
+        return _translate.apply(this, arguments);
+      }
+      return translate;
+    }()
   }, {
     key: "pick",
     value: function pick(entity) {
@@ -1084,13 +1157,13 @@ function selectableNodes(base, core, options) {
   function selectNode(node) {
     if (!node.selected) {
       node.selected = true;
-      area.update('node', node.id);
+      void area.update('node', node.id);
     }
   }
   function unselectNode(node) {
     if (node.selected) {
       node.selected = false;
-      area.update('node', node.id);
+      void area.update('node', node.id);
     }
   }
   /**
@@ -1098,73 +1171,175 @@ function selectableNodes(base, core, options) {
    * @param nodeId Node id
    * @param accumulate Whether to accumulate nodes on selection
    */
-  function add(nodeId, accumulate) {
-    var node = getEditor().getNode(nodeId);
-    if (!node) return;
-    core.add({
-      label: 'node',
-      id: node.id,
-      translate: function translate(dx, dy) {
-        var view = area.nodeViews.get(node.id);
-        var current = view === null || view === void 0 ? void 0 : view.position;
-        if (current) {
-          view.translate(current.x + dx, current.y + dy);
-        }
-      },
-      unselect: function unselect() {
-        unselectNode(node);
-      }
-    }, accumulate);
-    selectNode(node);
+  function add(_x6, _x7) {
+    return _add2.apply(this, arguments);
   }
   /**
    * Unselect node programmatically
    * @param nodeId Node id
    */
-  function remove(nodeId) {
-    core.remove({
-      id: nodeId,
-      label: 'node'
-    });
+  function _add2() {
+    _add2 = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee7(nodeId, accumulate) {
+      var node;
+      return _regeneratorRuntime__default["default"].wrap(function _callee7$(_context7) {
+        while (1) switch (_context7.prev = _context7.next) {
+          case 0:
+            node = getEditor().getNode(nodeId);
+            if (node) {
+              _context7.next = 3;
+              break;
+            }
+            return _context7.abrupt("return");
+          case 3:
+            _context7.next = 5;
+            return core.add({
+              label: 'node',
+              id: node.id,
+              translate: function translate(dx, dy) {
+                return _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee6() {
+                  var view, current;
+                  return _regeneratorRuntime__default["default"].wrap(function _callee6$(_context6) {
+                    while (1) switch (_context6.prev = _context6.next) {
+                      case 0:
+                        view = area.nodeViews.get(node.id);
+                        current = view === null || view === void 0 ? void 0 : view.position;
+                        if (!current) {
+                          _context6.next = 5;
+                          break;
+                        }
+                        _context6.next = 5;
+                        return view.translate(current.x + dx, current.y + dy);
+                      case 5:
+                      case "end":
+                        return _context6.stop();
+                    }
+                  }, _callee6);
+                }))();
+              },
+              unselect: function unselect() {
+                unselectNode(node);
+              }
+            }, accumulate);
+          case 5:
+            selectNode(node);
+          case 6:
+          case "end":
+            return _context7.stop();
+        }
+      }, _callee7);
+    }));
+    return _add2.apply(this, arguments);
   }
-
-  // eslint-disable-next-line max-statements, complexity
-  area.addPipe(function (context) {
-    if (!context || _typeof__default["default"](context) !== 'object' || !('type' in context)) return context;
-    if (context.type === 'nodepicked') {
-      var pickedId = context.data.id;
-      var accumulate = options.accumulating.active();
-      core.pick({
-        id: pickedId,
-        label: 'node'
-      });
-      twitch = null;
-      add(pickedId, accumulate);
-    } else if (context.type === 'nodetranslated') {
-      var _context$data = context.data,
-        id = _context$data.id,
-        position = _context$data.position,
-        previous = _context$data.previous;
-      var _dx = position.x - previous.x;
-      var _dy = position.y - previous.y;
-      if (core.isPicked({
-        id: id,
-        label: 'node'
-      })) {
-        core.translate(_dx, _dy);
-      }
-    } else if (context.type === 'pointerdown') {
-      twitch = 0;
-    } else if (context.type === 'pointermove') {
-      if (twitch !== null) twitch++;
-    } else if (context.type === 'pointerup') {
-      if (twitch !== null && twitch < 4) {
-        core.unselectAll();
-      }
-      twitch = null;
-    }
-    return context;
-  });
+  function remove(_x8) {
+    return _remove2.apply(this, arguments);
+  } // eslint-disable-next-line max-statements, complexity
+  function _remove2() {
+    _remove2 = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee8(nodeId) {
+      return _regeneratorRuntime__default["default"].wrap(function _callee8$(_context8) {
+        while (1) switch (_context8.prev = _context8.next) {
+          case 0:
+            _context8.next = 2;
+            return core.remove({
+              id: nodeId,
+              label: 'node'
+            });
+          case 2:
+          case "end":
+            return _context8.stop();
+        }
+      }, _callee8);
+    }));
+    return _remove2.apply(this, arguments);
+  }
+  area.addPipe(/*#__PURE__*/function () {
+    var _ref = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee5(context) {
+      var pickedId, accumulate, _context$data, id, position, previous, _dx, _dy;
+      return _regeneratorRuntime__default["default"].wrap(function _callee5$(_context5) {
+        while (1) switch (_context5.prev = _context5.next) {
+          case 0:
+            if (!(!context || _typeof__default["default"](context) !== 'object' || !('type' in context))) {
+              _context5.next = 2;
+              break;
+            }
+            return _context5.abrupt("return", context);
+          case 2:
+            if (!(context.type === 'nodepicked')) {
+              _context5.next = 11;
+              break;
+            }
+            pickedId = context.data.id;
+            accumulate = options.accumulating.active();
+            core.pick({
+              id: pickedId,
+              label: 'node'
+            });
+            twitch = null;
+            _context5.next = 9;
+            return add(pickedId, accumulate);
+          case 9:
+            _context5.next = 33;
+            break;
+          case 11:
+            if (!(context.type === 'nodetranslated')) {
+              _context5.next = 20;
+              break;
+            }
+            _context$data = context.data, id = _context$data.id, position = _context$data.position, previous = _context$data.previous;
+            _dx = position.x - previous.x;
+            _dy = position.y - previous.y;
+            if (!core.isPicked({
+              id: id,
+              label: 'node'
+            })) {
+              _context5.next = 18;
+              break;
+            }
+            _context5.next = 18;
+            return core.translate(_dx, _dy);
+          case 18:
+            _context5.next = 33;
+            break;
+          case 20:
+            if (!(context.type === 'pointerdown')) {
+              _context5.next = 24;
+              break;
+            }
+            twitch = 0;
+            _context5.next = 33;
+            break;
+          case 24:
+            if (!(context.type === 'pointermove')) {
+              _context5.next = 28;
+              break;
+            }
+            if (twitch !== null) twitch++;
+            _context5.next = 33;
+            break;
+          case 28:
+            if (!(context.type === 'pointerup')) {
+              _context5.next = 33;
+              break;
+            }
+            if (!(twitch !== null && twitch < 4)) {
+              _context5.next = 32;
+              break;
+            }
+            _context5.next = 32;
+            return core.unselectAll();
+          case 32:
+            twitch = null;
+          case 33:
+            return _context5.abrupt("return", context);
+          case 34:
+          case "end":
+            return _context5.stop();
+        }
+      }, _callee5);
+    }));
+    return function (_x9) {
+      return _ref.apply(this, arguments);
+    };
+  }());
   return {
     select: add,
     unselect: remove
@@ -1198,7 +1373,7 @@ function showInputControl(area, visible) {
       input: input
     }) : !hasAnyConnection;
     if (input.showControl !== previous) {
-      area.update('node', node.id);
+      void area.update('node', node.id);
     }
   }
   area.addPipe(function (context) {
@@ -1250,7 +1425,7 @@ function snapGrid(base, params) {
         var _view$position = view.position,
           _x = _view$position.x,
           _y = _view$position.y;
-        view.translate(snap(_x), snap(_y));
+        void view.translate(snap(_x), snap(_y));
       }
     }
     return context;
@@ -1272,7 +1447,7 @@ function zoomAt(_x, _x2, _x3) {
   return _zoomAt.apply(this, arguments);
 }
 function _zoomAt() {
-  _zoomAt = _asyncToGenerator__default["default"]( /*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee(plugin, nodes, params) {
+  _zoomAt = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee(plugin, nodes, params) {
     var _ref, _ref$scale, scale, editor, list, rects, boundingBox, _ref2, w, h, kw, kh, k;
     return _regeneratorRuntime__default["default"].wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
@@ -1350,7 +1525,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
     _defineProperty__default["default"](_this, "connectionViews", new Map());
     _defineProperty__default["default"](_this, "elements", new ElementsHolder());
     _defineProperty__default["default"](_this, "onContextMenu", function (event) {
-      _this.emit({
+      void _this.emit({
         type: 'contextmenu',
         data: {
           event: event,
@@ -1393,7 +1568,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
         });
       },
       pointerDown: function pointerDown(position, event) {
-        return _this.emit({
+        return void _this.emit({
           type: 'pointerdown',
           data: {
             position: position,
@@ -1402,7 +1577,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
         });
       },
       pointerMove: function pointerMove(position, event) {
-        return _this.emit({
+        return void _this.emit({
           type: 'pointermove',
           data: {
             position: position,
@@ -1411,7 +1586,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
         });
       },
       pointerUp: function pointerUp(position, event) {
-        return _this.emit({
+        return void _this.emit({
           type: 'pointerup',
           data: {
             position: position,
@@ -1420,7 +1595,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
         });
       },
       resize: function resize(event) {
-        return _this.emit({
+        return void _this.emit({
           type: 'resized',
           data: {
             event: event
@@ -1467,7 +1642,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
         return _this2.area.transform.k;
       }, {
         picked: function picked() {
-          return _this2.emit({
+          return void _this2.emit({
             type: 'nodepicked',
             data: {
               id: id
@@ -1483,13 +1658,13 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
           });
         },
         dragged: function dragged() {
-          return _this2.emit({
+          return void _this2.emit({
             type: 'nodedragged',
             data: node
           });
         },
         contextmenu: function contextmenu(event) {
-          return _this2.emit({
+          return void _this2.emit({
             type: 'contextmenu',
             data: {
               event: event,
@@ -1533,7 +1708,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
       });
       this.nodeViews.set(id, view);
       this.area.content.add(view.element);
-      this.emit({
+      void this.emit({
         type: 'render',
         data: {
           element: view.element,
@@ -1548,7 +1723,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
     value: function removeNodeView(id) {
       var view = this.nodeViews.get(id);
       if (view) {
-        this.emit({
+        void this.emit({
           type: 'unmount',
           data: {
             element: view.element
@@ -1564,7 +1739,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
       var _this3 = this;
       var view = new ConnectionView({
         contextmenu: function contextmenu(event) {
-          return _this3.emit({
+          return void _this3.emit({
             type: 'contextmenu',
             data: {
               event: event,
@@ -1575,7 +1750,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
       });
       this.connectionViews.set(connection.id, view);
       this.area.content.add(view.element);
-      this.emit({
+      void this.emit({
         type: 'render',
         data: {
           element: view.element,
@@ -1590,7 +1765,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
     value: function removeConnectionView(id) {
       var view = this.connectionViews.get(id);
       if (view) {
-        this.emit({
+        void this.emit({
           type: 'unmount',
           data: {
             element: view.element
@@ -1610,7 +1785,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
   }, {
     key: "update",
     value: (function () {
-      var _update = _asyncToGenerator__default["default"]( /*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee(type, id) {
+      var _update = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee(type, id) {
         var data;
         return _regeneratorRuntime__default["default"].wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -1646,7 +1821,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
   }, {
     key: "resize",
     value: (function () {
-      var _resize = _asyncToGenerator__default["default"]( /*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee2(id, width, height) {
+      var _resize = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee2(id, width, height) {
         var view;
         return _regeneratorRuntime__default["default"].wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -1680,7 +1855,7 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
   }, {
     key: "translate",
     value: (function () {
-      var _translate = _asyncToGenerator__default["default"]( /*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee3(id, _ref3) {
+      var _translate = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee3(id, _ref3) {
         var x, y, view;
         return _regeneratorRuntime__default["default"].wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {

@@ -1,6 +1,6 @@
 /*!
-* rete-connection-plugin v2.0.2
-* (c) 2024 Vitaliy Stoliarov
+* rete-connection-plugin v2.0.5
+* (c) 2026 Vitaliy Stoliarov
 * Released under the MIT license.
 * */
 import _typeof from '@babel/runtime/helpers/typeof';
@@ -8,13 +8,14 @@ import _asyncToGenerator from '@babel/runtime/helpers/asyncToGenerator';
 import _classCallCheck from '@babel/runtime/helpers/classCallCheck';
 import _createClass from '@babel/runtime/helpers/createClass';
 import _possibleConstructorReturn from '@babel/runtime/helpers/possibleConstructorReturn';
-import _get from '@babel/runtime/helpers/get';
 import _getPrototypeOf from '@babel/runtime/helpers/getPrototypeOf';
+import _get from '@babel/runtime/helpers/get';
 import _inherits from '@babel/runtime/helpers/inherits';
 import _defineProperty from '@babel/runtime/helpers/defineProperty';
 import _regeneratorRuntime from '@babel/runtime/regenerator';
 import { getUID, NodeEditor, Scope } from 'rete';
 import { BaseAreaPlugin } from 'rete-area-plugin';
+import _toConsumableArray from '@babel/runtime/helpers/toConsumableArray';
 import _slicedToArray from '@babel/runtime/helpers/slicedToArray';
 
 function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
@@ -43,7 +44,6 @@ function createPseudoconnection(extra) {
       return Boolean(id);
     },
     mount: mount,
-    // eslint-disable-next-line complexity
     render: function render(areaPlugin, _ref, data) {
       var x = _ref.x,
         y = _ref.y;
@@ -60,19 +60,21 @@ function createPseudoconnection(extra) {
         sourceOutput: data.key,
         target: '',
         targetInput: ''
-      }, extra || {}) : _objectSpread({
+      }, extra !== null && extra !== void 0 ? extra : {}) : _objectSpread({
         id: id,
         target: data.nodeId,
         targetInput: data.key,
         source: '',
         sourceOutput: ''
-      }, extra || {});
+      }, extra !== null && extra !== void 0 ? extra : {});
       if (!element) {
         var view = areaPlugin.addConnectionView(payload);
         element = view.element;
       }
+
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!element) return;
-      areaPlugin.emit({
+      void areaPlugin.emit({
         type: 'render',
         data: _objectSpread({
           element: element,
@@ -89,9 +91,9 @@ function createPseudoconnection(extra) {
   };
 }
 
-function _createForOfIteratorHelper$1(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray$1(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray$1(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray$1(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray$1(o, minLen); }
-function _arrayLikeToArray$1(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper$1(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray$1(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray$1(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray$1(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray$1(r, a) : void 0; } }
+function _arrayLikeToArray$1(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 /**
  * @param elements list of Element returned by document.elementsFromPoint
  */
@@ -111,6 +113,23 @@ function findSocket(socketsCache, elements) {
   } finally {
     _iterator.f();
   }
+}
+
+/**
+ * Alternative to document.elementsFromPoint that traverses shadow roots
+ * @param x x coordinate
+ * @param y y coordinate
+ * @param root root element to search in
+ */
+function elementsFromPoint(x, y) {
+  var _elements$;
+  var root = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : document;
+  var elements = root.elementsFromPoint(x, y);
+  var shadowRoot = (_elements$ = elements[0]) === null || _elements$ === void 0 ? void 0 : _elements$.shadowRoot;
+  if (shadowRoot && shadowRoot !== root) {
+    elements.unshift.apply(elements, _toConsumableArray(elementsFromPoint(x, y, shadowRoot)));
+  }
+  return elements;
 }
 
 var Flow = /*#__PURE__*/_createClass(function Flow() {
@@ -146,7 +165,7 @@ function makeConnection(initial, socket, context) {
     source = _ref4[0],
     target = _ref4[1];
   if (source && target) {
-    context.editor.addConnection({
+    void context.editor.addConnection({
       id: getUID(),
       source: source.nodeId,
       sourceOutput: source.key,
@@ -176,7 +195,7 @@ var Picked$1 = /*#__PURE__*/function (_State) {
   return _createClass(Picked, [{
     key: "pick",
     value: function () {
-      var _pick = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(_ref, context) {
+      var _pick = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee(_ref, context) {
         var socket;
         return _regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -204,7 +223,7 @@ var Picked$1 = /*#__PURE__*/function (_State) {
       var socket = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       var created = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       if (this.initial) {
-        context.scope.emit({
+        void context.scope.emit({
           type: 'connectiondrop',
           data: {
             initial: this.initial,
@@ -229,7 +248,7 @@ var Idle$1 = /*#__PURE__*/function (_State2) {
   return _createClass(Idle, [{
     key: "pick",
     value: function () {
-      var _pick2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(_ref2, context) {
+      var _pick2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee2(_ref2, context) {
         var socket, event;
         return _regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
@@ -273,7 +292,7 @@ var Idle$1 = /*#__PURE__*/function (_State2) {
       var socket = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       var created = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       if (this.initial) {
-        context.scope.emit({
+        void context.scope.emit({
           type: 'connectiondrop',
           data: {
             initial: this.initial,
@@ -303,7 +322,7 @@ var BidirectFlow = /*#__PURE__*/function () {
   return _createClass(BidirectFlow, [{
     key: "pick",
     value: function () {
-      var _pick3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(params, context) {
+      var _pick3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee3(params, context) {
         return _regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
@@ -376,7 +395,7 @@ function syncConnections(sockets, editor) {
         return id;
       })));
       uniqueIds.forEach(function (id) {
-        return editor.removeConnection(id);
+        return void editor.removeConnection(id);
       });
     }
   };
@@ -401,7 +420,7 @@ var Picked = /*#__PURE__*/function (_State) {
   return _createClass(Picked, [{
     key: "pick",
     value: function () {
-      var _pick = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(_ref, context) {
+      var _pick = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee(_ref, context) {
         var socket, created;
         return _regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -429,7 +448,7 @@ var Picked = /*#__PURE__*/function (_State) {
       var socket = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       var created = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       if (this.initial) {
-        context.scope.emit({
+        void context.scope.emit({
           type: 'connectiondrop',
           data: {
             initial: this.initial,
@@ -460,19 +479,19 @@ var PickedExisting = /*#__PURE__*/function (_State2) {
   return _createClass(PickedExisting, [{
     key: "init",
     value: function () {
-      var _init = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(context) {
+      var _init = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee2(context) {
         var _this3 = this;
         return _regeneratorRuntime.wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
-              context.scope.emit({
+              void context.scope.emit({
                 type: 'connectionpick',
                 data: {
                   socket: this.outputSocket
                 }
               }).then(function (response) {
                 if (response) {
-                  context.editor.removeConnection(_this3.connection.id);
+                  void context.editor.removeConnection(_this3.connection.id);
                   _this3.initial = _this3.outputSocket;
                 } else {
                   _this3.drop(context);
@@ -492,8 +511,8 @@ var PickedExisting = /*#__PURE__*/function (_State2) {
   }, {
     key: "pick",
     value: function () {
-      var _pick2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(_ref2, context) {
-        var socket, event, created, _created;
+      var _pick2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee3(_ref2, context) {
+        var socket, event, created, droppedSocket, _created, _droppedSocket;
         return _regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
@@ -502,13 +521,15 @@ var PickedExisting = /*#__PURE__*/function (_State2) {
                 if (this.params.canMakeConnection(this.initial, socket)) {
                   syncConnections([this.initial, socket], context.editor).commit();
                   created = this.params.makeConnection(this.initial, socket, context);
-                  this.drop(context, created ? socket : null, created);
+                  droppedSocket = created ? socket : null;
+                  this.drop(context, droppedSocket, created);
                 }
               } else if (event === 'down') {
                 if (this.initial) {
                   syncConnections([this.initial, socket], context.editor).commit();
                   _created = this.params.makeConnection(this.initial, socket, context);
-                  this.drop(context, _created ? socket : null, _created);
+                  _droppedSocket = _created ? null : socket;
+                  this.drop(context, _droppedSocket, _created);
                 }
               }
             case 2:
@@ -528,7 +549,7 @@ var PickedExisting = /*#__PURE__*/function (_State2) {
       var socket = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       var created = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       if (this.initial) {
-        context.scope.emit({
+        void context.scope.emit({
           type: 'connectiondrop',
           data: {
             initial: this.initial,
@@ -553,7 +574,7 @@ var Idle = /*#__PURE__*/function (_State3) {
   return _createClass(Idle, [{
     key: "pick",
     value: function () {
-      var _pick3 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee4(_ref3, context) {
+      var _pick3 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee4(_ref3, context) {
         var socket, event, _connection, state;
         return _regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
@@ -617,7 +638,7 @@ var Idle = /*#__PURE__*/function (_State3) {
       var socket = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       var created = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
       if (this.initial) {
-        context.scope.emit({
+        void context.scope.emit({
           type: 'connectiondrop',
           data: {
             initial: this.initial,
@@ -647,7 +668,7 @@ var ClassicFlow = /*#__PURE__*/function () {
   return _createClass(ClassicFlow, [{
     key: "pick",
     value: function () {
-      var _pick4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee5(params, context) {
+      var _pick4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee5(params, context) {
         return _regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) switch (_context5.prev = _context5.next) {
             case 0:
@@ -686,9 +707,9 @@ var ClassicFlow = /*#__PURE__*/function () {
 /**
  * Classic preset. Uses `ClassicFlow` for managing connections by user
  */
-function setup(params) {
+function setup() {
   return function () {
-    return new ClassicFlow(params);
+    return new ClassicFlow();
   };
 }
 
@@ -707,11 +728,12 @@ var index = /*#__PURE__*/Object.freeze({
   classic: classic
 });
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
 function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
+function _superPropGet(t, e, o, r) { var p = _get(_getPrototypeOf(1 & r ? t.prototype : t), e, o); return 2 & r && "function" == typeof p ? function (t) { return p.apply(o, t); } : p; }
 /**
  * Connection plugin. Responsible for user interaction with connections (creation, deletion)
  * @priority 9
@@ -802,7 +824,7 @@ var ConnectionPlugin = /*#__PURE__*/function (_Scope) {
   }, {
     key: "pick",
     value: function () {
-      var _pick = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(event, type) {
+      var _pick = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee(event, type) {
         var flowContext, pointedElements, pickedSocket;
         return _regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -812,7 +834,7 @@ var ConnectionPlugin = /*#__PURE__*/function (_Scope) {
                 scope: this,
                 socketsCache: this.socketsCache
               };
-              pointedElements = document.elementsFromPoint(event.clientX, event.clientY);
+              pointedElements = elementsFromPoint(event.clientX, event.clientY);
               pickedSocket = findSocket(this.socketsCache, pointedElements);
               if (!pickedSocket) {
                 _context.next = 15;
@@ -866,20 +888,18 @@ var ConnectionPlugin = /*#__PURE__*/function (_Scope) {
     key: "setParent",
     value: function setParent(scope) {
       var _this2 = this;
-      _get(_getPrototypeOf(ConnectionPlugin.prototype), "setParent", this).call(this, scope);
+      _superPropGet(ConnectionPlugin, "setParent", this, 3)([scope]);
       this.areaPlugin = this.parentScope(BaseAreaPlugin);
       this.editor = this.areaPlugin.parentScope(NodeEditor);
       var pointerdownSocket = function pointerdownSocket(e) {
-        _this2.pick(e, 'down');
+        void _this2.pick(e, 'down');
       };
-
-      // eslint-disable-next-line max-statements
       this.addPipe(function (context) {
         if (!context || _typeof(context) !== 'object' || !('type' in context)) return context;
         if (context.type === 'pointermove') {
           _this2.update();
         } else if (context.type === 'pointerup') {
-          _this2.pick(context.data.event, 'up');
+          void _this2.pick(context.data.event, 'up');
         } else if (context.type === 'render') {
           if (context.data.type === 'socket') {
             var element = context.data.element;

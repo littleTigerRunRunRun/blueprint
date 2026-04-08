@@ -1,12 +1,12 @@
-export declare type Position = {
+export type Position = {
     x: number;
     y: number;
 };
-export declare type Size = {
+export type Size = {
     width: number;
     height: number;
 };
-export declare type GetRenderTypes<Signals> = Extract<Signals, {
+export type GetRenderTypes<Signals> = Extract<Signals, {
     type: 'render';
     data: any;
 }> extends {
@@ -15,10 +15,10 @@ export declare type GetRenderTypes<Signals> = Extract<Signals, {
         type: infer G;
     };
 } ? (G extends string ? G : string) : string;
-export declare type RenderMeta = {
+export type RenderMeta = {
     filled?: boolean;
 };
-export declare type RenderSignal<Type extends string, Data> = {
+export type RenderSignal<Type extends string, Data> = {
     type: 'render';
     data: {
         element: HTMLElement;

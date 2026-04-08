@@ -2,12 +2,11 @@
   <div
     class="graph-node-end"
     :class="{
-      selected: data?.selected
+      selected
     }"
     :style="{
       width: `${data?.width}px`,
-      height: `${data?.height}px`,
-      lineHeight: `${data?.height}px`
+      height: `${data?.height}px`
     }"
   >
     <span>{{ data?.label }}</span>
@@ -15,20 +14,19 @@
 </template>
 
 <script lang="ts" setup>
-import { UniNode } from '../uniNode'
+import { UniNode } from '../tool/uniNode'
 
 const { data } = defineProps({
-  data: UniNode
+  data: UniNode,
+  selected: Boolean
 })
-console.log(data)
 </script>
 
 <style lang="scss">
 .graph-node-end {
-  background-color: #333;
+  background-color: #666;
   border-radius: 50%;
   text-align: center;
-  cursor: pointer;
   user-select: none;
   span {
     position: absolute;
@@ -38,7 +36,7 @@ console.log(data)
     line-height: 24px;
     font-family: 微软雅黑;
     font-weight: bold;
-    color: #333;
+    color: #666;
     transform: translate(-50%, 100%);
     word-wrap: break-word;
     word-break: break-all;
@@ -46,6 +44,9 @@ console.log(data)
   }
   &.selected {
     background-color: #1890ff;
+    span {
+      color: #1890ff;
+    }
   }
 }
 </style>

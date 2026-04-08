@@ -4,7 +4,6 @@ import { BaseArea, BaseAreaPlugin } from './base';
 import { ConnectionView } from './connection-view';
 import { NodeView } from './node-view';
 import { GetRenderTypes, Position } from './types';
-export type { AreaFilter } from './area';
 export { Area } from './area';
 export type { BaseArea } from './base';
 export { BaseAreaPlugin } from './base';
@@ -19,7 +18,7 @@ export { Zoom } from './zoom';
  * A union of all possible signals that can be emitted by the area
  * @priority 9
  */
-export declare type Area2D<Schemes extends BaseSchemes> = BaseArea<Schemes> | {
+export type Area2D<Schemes extends BaseSchemes> = BaseArea<Schemes> | {
     type: 'translate';
     data: TranslateEventParams;
 } | {
@@ -37,7 +36,7 @@ export declare type Area2D<Schemes extends BaseSchemes> = BaseArea<Schemes> | {
         event: Event;
     };
 };
-export declare type Area2DInherited<Schemes extends BaseSchemes, ExtraSignals = never> = [Area2D<Schemes> | ExtraSignals, Root<Schemes>];
+export type Area2DInherited<Schemes extends BaseSchemes, ExtraSignals = never> = [Area2D<Schemes> | ExtraSignals, Root<Schemes>];
 /**
  * A plugin that provides a 2D area for nodes and connections
  * @priority 8

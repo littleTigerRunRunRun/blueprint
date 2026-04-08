@@ -3,7 +3,7 @@ import { NodeRef, SchemesWithSizes } from './shared/types';
 /**
  * Zoom extension parameters
  */
-export declare type Params = {
+export type Params = {
     /** Set gap between nodes and the viewport border */
     scale?: number;
 };

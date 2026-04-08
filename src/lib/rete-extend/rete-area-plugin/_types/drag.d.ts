@@ -1,14 +1,14 @@
 import { Position } from './types';
-declare type Events = {
+type Events = {
     start: (e: PointerEvent) => void;
-    translate: (x: number, y: number, e: PointerEvent) => void;
+    translate: (x: number, y: number, e: PointerEvent) => unknown;
     drag: (e: PointerEvent) => void;
 };
-declare type Guards = {
+type Guards = {
     down: (e: PointerEvent) => boolean;
     move: (e: PointerEvent) => boolean;
 };
-declare type DragConfig = {
+type DragConfig = {
     getCurrentPosition: () => Position;
     getZoom: () => number;
 };

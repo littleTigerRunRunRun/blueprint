@@ -1,15 +1,19 @@
 import { type GetSchemes, ClassicPreset } from 'rete'
 import type { VueArea2D } from 'rete-vue-plugin'
-import { UniNode } from './uniNode'
+import { UniNode } from './tool/uniNode'
 import type { nodeScaleEvent } from './plugin'
 import type { DataflowNode } from 'rete-engine'
 import type { SelectorEntity } from 'rete-area-plugin/_types/extensions/selectable.d'
+
+export type Callback = (...argus: unknown[]) => void
 
 // editor基础定义
 export class Connection<A extends UniNode, B extends UniNode> extends ClassicPreset.Connection<
   A,
   B
 > {
+  flowType?: GSFlowType
+  dataType?: GSDataType
   isLoop?: boolean
   selected?: boolean
 }
@@ -18,19 +22,38 @@ export type Schemes = GetSchemes<UniNode, Connection<UniNode, UniNode>>
 
 export type MyAreaExtra = VueArea2D<Schemes> | nodeScaleEvent
 
-// 数据结构定义
-export declare interface DataFlowNode {
-  id?: string
+// 还未初始化到画布前的节点定义
+export declare interface RawDataFlowNode {
   label: string
   name: string
   width: number
   height: number
-  position?: { x: number; y: number }
+}
+
+// 数据结构定义
+export declare interface DataFlowNode {
+  id: string
+  label: string
+  name: string
+  width: number
+  height: number
+  position: { x: number; y: number }
 }
 
 export declare interface DataFlowGroup extends DataFlowNode {}
 
-export declare interface DataFlowLine {}
+export declare interface DataFlowLine {
+  id: string
+  source: string
+  sourceOutput: string // output name of source
+  target: string
+  targetInput: string // input name of target
+  flowType?: GSFlowType
+  dataType?: GSDataType
+  // status?: {
+  //   log: boolean
+  // }
+}
 
 export declare interface DataFlowGraph {
   id: string // 数据流图id标识
@@ -43,12 +66,43 @@ export declare interface DataFlowGraph {
   }
 }
 
-// 指令（快捷键、右键菜单、按钮等用于调取）
+// 数据连接点涉及的数据类型
+// GS = graph socket
+export enum GSDataType {
+  STRING = 'string',
+  NUMBER = 'number',
+  BOOLEAN = 'boolean',
+  OBJECT = 'object',
+  ARRAY = 'array',
+  UNKNOW = 'unknow',
+  NULL = 'null',
+  ANY = 'any' // 可以是任何类型，也就是说不做类型限制
+}
+
+// 数据连接点的流类型
+export enum GSFlowType {
+  CONTROL = 'control',
+  DATA = 'data',
+  UNI = 'uni' // 通用类型
+}
+
+// 无参数指令（快捷键）
+export enum GraphNoParamExec {
+  IMPORT = 'import',
+  EXPORT = 'export',
+  DELETE_SELECT = 'delete_select',
+  CLEAR = 'clear',
+}
+
+// 指令（右键菜单、按钮等用于调取）
 export enum GraphExec {
   IMPORT = 'import',
   EXPORT = 'export',
   DELETE_SELECT = 'delete_select',
-  CLEAR = 'clear'
+  CLEAR = 'clear',
+  DROP_ADD = 'dropAdd',
+  SET_LINE_TYPE = 'setLineType',
+  REARRANGE = 'rearrange'
 }
 
 // 图形节点类型
@@ -65,7 +119,20 @@ export interface GraphEditor {
   clear: () => void
   export: () => DataFlowGraph
   import: (data: DataFlowGraph) => void
-  dropAdd: (item: DataFlowNode | null) => void
+  dropAdd: (item: RawDataFlowNode | null) => void
+}
+
+// 无需参数的指令集，主要用于给快捷键系统调取
+export interface GraphExecNoParamCallback {
+  [GraphExec.IMPORT]: () => Promise<void>
+  [GraphExec.EXPORT]: () => DataFlowGraph
+  [GraphExec.DELETE_SELECT]: Callback
+  [GraphExec.CLEAR]: Callback
+}
+
+export interface GraphExecCallback extends GraphExecNoParamCallback {
+  [GraphExec.DROP_ADD]: GraphEditor['dropAdd']
+  [GraphExec.SET_LINE_TYPE]: (lineType:GraphLineType) => void
 }
 
 export interface CallbackEventHandler {
@@ -81,7 +148,18 @@ export enum GraphAbility {
 }
 
 export interface EditorInitParams {
+  id?: string
   container: HTMLElement
   eventHandlers: CallbackEventHandler
   abilities: Array<GraphAbility>
+}
+
+// 线型
+export enum GraphLineType {
+  STRAIGHT = 'straight', // 直线
+  MANHATTAN = 'manhattan', // 垂直折线
+  CURVE = 'curve', // 三次贝塞尔曲线
+  // 带自动布局的线型
+  CLUSTERCURVE = 'clusterCurve', // 聚合曲线（所谓聚合，就是指一系列平级子节点都连接到同一个父节点，从而需要进行整体自动布局）
+  CLUSTERMANHATTAN = 'clusterManhattan', // 聚合折线
 }

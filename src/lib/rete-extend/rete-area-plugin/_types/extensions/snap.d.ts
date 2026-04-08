@@ -3,7 +3,7 @@ import { BaseAreaPlugin } from '../base';
 /**
  * Snap grid extension parameters
  */
-export declare type Params = {
+export type Params = {
     /** The grid size */
     size?: number;
     /** Whether to snap on node drag */

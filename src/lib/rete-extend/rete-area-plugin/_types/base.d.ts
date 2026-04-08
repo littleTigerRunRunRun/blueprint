@@ -24,7 +24,7 @@ interface Area {
  * A union of all possible signals that can be emitted by any area plugin
  * @priority 10
  */
-export declare type BaseArea<Schemes extends BaseSchemes> = {
+export type BaseArea<Schemes extends BaseSchemes> = {
     type: 'nodepicked';
     data: {
         id: string;
