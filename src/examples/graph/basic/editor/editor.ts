@@ -458,6 +458,40 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         }
       });
     },
+    addNodeFromSelecting: async (nodeInfo:RawDataFlowNode) => {
+      let selectingNodeId:string|undefined
+      selector.entities.forEach((item) => {
+        if (item.label === 'node' && !selectingNodeId) {
+          selectingNodeId = item.id
+          return
+        }
+      })
+
+      if (selectingNodeId) {
+        const sourceNode = editor.getNode(selectingNodeId) as UniNode
+        const source = area.nodeViews.get(selectingNodeId)!.position
+
+        // const rightChilds = editor.getConnections().filter((c) => {
+        //   return c.source === sourceNode.id && c.sourceOutput === 'r'
+        // }).map((connection) => connection.target)
+
+        const targetNodeId = getUID()
+        const targetNode = createNode({
+          id: targetNodeId,
+          ...nodeInfo
+        })
+        await editor.addNode(targetNode)
+
+        // rightChilds.push(targetNodeId)
+        // rightChilds.forEach(async (childId, index) => {
+        //   const position = { x: source.x + 150, y: source.y + (index + 0.5 - rightChilds.length * 0.5) * 80 }
+        //   await area.translate(childId, position);
+        // });
+
+        const connection = new Connection(sourceNode, 'r', targetNode, 'l')
+        await editor.addConnection(connection);
+      } else throw new Error('无选中节点')
+    },
     destroy() {
       editor.clear()
       dropAdd.destroy()

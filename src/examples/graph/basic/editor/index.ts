@@ -53,14 +53,22 @@ export async function makeupEditor(params: EditorInitParams) {
           global.lineArrow = params
           break
       }
-      
+    },
+    [GraphExec.ADD_NODE_FROM_SELECTING]: () => {
+      editor.addNodeFromSelecting({
+        name: 'node',
+        label: '新建节点',
+        width: 100,
+        height: 40
+      })
     }
   }
   global.exec = callExec
   // to do: 框选插件
 
   BlueprintKeyboard([
-    { key: 'delete', exec: GraphNoParamExec.DELETE_SELECT }
+    { key: 'delete', exec: GraphNoParamExec.DELETE_SELECT },
+    { key: 'tab', exec: GraphNoParamExec.ADD_NODE_FROM_SELECTING }
   ], callExec)
 
   return callExec

@@ -106,6 +106,7 @@ export enum GraphNoParamExec {
   EXPORT = 'export',
   DELETE_SELECT = 'delete_select',
   CLEAR = 'clear',
+  ADD_NODE_FROM_SELECTING = 'addNodeFromSelecting'
 }
 
 // 指令（右键菜单、按钮等用于调取）
@@ -116,7 +117,8 @@ export enum GraphExec {
   CLEAR = 'clear',
   DROP_ADD = 'dropAdd',
   SET_LINE = 'setLine',
-  REARRANGE = 'rearrange'
+  REARRANGE = 'rearrange',
+  ADD_NODE_FROM_SELECTING = 'addNodeFromSelecting'
 }
 
 // 图形节点类型
@@ -133,7 +135,8 @@ export interface GraphEditor {
   clear: () => void
   export: () => DataFlowGraph
   import: (data: DataFlowGraph) => void
-  dropAdd: (item: RawDataFlowNode | null) => void
+  dropAdd: (item: RawDataFlowNode | null) => void,
+  addNodeFromSelecting: (nodeInfo:RawDataFlowNode) => void
 }
 
 // 无需参数的指令集，主要用于给快捷键系统调取
@@ -142,6 +145,7 @@ export interface GraphExecNoParamCallback {
   [GraphExec.EXPORT]: () => DataFlowGraph
   [GraphExec.DELETE_SELECT]: Callback
   [GraphExec.CLEAR]: Callback
+  [GraphExec.ADD_NODE_FROM_SELECTING]: Callback
 }
 
 export interface GraphExecCallback extends GraphExecNoParamCallback {

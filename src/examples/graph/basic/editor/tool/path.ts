@@ -66,6 +66,7 @@ export function generateOrthogonalPath(rectA:Rect, sideA:side, paddingA:number, 
   
   const points = [startCenter]
 
+  // to do: 某些交叉情况还是没处理，一种思路：让node move的逻辑上做一些限制，让连线节点不能靠近padding距离
   if ((sideA === 'r' && horizonPositive) || (sideA === 'l' && !horizonPositive)) {
     // 水平顺势，则出线不需要经过safeStart
     if ((sideB === 'b' && verticalPositive) || (sideB === 't' && !verticalPositive)) {
