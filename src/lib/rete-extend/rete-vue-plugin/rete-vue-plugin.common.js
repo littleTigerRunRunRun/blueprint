@@ -496,12 +496,15 @@ function setup$3(props) {
           }
         };
       } else if (context.data.type === 'socket') {
-        var _payload = context.data.payload;
+        var _context$data2 = context.data,
+          _payload = _context$data2.payload,
+          nodeId = _context$data2.nodeId;
         var _component2 = socket ? socket(context.data) : Socket;
         return {
           component: _component2,
           props: {
-            data: _payload
+            data: _payload,
+            nodeId: nodeId
           }
         };
       } else if (context.data.type === 'control') {
@@ -593,7 +596,7 @@ function render$5(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Block = vue.resolveComponent("Block");
 
   return (vue.openBlock(), vue.createBlock(_component_Block, {
-    class: vue.normalizeClass(["block", { hasSubitems: $props.subitems }]),
+    class: vue.normalizeClass(["block", { hasSubitems: $props.subitems, selected: $props.status }]),
     "data-testid": "context-menu-item"
   }, {
     default: vue.withCtx(() => [
@@ -611,8 +614,9 @@ function render$5(_ctx, _cache, $props, $setup, $data, $options) {
               (vue.openBlock(true), vue.createElementBlock(vue.Fragment, null, vue.renderList($props.subitems, (item) => {
                 return (vue.openBlock(), vue.createBlock(_component_Item, {
                   key: item.key,
-                  onSelect: $event => (item.handler($event)),
                   delay: $props.delay,
+                  status: item?.status?.(),
+                  onSelect: $event => (item.handler($event)),
                   onHide: _cache[0] || (_cache[0] = $event => (_ctx.$emit('hide'))),
                   subitems: item.subitems
                 }, {
@@ -620,7 +624,7 @@ function render$5(_ctx, _cache, $props, $setup, $data, $options) {
                     vue.createTextVNode(vue.toDisplayString(item.label), 1 /* TEXT */)
                   ]),
                   _: 2 /* DYNAMIC */
-                }, 1032 /* PROPS, DYNAMIC_SLOTS */, ["onSelect", "delay", "subitems"]))
+                }, 1032 /* PROPS, DYNAMIC_SLOTS */, ["delay", "status", "onSelect", "subitems"]))
               }), 128 /* KEYED_FRAGMENT */))
             ]))
           : vue.createCommentVNode("v-if", true)
@@ -630,15 +634,15 @@ function render$5(_ctx, _cache, $props, $setup, $data, $options) {
   }, 8 /* PROPS */, ["class"]))
 }
 
-___$insertStylesToHeader("@charset \"UTF-8\";\n.block[data-v-fc3b2bca] {\n  padding: 0;\n}\n\n.content[data-v-fc3b2bca] {\n  padding: 4px;\n}\n\n.hasSubitems[data-v-fc3b2bca][data-v-fc3b2bca]:after {\n  content: \"►\";\n  position: absolute;\n  opacity: 0.6;\n  right: 5px;\n  top: 5px;\n}\n\n.subitems[data-v-fc3b2bca] {\n  position: absolute;\n  top: 0;\n  left: 100%;\n  width: 120px;\n}");
+___$insertStylesToHeader("@charset \"UTF-8\";\n.block[data-v-fc3b2bca] {\n  padding: 0;\n}\n\n.content[data-v-fc3b2bca] {\n  padding: 4px;\n}\n\n.selected[data-v-fc3b2bca] {\n  background-color: rgba(0, 0, 0, 0.3);\n}\n\n.hasSubitems[data-v-fc3b2bca][data-v-fc3b2bca]:after {\n  content: \"►\";\n  position: absolute;\n  opacity: 0.6;\n  right: 5px;\n  top: 5px;\n}\n\n.subitems[data-v-fc3b2bca] {\n  position: absolute;\n  top: 0;\n  left: 100%;\n  width: 120px;\n}");
 
 const _sfc_main$6 = {
   name: 'Item',
-  props: ['subitems', 'delay'],
+  props: ['subitems', 'delay', 'status'],
   data() {
     return {
       visibleSubitems: false,
-      hide: debounce(this.delay, this.hideSubitems)
+      hide: debounce(20, this.hideSubitems)
     }
   },
   methods: {

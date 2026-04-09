@@ -15,7 +15,7 @@ const handleSelect = () => {
   gcs.selector.add(
     {
       id: data.id,
-      label: '',
+      label: 'connection',
       translate() {},
       unselect: () => {
         data.selected = false

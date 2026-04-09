@@ -707,9 +707,9 @@ var ClassicFlow = /*#__PURE__*/function () {
 /**
  * Classic preset. Uses `ClassicFlow` for managing connections by user
  */
-function setup() {
+function setup(params) {
   return function () {
-    return new ClassicFlow();
+    return new ClassicFlow(params);
   };
 }
 

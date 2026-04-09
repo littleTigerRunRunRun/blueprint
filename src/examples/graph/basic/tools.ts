@@ -35,8 +35,8 @@ export const assetNode: Record<GraphNodeType, RawDataFlowNode> = {
   [GraphNodeType.START]: {
     name: 'start',
     label: '开始',
-    width: 40,
-    height: 40
+    width: 4,
+    height: 4
   },
   [GraphNodeType.END]: {
     name: 'end',
@@ -48,7 +48,7 @@ export const assetNode: Record<GraphNodeType, RawDataFlowNode> = {
     name: 'node',
     label: '新建节点',
     width: 100,
-    height: 50
+    height: 40
   }
 }
 

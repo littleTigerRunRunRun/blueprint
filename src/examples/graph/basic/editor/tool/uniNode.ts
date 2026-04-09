@@ -81,11 +81,17 @@ export class UniNode extends ClassicPreset.Node<
     }
 
     // 建立所属的连接点
-    const input = new ClassicPreset.Input(new UniSocket('testInput'), '测试入口', true)
-    this.addInput('testInput', input)
+    const leftInput = new ClassicPreset.Input(new UniSocket('l'), '左连接点', true)
+    this.addOutput('l', leftInput)
+    
+    const topInput = new ClassicPreset.Input(new UniSocket('t'), '上连接点', true)
+    this.addOutput('t', topInput)
 
-    const output = new ClassicPreset.Output(new UniSocket('testOutput'), '测试出口')
-    this.addOutput('testOutput', output)
+    const rightInput = new ClassicPreset.Input(new UniSocket('r'), '右连接点', true)
+    this.addOutput('r', rightInput)
+    
+    const bottomInput = new ClassicPreset.Input(new UniSocket('b'), '下连接点', true)
+    this.addOutput('b', bottomInput)
   }
   // data函数是retejs设计的数据流遍历的一环
   data(inputs: Record<string, Array<unknown>>): { [key: string]: unknown } {

@@ -28,6 +28,7 @@ import { UniNode, scopeElder, getCreateUniNode } from './tool/uniNode'
 import { attachSmoothArea } from "./tool/smoothZoom";
 import { DropAddPlugin, NodeScalablePlugin } from './plugin'
 import { global } from './global'
+import { generateOrthogonalPath, type side } from './tool/path'
 const createNode = getCreateUniNode({})
 
 // 业务定义
@@ -89,7 +90,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
     canMakePreudo(socketData: SocketData): boolean {
       // if (socketData.side === "input") return false;
       return true;
-    },
+    }
   })
 
   // 渲染插件
@@ -160,7 +161,9 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
             x: position.x - 5,
             y: position.y - 5
           }
-        }
+        },
+        // 这导致初始化时每条线都被绘制了2次
+        skipSideCheck: true
       }),
       customize: {
         node(_context) {
@@ -196,28 +199,83 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
       }
     })
   )
-  render.addPreset(Presets.contextMenu.setup({ delay: 400, className: 'graph-context-menu' }) as any)
+  render.addPreset(Presets.contextMenu.setup({ delay: 200, className: 'graph-context-menu' }) as any)
   scopes.addPreset(ScopesPresets.classic.setup())
-  connection.addPreset(ConnectionPresets.classic.setup())
-  // { makeConnection: () => true } // 定制连线校验规则
+  connection.addPreset(
+    ConnectionPresets.classic.setup(
+      {
+        makeConnection: (
+          initial: SocketData,
+          socket: SocketData,
+          context: Context<Schemes, Array<unknown>>,
+        ) => {
+          if (initial.nodeId === socket.nodeId && initial.key === socket.key) return false
+
+          context.editor.addConnection({
+            id: getUID(),
+            source: initial.nodeId,
+            sourceOutput: initial.key,
+            target: socket.nodeId,
+            targetInput: socket.key,
+            // flowType: sourceOutput.socket.flowType,
+            // dataType: sourceOutput.socket.dataType,
+          });
+          return true;
+          // return makeConnection(initial, socket, context);
+        },
+        canMakeConnection: (from: SocketData, to: SocketData) => {
+          return true
+        }
+      }
+    ),
+  );
+  //  // 定制连线校验规则
 
   // 监听事件提供线型修改中间函数
   render.addPipe((context:any) => {
     if (context.type === 'connectionpath') {
-      const points = context.data.points
-      // const centerPoint = [
-      //   points[0].x,
-      //   points[1].y
-      // ]
-      const centerPoint1 = [
-        (points[0].x + points[1].x) * 0.5,
-        points[0].y
-      ]
-      const centerPoint2 = [
-        (points[0].x + points[1].x) * 0.5,
-        points[1].y
-      ]
-      const path = `M${points[0].x},${points[0].y} L${centerPoint1[0]},${centerPoint1[1]} L${centerPoint2[0]},${centerPoint2[1]} L${points[1].x},${points[1].y}`
+      // source node view
+      const sn = editor.getNode(context.data.payload.source)
+      const snv = area.nodeViews.get(context.data.payload.source)
+
+      // target rect
+      let tr = {
+        x: context.data.points[1].x,
+        y: context.data.points[1].y,
+        width: 0,
+        height: 0
+      }
+      let tside:side = 'l'
+      let paddingEnd = 0
+      if (global.hoveringSocket || context.data.payload.target) {
+        const tn = editor.getNode(context.data.payload.target || global.hoveringSocket!.nodeId)
+        const tnv = area.nodeViews.get(context.data.payload.target || global.hoveringSocket!.nodeId)
+        tr = {
+          x: tnv!.position.x,
+          y: tnv!.position.y,
+          width: tn!.width,
+          height: tn!.height
+        }
+        tside = (context.data.payload.targetInput || global.hoveringSocket!.key) as side
+        paddingEnd = 15
+      }
+
+      const points = generateOrthogonalPath({
+        x: snv!.position.x,
+        y: snv!.position.y,
+        width: sn!.width,
+        height: sn!.height
+      }, context.data.payload.sourceOutput, 15,
+      tr, tside, paddingEnd)
+      // console.log(points)
+      
+      const path = points.reduce((prev, current, index) => {
+        let next
+        if (index === 0) next = prev + `M${current.x},${current.y} `
+        else next = prev + `L${current.x},${current.y} `
+        return next
+      }, '')
+
       return {
         data: {
           points,
@@ -387,6 +445,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
             break;
           }
           case "node": {
+            console.log('xxxx')
             const connections = editor.getConnections().filter((c) => {
               return c.source === entity.id || c.target === entity.id;
             });

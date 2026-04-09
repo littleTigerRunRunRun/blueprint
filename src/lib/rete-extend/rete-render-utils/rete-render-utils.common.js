@@ -1,6 +1,6 @@
 /*!
-* rete-render-utils v2.0.2
-* (c) 2024 Vitaliy Stoliarov
+* rete-render-utils v2.0.3
+* (c) 2026 Vitaliy Stoliarov
 * Released under the MIT license.
 * */
 'use strict';
@@ -76,13 +76,13 @@ function loopConnectionPath(points, curvature, size) {
 /* eslint-disable max-statements */
 
 /**
-* Calculates the center coordinates of a child element relative to a parent element.
-* @async
-* @param child The child element whose center coordinates need to be calculated.
-* @param parent The parent element relative to which the child element's center is calculated.
-* @returns Position of the child element's center
-* @throws Error if the child element has a null offsetParent.
-*/
+ * Calculates the center coordinates of a child element relative to a parent element.
+ * @async
+ * @param child The child element whose center coordinates need to be calculated.
+ * @param parent The parent element relative to which the child element's center is calculated.
+ * @returns Position of the child element's center
+ * @throws Error if the child element has a null offsetParent.
+ */
 function getElementCenter(_x, _x2) {
   return _getElementCenter.apply(this, arguments);
 }
@@ -141,7 +141,7 @@ var EventEmitter = /*#__PURE__*/function () {
     key: "emit",
     value: function emit(data) {
       this.listeners.forEach(function (listener) {
-        return listener(data);
+        listener(data);
       });
     }
   }, {
@@ -163,16 +163,16 @@ var SocketsPositionsStorage = /*#__PURE__*/function () {
   }
   return _createClass__default["default"](SocketsPositionsStorage, [{
     key: "getPosition",
-    value: function getPosition(data) {
-      var _found$pop;
+    value: function getPosition(data, skipSideCheck) {
+      var _found$pop$position, _found$pop;
       var list = Array.from(this.elements.values()).flat();
       var found = list.filter(function (item) {
-        return item.side === data.side && item.nodeId === data.nodeId && item.key === data.key;
+        return (skipSideCheck || item.side === data.side) && item.nodeId === data.nodeId && item.key === data.key;
       });
 
       // eslint-disable-next-line no-console
       if (found.length > 1) console.warn(['Found more than one element for socket with same key and side.', 'Probably it was not unmounted correctly'].join(' '), data);
-      return ((_found$pop = found.pop()) === null || _found$pop === void 0 ? void 0 : _found$pop.position) || null;
+      return (_found$pop$position = (_found$pop = found.pop()) === null || _found$pop === void 0 ? void 0 : _found$pop.position) !== null && _found$pop$position !== void 0 ? _found$pop$position : null;
     }
   }, {
     key: "add",
@@ -206,10 +206,46 @@ var SocketsPositionsStorage = /*#__PURE__*/function () {
  */
 var BaseSocketPosition = /*#__PURE__*/function () {
   function BaseSocketPosition() {
+    var _this = this;
     _classCallCheck__default["default"](this, BaseSocketPosition);
     _defineProperty__default["default"](this, "sockets", new SocketsPositionsStorage());
     _defineProperty__default["default"](this, "emitter", new EventEmitter());
     _defineProperty__default["default"](this, "area", null);
+    /**
+     * Listen to socket position changes. Usually used by rendering plugins to update the start/end of the connection.
+     * @internal
+     * @param nodeId Node ID
+     * @param side Side of the socket, 'input' or 'output'
+     * @param key Socket key
+     * @param change Callback function that is called when the socket position changes
+     */
+    _defineProperty__default["default"](this, "listen", function (nodeId, side, key, change) {
+      var unlisten = _this.emitter.listen(function (data) {
+        var _props;
+        if (data.nodeId !== nodeId) return;
+        var skip = _this === null || _this === void 0 ? void 0 : (_props = _this.props) === null || _props === void 0 ? void 0 : _props.skipSideCheck;
+        if ((!data.key || data.side === side || skip) && (!data.side || data.key === key)) {
+          var _this$area;
+          var position = _this.sockets.getPosition({
+            side: side,
+            nodeId: nodeId,
+            key: key
+          }, skip);
+          if (!position) return;
+          var x = position.x,
+            y = position.y;
+          var nodeView = (_this$area = _this.area) === null || _this$area === void 0 ? void 0 : _this$area.nodeViews.get(nodeId);
+          if (nodeView) change({
+            x: x + nodeView.position.x,
+            y: y + nodeView.position.y
+          });
+        }
+      });
+      _this.sockets.snapshot().forEach(function (data) {
+        if (data.nodeId === nodeId) _this.emitter.emit(data);
+      });
+      return unlisten;
+    });
   }
   return _createClass__default["default"](BaseSocketPosition, [{
     key: "attach",
@@ -219,15 +255,15 @@ var BaseSocketPosition = /*#__PURE__*/function () {
      * @param scope Scope of the watcher that should be a child of `BaseAreaPlugin`
      */
     function attach(scope) {
-      var _this = this;
+      var _this2 = this;
       if (this.area) return;
       if (!scope.hasParent()) return;
       this.area = scope.parentScope(reteAreaPlugin.BaseAreaPlugin);
 
-      // eslint-disable-next-line max-statements, complexity
+      // eslint-disable-next-line max-statements
       this.area.addPipe(/*#__PURE__*/function () {
         var _ref = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee2(context) {
-          var _context$data, _nodeId, _key, _side, inout, _element, position, _nodeId2, _context$data$payload, source, target, _nodeId3;
+          var _context$data, _nodeId, _key, _side, _element, position, _nodeId2, _context$data$payload, source, target, _nodeId3;
           return _regeneratorRuntime__default["default"].wrap(function _callee2$(_context2) {
             while (1) switch (_context2.prev = _context2.next) {
               case 0:
@@ -235,25 +271,23 @@ var BaseSocketPosition = /*#__PURE__*/function () {
                   _context2.next = 8;
                   break;
                 }
-                _context$data = context.data, _nodeId = _context$data.nodeId, _key = _context$data.key, _side = _context$data.side, inout = _context$data.inout, _element = _context$data.element;
+                _context$data = context.data, _nodeId = _context$data.nodeId, _key = _context$data.key, _side = _context$data.side, _element = _context$data.element;
                 _context2.next = 4;
-                return _this.calculatePosition(_nodeId, _side, _key, _element);
+                return _this2.calculatePosition(_nodeId, _side, _key, _element);
               case 4:
                 position = _context2.sent;
                 if (position) {
-                  _this.sockets.add({
+                  _this2.sockets.add({
                     nodeId: _nodeId,
                     key: _key,
                     side: _side,
-                    inout: inout,
                     element: _element,
                     position: position
                   });
-                  _this.emitter.emit({
+                  _this2.emitter.emit({
                     nodeId: _nodeId,
                     key: _key,
-                    side: _side,
-                    inout: inout
+                    side: _side
                   });
                 }
                 _context2.next = 24;
@@ -263,7 +297,7 @@ var BaseSocketPosition = /*#__PURE__*/function () {
                   _context2.next = 12;
                   break;
                 }
-                _this.sockets.remove(context.data.element);
+                _this2.sockets.remove(context.data.element);
                 _context2.next = 24;
                 break;
               case 12:
@@ -271,7 +305,7 @@ var BaseSocketPosition = /*#__PURE__*/function () {
                   _context2.next = 16;
                   break;
                 }
-                _this.emitter.emit({
+                _this2.emitter.emit({
                   nodeId: context.data.id
                 });
                 _context2.next = 24;
@@ -283,9 +317,11 @@ var BaseSocketPosition = /*#__PURE__*/function () {
                 }
                 _nodeId2 = context.data.id;
                 _context2.next = 20;
-                return Promise.all(_this.sockets.snapshot().filter(function (item) {
-                  return item.nodeId === context.data.id && (item.inout !== 'in' && item.side === 'output' || item.inout === 'in' && item.side === 'input');
-                }).map(/*#__PURE__*/function () {
+                return Promise.all(_this2.sockets.snapshot().filter(function (item) {
+                  return item.nodeId === context.data.id && item.side === 'output';
+                })
+                // .filter(item => item.nodeId === context.data.id && (item.inout !== 'in' && item.side === 'output' || item.inout === 'in' && item.side === 'input'))
+                .map(/*#__PURE__*/function () {
                   var _ref2 = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee(item) {
                     var side, key, element, position;
                     return _regeneratorRuntime__default["default"].wrap(function _callee$(_context) {
@@ -293,7 +329,7 @@ var BaseSocketPosition = /*#__PURE__*/function () {
                         case 0:
                           side = item.side, key = item.key, element = item.element;
                           _context.next = 3;
-                          return _this.calculatePosition(_nodeId2, side, key, element);
+                          return _this2.calculatePosition(_nodeId2, side, key, element);
                         case 3:
                           position = _context.sent;
                           if (position) {
@@ -310,7 +346,7 @@ var BaseSocketPosition = /*#__PURE__*/function () {
                   };
                 }()));
               case 20:
-                _this.emitter.emit({
+                _this2.emitter.emit({
                   nodeId: _nodeId2
                 });
                 _context2.next = 24;
@@ -319,7 +355,7 @@ var BaseSocketPosition = /*#__PURE__*/function () {
                 if (context.type === 'render' && context.data.type === 'connection') {
                   _context$data$payload = context.data.payload, source = _context$data$payload.source, target = _context$data$payload.target;
                   _nodeId3 = source || target;
-                  _this.emitter.emit({
+                  _this2.emitter.emit({
                     nodeId: _nodeId3
                   });
                 }
@@ -335,43 +371,6 @@ var BaseSocketPosition = /*#__PURE__*/function () {
           return _ref.apply(this, arguments);
         };
       }());
-    }
-
-    /**
-     * Listen to socket position changes. Usually used by rendering plugins to update the start/end of the connection.
-     * @internal
-     * @param nodeId Node ID
-     * @param side Side of the socket, 'input' or 'output'
-     * @param key Socket key
-     * @param change Callback function that is called when the socket position changes
-     */
-  }, {
-    key: "listen",
-    value: function listen(nodeId, side, key, change) {
-      var _this2 = this;
-      var unlisten = this.emitter.listen(function (data) {
-        if (data.nodeId !== nodeId) return;
-        if ((!data.key || data.side === side) && (!data.side || data.key === key)) {
-          var _this2$area;
-          var position = _this2.sockets.getPosition({
-            side: side,
-            nodeId: nodeId,
-            key: key
-          });
-          if (!position) return;
-          var x = position.x,
-            y = position.y;
-          var nodeView = (_this2$area = _this2.area) === null || _this2$area === void 0 ? void 0 : _this2$area.nodeViews.get(nodeId);
-          if (nodeView) change({
-            x: x + nodeView.position.x,
-            y: y + nodeView.position.y
-          });
-        }
-      });
-      this.sockets.snapshot().forEach(function (data) {
-        if (data.nodeId === nodeId) _this2.emitter.emit(data);
-      });
-      return unlisten;
     }
   }]);
 }();
@@ -399,7 +398,7 @@ var DOMSocketPosition = /*#__PURE__*/function (_BaseSocketPosition) {
     key: "calculatePosition",
     value: function () {
       var _calculatePosition = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee(nodeId, side, key, element) {
-        var _this$area, _this$props, _this$props2;
+        var _this$area, _this$props;
         var view, position;
         return _regeneratorRuntime__default["default"].wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -419,7 +418,7 @@ var DOMSocketPosition = /*#__PURE__*/function (_BaseSocketPosition) {
                 _context.next = 8;
                 break;
               }
-              return _context.abrupt("return", (_this$props2 = this.props) === null || _this$props2 === void 0 ? void 0 : _this$props2.offset(position, nodeId, side, key));
+              return _context.abrupt("return", this.props.offset(position, nodeId, side, key));
             case 8:
               return _context.abrupt("return", {
                 x: position.x + 12 * (side === 'input' ? -1 : 1),

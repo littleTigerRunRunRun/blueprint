@@ -14,6 +14,9 @@
     color: #333 !important;
     cursor: pointer;
     transition: background-color 0.2s;
+    &.selected {
+      background-color: #ddd !important;
+    }
     &.hasSubitems:after{
       content: '' !important;
       position: absolute !important;

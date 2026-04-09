@@ -23,15 +23,15 @@
     "elkjs": "^0.8.2",
     "keyboardjs": "^2.7.0",
     "rete": "^2.0.3",
-    "rete-auto-arrange-plugin": "^2.0.1",
-    "rete-engine": "^2.0.1",
     "rete-area-plugin": "file:./src/lib/rete-extend/rete-area-plugin/",
+    "rete-auto-arrange-plugin": "^2.0.1",
     "rete-connection-plugin": "file:./src/lib/rete-extend/rete-connection-plugin/",
     "rete-context-menu-plugin": "file:./src/lib/rete-extend/rete-context-menu-plugin/",
+    "rete-engine": "^2.0.1",
     "rete-render-utils": "file:./src/lib/rete-extend/rete-render-utils/",
     "rete-scopes-plugin": "file:./src/lib/rete-extend/rete-scopes-plugin/",
-    "rete-vue-plugin": "file:./src/lib/rete-extend/rete-vue-plugin/",
-    "rete-structures": "^2.0.1"
+    "rete-structures": "^2.0.1",
+    "rete-vue-plugin": "file:./src/lib/rete-extend/rete-vue-plugin/"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",

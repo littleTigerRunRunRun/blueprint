@@ -14,6 +14,7 @@ export declare type Props = {
      * @returns Custom position of the socket
      */
     offset?: (position: Position, nodeId: string, side: Side, key: string) => Position;
+    skipSideCheck?: boolean;
 };
 /**
  * Class for socket position calculation based on DOM elements. It uses `getElementCenter` function to calculate the position.

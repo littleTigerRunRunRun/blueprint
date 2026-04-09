@@ -1,13 +1,12 @@
 import { BaseSchemes, NodeId, Scope } from 'rete';
 import { BaseAreaPlugin } from 'rete-area-plugin';
-import { ExpectArea2DExtra, Position, Side, InOut } from '../types';
+import { ExpectArea2DExtra, Position, Side } from '../types';
 import { EventEmitter } from '../utils';
 import { SocketsPositionsStorage } from './storage';
 import { OnChange, SocketPositionWatcher } from './types';
 declare type ListenerData = {
     nodeId: string;
     side?: Side;
-    inout?: InOut;
     key?: string;
 };
 /**
@@ -44,7 +43,7 @@ export declare abstract class BaseSocketPosition<Schemes extends BaseSchemes, K>
      * @param key Socket key
      * @param change Callback function that is called when the socket position changes
      */
-    listen(nodeId: NodeId, side: Side, key: string, change: OnChange): () => void;
+    listen: (nodeId: NodeId, side: Side, key: string, change: OnChange) => () => void;
 }
 export {};
 //# sourceMappingURL=base-socket-position.d.ts.map

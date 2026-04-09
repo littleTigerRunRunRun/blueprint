@@ -16,46 +16,99 @@ const deleteItem:Item = {
   }
 }
 
-const setLines:Item = {
+const setLinesType:Item = {
   label: '设置线型',
-  key: GraphExec.SET_LINE_TYPE,
+  key: GraphExec.SET_LINE,
   handler() {},
   subitems: [
     {
       label: '直线',
-      key: GraphExec.SET_LINE_TYPE,
+      key: GraphExec.SET_LINE,
+      status: () => global.lineType === GraphLineType.STRAIGHT,
       handler() {
-        global.exec?.[GraphExec.SET_LINE_TYPE](GraphLineType.STRAIGHT)
+        global.exec?.[GraphExec.SET_LINE]('type', GraphLineType.STRAIGHT)
       }
     },
     {
       label: '折线',
-      key: GraphExec.SET_LINE_TYPE,
+      key: GraphExec.SET_LINE,
+      status: () => global.lineType === GraphLineType.MANHATTAN,
       handler() {
-        global.exec?.[GraphExec.SET_LINE_TYPE](GraphLineType.MANHATTAN)
+        global.exec?.[GraphExec.SET_LINE]('type', GraphLineType.MANHATTAN)
       }
     },
     {
       label: '曲线',
-      key: GraphExec.SET_LINE_TYPE,
+      key: GraphExec.SET_LINE,
+      status: () => global.lineType === GraphLineType.CURVE,
       handler() {
-        global.exec?.[GraphExec.SET_LINE_TYPE](GraphLineType.CURVE)
+        global.exec?.[GraphExec.SET_LINE]('type', GraphLineType.CURVE)
       }
     },
     {
       label: '聚合曲线',
-      key: GraphExec.SET_LINE_TYPE,
+      key: GraphExec.SET_LINE,
+      status: () => global.lineType === GraphLineType.CLUSTERCURVE,
       handler() {
-        global.exec?.[GraphExec.SET_LINE_TYPE](GraphLineType.CLUSTERCURVE)
+        global.exec?.[GraphExec.SET_LINE]('type', GraphLineType.CLUSTERCURVE)
       }
     },
     {
       label: '聚合折线',
-      key: GraphExec.SET_LINE_TYPE,
+      key: GraphExec.SET_LINE,
+      status: () => global.lineType === GraphLineType.CLUSTERMANHATTAN,
       handler() {
-        global.exec?.[GraphExec.SET_LINE_TYPE](GraphLineType.CLUSTERMANHATTAN)
+        global.exec?.[GraphExec.SET_LINE]('type', GraphLineType.CLUSTERMANHATTAN)
       }
     },
+  ]
+}
+
+const setLinesFlow:Item = {
+  label: '设置流动',
+  key: GraphExec.SET_LINE,
+  handler() {},
+  subitems: [
+    {
+      label: '是',
+      key: GraphExec.SET_LINE,
+      status: () => !!global.lineFlow,
+      handler() {
+        global.exec?.[GraphExec.SET_LINE]('flow', true)
+      }
+    },
+    {
+      label: '否',
+      key: GraphExec.SET_LINE,
+      status: () => !global.lineFlow,
+      handler() {
+        global.exec?.[GraphExec.SET_LINE]('flow', false)
+      }
+    }
+  ]
+}
+
+const setLineArrow:Item = {
+  label: '设置箭头',
+  key: GraphExec.SET_LINE,
+  handler() {},
+  subitems: [
+    {
+      label: '是',
+      key: GraphExec.SET_LINE,
+      status: () => !!global.lineArrow,
+      handler() {
+        global.exec?.[GraphExec.SET_LINE]('arrow', true)
+      }
+    },
+    {
+      label: '否',
+      key: GraphExec.SET_LINE,
+      status: () => !global.lineArrow,
+      handler() {
+        global.exec?.[GraphExec.SET_LINE]('arrow', false)
+      }
+    }
   ]
 }
 
@@ -71,7 +124,7 @@ export const CMItems:Items<Schemes> = (context:any, plugin:any) => {
   if (context === 'root') {
     return {
       searchBar: false,
-      list: [reArrange, setLines]
+      list: [reArrange, setLinesType, setLinesFlow, setLineArrow]
     }
   } else {
     if (context.id && global.connectionSelector.selectableNodes) {

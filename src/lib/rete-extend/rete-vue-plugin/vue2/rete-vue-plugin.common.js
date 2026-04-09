@@ -564,12 +564,15 @@ function setup$3(props) {
           }
         };
       } else if (context.data.type === 'socket') {
-        var _payload = context.data.payload;
+        var _context$data2 = context.data,
+          _payload = _context$data2.payload,
+          nodeId = _context$data2.nodeId;
         var _component2 = socket ? socket(context.data) : Socket;
         return {
           component: _component2,
           props: {
-            data: _payload
+            data: _payload,
+            nodeId: nodeId
           }
         };
       } else if (context.data.type === 'control') {
@@ -664,20 +667,20 @@ function debounce(delay, cb) {
   };
 }
 
-var render$5 = function render(){var _vm=this,_c=_vm._self._c;return _c('Block',{staticClass:"block",class:{ hasSubitems: _vm.subitems },attrs:{"data-testid":"context-menu-item"}},[_c('div',{staticClass:"content",on:{"click":function($event){$event.stopPropagation();_vm.$emit('select', $event); _vm.$emit('hide');},"wheel":function($event){$event.stopPropagation();},"pointerover":function($event){_vm.hide.cancel(); _vm.visibleSubitems = true;},"pointerleave":function($event){return _vm.hide.call()},"pointerdown":function($event){$event.stopPropagation();}}},[_vm._t("default"),(_vm.subitems && _vm.visibleSubitems)?_c('div',{staticClass:"subitems"},_vm._l((_vm.subitems),function(item){return _c('Item',{key:item.key,attrs:{"delay":_vm.delay,"subitems":item.subitems},on:{"select":function($event){return item.handler($event)},"hide":function($event){return _vm.$emit('hide')}}},[_vm._v(_vm._s(item.label))])}),1):_vm._e()],2)])
+var render$5 = function render(){var _vm=this,_c=_vm._self._c;return _c('Block',{staticClass:"block",class:{ hasSubitems: _vm.subitems, selected: _vm.status },attrs:{"data-testid":"context-menu-item"}},[_c('div',{staticClass:"content",on:{"click":function($event){$event.stopPropagation();_vm.$emit('select', $event); _vm.$emit('hide');},"wheel":function($event){$event.stopPropagation();},"pointerover":function($event){_vm.hide.cancel(); _vm.visibleSubitems = true;},"pointerleave":function($event){return _vm.hide.call()},"pointerdown":function($event){$event.stopPropagation();}}},[_vm._t("default"),(_vm.subitems && _vm.visibleSubitems)?_c('div',{staticClass:"subitems"},_vm._l((_vm.subitems),function(item){return _c('Item',{key:item.key,attrs:{"delay":_vm.delay,"status":item?.status?.(),"subitems":item.subitems},on:{"select":function($event){return item.handler($event)},"hide":function($event){return _vm.$emit('hide')}}},[_vm._v(_vm._s(item.label))])}),1):_vm._e()],2)])
 };
 var staticRenderFns$5 = [];
 render$5._withStripped = true;
 
-___$insertStylesToHeader("@charset \"UTF-8\";\n.block[data-v-fc3b2bca] {\n  padding: 0;\n}\n\n.content[data-v-fc3b2bca] {\n  padding: 4px;\n}\n\n.hasSubitems[data-v-fc3b2bca][data-v-fc3b2bca]:after {\n  content: \"►\";\n  position: absolute;\n  opacity: 0.6;\n  right: 5px;\n  top: 5px;\n}\n\n.subitems[data-v-fc3b2bca] {\n  position: absolute;\n  top: 0;\n  left: 100%;\n  width: 120px;\n}");
+___$insertStylesToHeader("@charset \"UTF-8\";\n.block[data-v-fc3b2bca] {\n  padding: 0;\n}\n\n.content[data-v-fc3b2bca] {\n  padding: 4px;\n}\n\n.selected[data-v-fc3b2bca] {\n  background-color: rgba(0, 0, 0, 0.3);\n}\n\n.hasSubitems[data-v-fc3b2bca][data-v-fc3b2bca]:after {\n  content: \"►\";\n  position: absolute;\n  opacity: 0.6;\n  right: 5px;\n  top: 5px;\n}\n\n.subitems[data-v-fc3b2bca] {\n  position: absolute;\n  top: 0;\n  left: 100%;\n  width: 120px;\n}");
 
 const _sfc_main$6 = {
   name: 'Item',
-  props: ['subitems', 'delay'],
+  props: ['subitems', 'delay', 'status'],
   data() {
     return {
       visibleSubitems: false,
-      hide: debounce(this.delay, this.hideSubitems)
+      hide: debounce(20, this.hideSubitems)
     }
   },
   methods: {

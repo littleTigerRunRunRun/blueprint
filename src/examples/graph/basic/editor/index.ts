@@ -27,7 +27,6 @@ export async function makeupEditor(params: EditorInitParams) {
     [GraphExec.IMPORT]: async (): Promise<void> => {
       // const data = await tools.getImportData()
       const data = JSON.parse(localStorage._testSaveGraph)
-      console.log(data.id)
       await editor.import(data)
     },
     [GraphExec.EXPORT]: () => {
@@ -42,8 +41,19 @@ export async function makeupEditor(params: EditorInitParams) {
       editor.clear()
     },
     [GraphExec.DROP_ADD]: editor.dropAdd,
-    [GraphExec.SET_LINE_TYPE]: (lineType:GraphLineType) => {
-      global.lineType = lineType
+    [GraphExec.SET_LINE]: (name: 'type' | 'flow' | 'arrow', params:any) => {
+      switch (name) {
+        case 'type':
+          global.lineType = params
+          break
+        case 'flow':
+          global.lineFlow = params
+          break
+        case 'arrow':
+          global.lineArrow = params
+          break
+      }
+      
     }
   }
   global.exec = callExec

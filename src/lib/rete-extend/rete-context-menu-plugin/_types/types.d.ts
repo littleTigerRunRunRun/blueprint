@@ -10,6 +10,7 @@ export type Position = {
 export type Item = {
     label: string;
     key: string;
+    status?: () => boolean;
     handler(): void | Promise<void>;
     subitems?: Item[];
 };

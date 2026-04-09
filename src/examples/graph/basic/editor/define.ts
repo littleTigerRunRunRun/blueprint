@@ -1,4 +1,4 @@
-import { type GetSchemes, ClassicPreset } from 'rete'
+import { type GetSchemes, ClassicPreset, type ConnectionBase, type NodeBase, getUID } from 'rete'
 import type { VueArea2D } from 'rete-vue-plugin'
 import { UniNode } from './tool/uniNode'
 import type { nodeScaleEvent } from './plugin'
@@ -8,14 +8,28 @@ import type { SelectorEntity } from 'rete-area-plugin/_types/extensions/selectab
 export type Callback = (...argus: unknown[]) => void
 
 // editor基础定义
-export class Connection<A extends UniNode, B extends UniNode> extends ClassicPreset.Connection<
-  A,
-  B
-> {
+// 重写了Connection，主要原因是retejs作为一个严谨的库，限制了只有output作为source，input作为target，而在我们的项目中这是不一定的（可以限制但是也可以不做限制）
+export class Connection<
+  Source extends UniNode,
+  Target extends UniNode
+> implements ConnectionBase {
+  id: ConnectionBase['id']
+  source: NodeBase['id']
+  target: NodeBase['id']
   flowType?: GSFlowType
   dataType?: GSDataType
   isLoop?: boolean
   selected?: boolean
+  constructor(
+    source: Source,
+    public sourceOutput: keyof Source['outputs'],
+    target: Target,
+    public targetInput: keyof Target['inputs']
+  ) {
+    this.id = getUID()
+    this.source = source.id
+    this.target = target.id
+  }
 }
 
 export type Schemes = GetSchemes<UniNode, Connection<UniNode, UniNode>>
@@ -101,7 +115,7 @@ export enum GraphExec {
   DELETE_SELECT = 'delete_select',
   CLEAR = 'clear',
   DROP_ADD = 'dropAdd',
-  SET_LINE_TYPE = 'setLineType',
+  SET_LINE = 'setLine',
   REARRANGE = 'rearrange'
 }
 
@@ -132,7 +146,7 @@ export interface GraphExecNoParamCallback {
 
 export interface GraphExecCallback extends GraphExecNoParamCallback {
   [GraphExec.DROP_ADD]: GraphEditor['dropAdd']
-  [GraphExec.SET_LINE_TYPE]: (lineType:GraphLineType) => void
+  [GraphExec.SET_LINE]: (name: 'type' | 'flow' | 'arrow', params:any) => void
 }
 
 export interface CallbackEventHandler {

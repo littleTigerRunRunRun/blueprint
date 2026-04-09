@@ -16,7 +16,6 @@ export declare type RenderSignal<Type extends string, Data> = {
     } & Data;
 };
 export declare type Side = 'input' | 'output';
-export declare type InOut = 'in' | 'out';
 export declare type Position = {
     x: number;
     y: number;
@@ -25,7 +24,6 @@ export declare type ExpectArea2DExtra<Schemes extends BaseSchemes> = RenderSigna
     nodeId: string;
     key: string;
     side: Side;
-    inout?: InOut;
 }> | RenderSignal<'connection', {
     payload: Schemes['Connection'];
     start?: Position;

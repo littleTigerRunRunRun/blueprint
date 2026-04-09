@@ -1,9 +1,26 @@
 <template>
-  <div class="graph-socket" :title="data.name" />
+  <div
+    class="graph-socket"
+    :title="data.name"
+    @mouseenter="handleMouseEnter"
+    @mouseleave="handleMouseLeave"
+  />
 </template>
 
 <script lang="ts" setup>
-const { data } = defineProps(['data'])
+import { global } from '../global'
+
+const { data, nodeId } = defineProps(['data', 'nodeId'])
+
+const handleMouseEnter = () => {
+  global.hoveringSocket = {
+    nodeId,
+    key: data.name
+  }
+}
+const handleMouseLeave = () => {
+  global.hoveringSocket = null
+}
 </script>
 
 <style lang="scss" scoped>

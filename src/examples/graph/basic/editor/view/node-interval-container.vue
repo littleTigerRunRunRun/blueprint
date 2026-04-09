@@ -18,6 +18,7 @@
       v-for="(input, key) in data.inputs"
       :key="`input_${key}`"
       class="socket input"
+      :class="[key]"
     >
       <Ref
         class="input-socket"
@@ -31,6 +32,7 @@
       v-for="(output, key) in data.outputs"
       :key="`output_${key}`"
       class="socket output"
+      :class="[key]"
     >
       <Ref
         class="output-socket"
@@ -43,7 +45,7 @@
 </template>
 
 <script lang="ts" setup>
-import { UniNode } from '../tool/uniNode'
+// import { UniNode } from '../tool/uniNode'
 import Node from './node.vue'
 import NodeStart from './node-start.vue'
 import NodeEnd from './node-end.vue';
@@ -67,6 +69,7 @@ const { data, emit } = defineProps(['data', 'emit'])
     transform: translate(-50%, -50%);
     opacity: 0;
     transition: opacity 0.2s;
+    cursor: pointer;
     &.l,&.r{
       top: 50%;
     }
@@ -77,20 +80,6 @@ const { data, emit } = defineProps(['data', 'emit'])
     &.r { left: 100%; }
     &.t { top: 0%; }
     &.b { top: 100%;}
-
-    &.output {
-      left: 100%;
-      top: 50%;
-      // border-color: #f54;
-      cursor: pointer;
-    }
-
-    &.input {
-      left: 0%;
-      top: 50%;
-      // border-color: #59f;
-      cursor: pointer;
-    }
 
     &>div{
       position: absolute;
