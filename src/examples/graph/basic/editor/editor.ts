@@ -16,6 +16,7 @@ import {
 } from 'rete-connection-plugin'
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin'
 import { structures } from 'rete-structures'
+import { compactBox } from '@antv/hierarchy'
 
 // 视图优化
 import NodeIntervalContainer from './view/node-interval-container.vue'
@@ -445,7 +446,6 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
             break;
           }
           case "node": {
-            console.log('xxxx')
             const connections = editor.getConnections().filter((c) => {
               return c.source === entity.id || c.target === entity.id;
             });
@@ -471,16 +471,43 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         const sourceNode = editor.getNode(selectingNodeId) as UniNode
         const source = area.nodeViews.get(selectingNodeId)!.position
 
-        // const rightChilds = editor.getConnections().filter((c) => {
-        //   return c.source === sourceNode.id && c.sourceOutput === 'r'
-        // }).map((connection) => connection.target)
-
         const targetNodeId = getUID()
         const targetNode = createNode({
           id: targetNodeId,
           ...nodeInfo
         })
         await editor.addNode(targetNode)
+
+        const rightChilds = editor.getConnections().filter((c) => {
+          return c.source === sourceNode.id && c.sourceOutput === 'r'
+        }).map((connection) => connection.target)
+
+        rightChilds.push(targetNodeId)
+
+        const tree = {
+          isRoot: true,
+          id: sourceNode.id,
+          children: rightChilds.map((childId) => ({ id: childId }))
+        }
+        const rootNode = compactBox(tree, {
+          direction: 'LR',
+          getId(d) {
+            if (!d.id) console.error('no id', d)
+            return d.id || ''
+          },
+          getHeight() {
+            return 40
+          },
+          getWidth() {
+            return 100
+          }
+        })
+
+        rootNode.children.forEach(async (child) => {
+          const x = child.x - rootNode.x + source.x
+          const y = child.y - rootNode.y + source.y
+          await area.translate(child.id, { x, y });
+        })
 
         // rightChilds.push(targetNodeId)
         // rightChilds.forEach(async (childId, index) => {

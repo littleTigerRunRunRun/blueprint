@@ -15,6 +15,25 @@ const deleteItem:Item = {
     global.exec?.[GraphExec.DELETE_SELECT]()
   }
 }
+// to do: 整体方向变化，不做布局改动
+
+// 添加子节点可以选择方向
+// const addNextNode:Item = {
+//   label: '添加子节点',
+//   key: GraphExec.ADD_NODE,
+//   handler() {
+//     console.log('add next node')
+//   },
+//   subitems: [
+//     {
+//       label: '右侧添加',
+//       key: GraphExec.ADD_NODE,
+//       handler() {
+//         console.log('add next right node')
+//       }
+//     }
+//   ]
+// }
 
 const setLinesType:Item = {
   label: '设置线型',
@@ -130,7 +149,13 @@ export const CMItems:Items<Schemes> = (context:any, plugin:any) => {
     if (context.id && global.connectionSelector.selectableNodes) {
       global.connectionSelector.selectableNodes.select(context.id, false)
     }
-    return {
+    if (context.name === 'node') {
+      return {
+        searchBar: false,
+        // addNextNode, 
+        list: [deleteItem]
+      }
+    } else return {
       searchBar: false,
       list: [deleteItem]
     }

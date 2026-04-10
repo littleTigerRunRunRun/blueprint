@@ -22,6 +22,11 @@
     "@ant-design/colors" "^6.0.0"
     "@ant-design/icons-svg" "^4.2.1"
 
+"@antv/hierarchy@^0.7.1":
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/@antv/hierarchy/-/hierarchy-0.7.1.tgz#0962ffa3440eb59db2a2d2c601bf4de564dc1f9a"
+  integrity sha512-7r22r+HxfcRZp79ZjGmsn97zgC1Iajrv0Mm9DIgx3lPfk+Kme2MG/+EKdZj1iEBsN0rJRzjWVPGL5YrBdVHchw==
+
 "@babel/code-frame@^7.28.6", "@babel/code-frame@^7.29.0":
   version "7.29.0"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.29.0.tgz#7cd7a59f15b3cc0dcd803038f7792712a7d0b15c"
@@ -2592,7 +2597,7 @@ rete-engine@^2.0.1:
     "@babel/runtime" "^7.21.0"
 
 "rete-render-utils@file:./src/lib/rete-extend/rete-render-utils":
-  version "2.0.2"
+  version "2.0.3"
   dependencies:
     "@babel/runtime" "^7.21.0"
 
