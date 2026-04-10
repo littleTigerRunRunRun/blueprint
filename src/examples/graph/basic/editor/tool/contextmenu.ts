@@ -36,7 +36,7 @@ const deleteItem:Item = {
 // }
 
 const setLinesType:Item = {
-  label: '设置线型',
+  label: '设置线型（暂无）',
   key: GraphExec.SET_LINE,
   handler() {},
   subitems: [
@@ -84,7 +84,7 @@ const setLinesType:Item = {
 }
 
 const setLinesFlow:Item = {
-  label: '设置流动',
+  label: '设置流动（暂无）',
   key: GraphExec.SET_LINE,
   handler() {},
   subitems: [
@@ -108,7 +108,7 @@ const setLinesFlow:Item = {
 }
 
 const setLineArrow:Item = {
-  label: '设置箭头',
+  label: '设置箭头（暂无）',
   key: GraphExec.SET_LINE,
   handler() {},
   subitems: [
