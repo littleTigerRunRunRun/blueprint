@@ -21,6 +21,7 @@ declare type ListenerData = {
 export declare abstract class BaseSocketPosition<Schemes extends BaseSchemes, K> implements SocketPositionWatcher<Scope<never, [K]>> {
     sockets: SocketsPositionsStorage;
     emitter: EventEmitter<ListenerData>;
+    connectionEmitter: EventEmitter<ListenerData>;
     area: BaseAreaPlugin<Schemes, ExpectArea2DExtra<Schemes>> | null;
     /**
      * The method needs to be implemented that calculates the position of the socket.
@@ -44,6 +45,7 @@ export declare abstract class BaseSocketPosition<Schemes extends BaseSchemes, K>
      * @param change Callback function that is called when the socket position changes
      */
     listen: (nodeId: NodeId, side: Side, key: string, change: OnChange) => () => void;
+    listenConnection: (nodeId: NodeId, connectionId: string, key: string, change: OnChange) => () => void;
 }
 export {};
 //# sourceMappingURL=base-socket-position.d.ts.map

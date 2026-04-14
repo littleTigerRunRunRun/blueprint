@@ -1,8 +1,8 @@
 import keyboardJS from 'keyboardjs'
-import type { Callback, GraphNoParamExec, GraphExecNoParamCallback } from '../define'
+import type { Callback, GraphExec, GraphExecCallback } from '../define'
 
 // 键盘监听模块属于一个输入辅助类型的功能模块，因此不适宜做到蓝图内部插件，因为不参与图编辑的事件流
-export function BlueprintKeyboard(config:Array<{ key: string, exec: GraphNoParamExec }>, callExec:GraphExecNoParamCallback) {
+export function BlueprintKeyboard(config:Array<{ key: string, exec: GraphExec }>, callExec:GraphExecCallback) {
   // 辅助键，用于响应组合键指令，例如ctrl + c复制等等
   const auxiliary = {
     ctrl: false,
@@ -10,7 +10,7 @@ export function BlueprintKeyboard(config:Array<{ key: string, exec: GraphNoParam
     shift: false,
     space: false
   }
-  const keyExec:Record<string, GraphNoParamExec> = {}
+  const keyExec:Record<string, GraphExec> = {}
   const bindings:Array<[string, Callback, Callback|undefined]> = []
 
   const keyPress = (event:keyboardJS.KeyEvent|undefined) => {
@@ -29,7 +29,8 @@ export function BlueprintKeyboard(config:Array<{ key: string, exec: GraphNoParam
 
   const commonBind = (event:keyboardJS.KeyEvent|undefined) => {
     const key = event?.key.toLowerCase()
-    if (key && keyExec[key]) callExec[keyExec[key]]()
+    // to do: 类型不正确
+    if (key && keyExec[key]) (callExec as any)[keyExec[key]]()
   }
 
   keyboardJS.bind('ctrl', keyPress, keyRelease)

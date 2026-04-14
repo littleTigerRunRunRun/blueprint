@@ -1,11 +1,11 @@
 export * from './define'
+export { subscriber } from './tool/Subscriber'
 
 // editor cli，一个用于组装你所需的定制编辑器的工具入口
 import { createEditor } from './editor'
-import { type EditorInitParams, GraphExec, GraphLineType, GraphNoParamExec } from './define'
+import { type EditorInitParams, GraphExec, type GraphLineParams } from './define'
 import { BlueprintKeyboard } from './tool/keyborad'
-import { global } from './global'
-
+import { subscriber } from './tool/Subscriber'
 
 export async function makeupEditor(params: EditorInitParams) {
   // 样式定制
@@ -41,18 +41,22 @@ export async function makeupEditor(params: EditorInitParams) {
       editor.clear()
     },
     [GraphExec.DROP_ADD]: editor.dropAdd,
-    [GraphExec.SET_LINE]: (name: 'type' | 'flow' | 'arrow', params:any) => {
-      switch (name) {
+    [GraphExec.SET_LINE]: (params: GraphLineParams) => {
+      const { param, attr } = params
+      switch (attr) {
         case 'type':
-          global.lineType = params
+          subscriber.get('line').type = param
           break
         case 'flow':
-          global.lineFlow = params
+          subscriber.get('line').flow = param
           break
         case 'arrow':
-          global.lineArrow = params
+          subscriber.get('line').arrow = param
           break
+        case 'solid':
+          subscriber.get('line').solid = param
       }
+      editor.updateSelectingLine(params)
     },
     [GraphExec.ADD_NODE_FROM_SELECTING]: () => {
       editor.addNodeFromSelecting({
@@ -61,14 +65,17 @@ export async function makeupEditor(params: EditorInitParams) {
         width: 100,
         height: 40
       })
+    },
+    [GraphExec.REARRANGE]: () => {
+      console.log('重排')
     }
   }
-  global.exec = callExec
+  subscriber.set('exec', callExec)
   // to do: 框选插件
 
   BlueprintKeyboard([
-    { key: 'delete', exec: GraphNoParamExec.DELETE_SELECT },
-    { key: 'tab', exec: GraphNoParamExec.ADD_NODE_FROM_SELECTING }
+    { key: 'delete', exec: GraphExec.DELETE_SELECT },
+    { key: 'tab', exec: GraphExec.ADD_NODE_FROM_SELECTING }
   ], callExec)
 
   return callExec

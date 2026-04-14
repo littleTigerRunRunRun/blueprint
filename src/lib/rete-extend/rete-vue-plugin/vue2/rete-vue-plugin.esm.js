@@ -219,7 +219,7 @@ var staticRenderFns$c = [];
 render$c._withStripped = true;
 
 const _sfc_main$d = {
-  props: ['component', 'data', 'start', 'end', 'path'],
+  props: ['component', 'data', 'start', 'end', 'connection', 'path'],
   data() {
     return {
       observedStart: { x: 0, y: 0 },
@@ -256,10 +256,14 @@ const _sfc_main$d = {
     const unwatch2 = typeof this.end === 'function' && this.end(pos => {
       this.observedEnd = pos;
     });
+    const unwatch3 = typeof this.connection === 'function' && this.connection(() => {
+      this.path(this.startPosition, this.endPosition);
+    });
 
     this.onDestroy = () => {
       unwatch1 && unwatch1();
       unwatch2 && unwatch2();
+      unwatch3 && unwatch3();
     };
   },
   destroyed() {
@@ -431,6 +435,7 @@ function setup$3(props) {
     connection = _ref.connection,
     socket = _ref.socket,
     control = _ref.control;
+  var pathRendered = {};
   return {
     attach: function attach(plugin) {
       positionWatcher.attach(plugin);
@@ -475,7 +480,7 @@ function setup$3(props) {
           }
         };
       } else if (context.data.type === 'connection') {
-        var _context$data$start, _context$data$end;
+        var _context$data$start, _context$data$end, _context$data$connect;
         var _component = connection ? connection(context.data) : Connection;
         var payload = context.data.payload;
         var source = payload.source,
@@ -493,13 +498,30 @@ function setup$3(props) {
             end: (_context$data$end = context.data.end) !== null && _context$data$end !== void 0 ? _context$data$end : function (change) {
               return positionWatcher.listen(target, 'input', targetInput, change);
             },
+            // @ts-ignore
+            connection: (_context$data$connect = context.data.connection) !== null && _context$data$connect !== void 0 ? _context$data$connect : function (change) {
+              return positionWatcher.listenConnection(payload.id, change);
+            },
             path: function () {
               var _path = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee(start, end) {
                 var response, _response$data, path, points, curvature;
                 return _regeneratorRuntime.wrap(function _callee$(_context) {
                   while (1) switch (_context.prev = _context.next) {
                     case 0:
-                      _context.next = 2;
+                      if (pathRendered[payload.id]) {
+                        _context.next = 5;
+                        break;
+                      }
+                      pathRendered[payload.id] = true;
+                      requestAnimationFrame(function () {
+                        pathRendered[payload.id] = false;
+                      });
+                      _context.next = 6;
+                      break;
+                    case 5:
+                      return _context.abrupt("return");
+                    case 6:
+                      _context.next = 8;
                       return plugin.emit({
                         type: 'connectionpath',
                         data: {
@@ -507,30 +529,30 @@ function setup$3(props) {
                           points: [start, end]
                         }
                       });
-                    case 2:
+                    case 8:
                       response = _context.sent;
                       if (response) {
-                        _context.next = 5;
-                        break;
-                      }
-                      return _context.abrupt("return", '');
-                    case 5:
-                      _response$data = response.data, path = _response$data.path, points = _response$data.points;
-                      curvature = 0.3;
-                      if (!(!path && points.length !== 2)) {
-                        _context.next = 9;
-                        break;
-                      }
-                      throw new Error('cannot render connection with a custom number of points');
-                    case 9:
-                      if (path) {
                         _context.next = 11;
                         break;
                       }
-                      return _context.abrupt("return", payload.isLoop ? loopConnectionPath(points, curvature, 120) : classicConnectionPath(points, curvature));
+                      return _context.abrupt("return", '');
                     case 11:
+                      _response$data = response.data, path = _response$data.path, points = _response$data.points;
+                      curvature = 0.3;
+                      if (!(!path && points.length !== 2)) {
+                        _context.next = 15;
+                        break;
+                      }
+                      throw new Error('cannot render connection with a custom number of points');
+                    case 15:
+                      if (path) {
+                        _context.next = 17;
+                        break;
+                      }
+                      return _context.abrupt("return", payload.isLoop ? loopConnectionPath(points, curvature, 120) : classicConnectionPath(points, curvature));
+                    case 17:
                       return _context.abrupt("return", path);
-                    case 12:
+                    case 18:
                     case "end":
                       return _context.stop();
                   }

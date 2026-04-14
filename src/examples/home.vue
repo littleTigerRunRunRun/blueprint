@@ -6,7 +6,7 @@
       <router-link to="/graph-basic">
         <div class="example">
           <img src="../assets/basic.png" />
-          <span>基础图形编辑</span>
+          <span>功能展示：连线</span>
         </div>
       </router-link>
     </div>

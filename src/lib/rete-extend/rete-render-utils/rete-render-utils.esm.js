@@ -146,11 +146,11 @@ var SocketsPositionsStorage = /*#__PURE__*/function () {
   }
   return _createClass(SocketsPositionsStorage, [{
     key: "getPosition",
-    value: function getPosition(data, skipSideCheck) {
+    value: function getPosition(data, connectionId) {
       var _found$pop$position, _found$pop;
       var list = Array.from(this.elements.values()).flat();
       var found = list.filter(function (item) {
-        return (skipSideCheck || item.side === data.side) && item.nodeId === data.nodeId && item.key === data.key;
+        return connectionId && data.key === item.key || item.side === data.side && item.nodeId === data.nodeId && item.key === data.key;
       });
 
       // eslint-disable-next-line no-console
@@ -193,6 +193,7 @@ var BaseSocketPosition = /*#__PURE__*/function () {
     _classCallCheck(this, BaseSocketPosition);
     _defineProperty(this, "sockets", new SocketsPositionsStorage());
     _defineProperty(this, "emitter", new EventEmitter());
+    _defineProperty(this, "connectionEmitter", new EventEmitter());
     _defineProperty(this, "area", null);
     /**
      * Listen to socket position changes. Usually used by rendering plugins to update the start/end of the connection.
@@ -222,6 +223,20 @@ var BaseSocketPosition = /*#__PURE__*/function () {
             x: x + nodeView.position.x,
             y: y + nodeView.position.y
           });
+        }
+      });
+      _this.sockets.snapshot().forEach(function (data) {
+        if (data.nodeId === nodeId) _this.emitter.emit(data);
+      });
+      return unlisten;
+    });
+    _defineProperty(this, "listenConnection", function (nodeId, connectionId, key, change) {
+      var unlisten = _this.connectionEmitter.listen(function (data) {
+        if (data.nodeId !== nodeId) return;
+        // @ts-ignore
+        if (data.id === connectionId && key) {
+          // @ts-ignore
+          change();
         }
       });
       _this.sockets.snapshot().forEach(function (data) {
@@ -336,10 +351,12 @@ var BaseSocketPosition = /*#__PURE__*/function () {
                 break;
               case 23:
                 if (context.type === 'render' && context.data.type === 'connection') {
+                  // connection 事件分给独立的监听器监听
                   _context$data$payload = context.data.payload, source = _context$data$payload.source, target = _context$data$payload.target;
-                  _nodeId3 = source || target;
-                  _this2.emitter.emit({
-                    nodeId: _nodeId3
+                  _nodeId3 = source || target; // @ts-ignore
+                  _this2.connectionEmitter.emit({
+                    nodeId: _nodeId3,
+                    id: context.data.payload.id
                   });
                 }
               case 24:

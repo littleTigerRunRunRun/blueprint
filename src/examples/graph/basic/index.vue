@@ -2,14 +2,37 @@
   <div class="graph-basic">
     <!-- 顶部工具栏 -->
     <div className="graph-toolbar">
-      <a-tooltip
-        v-for="(t, ti) in toolbarList"
-        :key="`tool_${ti}`"
-        :title="t.label"
-        color="#35bfff"
-      >
-        <a-button type="primary" shape="circle" :icon="h(t.icon)" @click="editorExec[t.name]()" />
-      </a-tooltip>
+      <template v-for="(t, ti) in toolbarList" :key="`tool_${ti}`">
+        <a-tooltip
+          :title="t.label"
+          color="#35bfff"
+          overlayClassName="graph-asset-tooltip"
+        >
+          <a-dropdown v-if="t.params" overlayClassName="graph-button-dropdown">
+            <!-- :trigger="['click']" -->
+            <a-button type="primary" shape="circle" class="graph-tool-button" :icon="h(t.icon.value || t.icon)" @click="(!t.params) ? editorExec[t.name](t.value) : ''" />
+            <template #overlay>
+              <a-menu>
+                <a-menu-item
+                  v-for="(par, pi) in t.params"
+                  :key="`bp_${pi}`"
+                >
+                  <a-tooltip
+                    :title="par.label"
+                    color="#35bfff"
+                    placement="left"
+                    overlayClassName="graph-asset-tooltip"
+                  >
+                    <a-button class="graph-tool-button" type="primary" shape="circle" :icon="h(par.icon)" @click="t.icon.value = par.icon, editorExec[t.name](par.value)" />
+                  </a-tooltip>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+          <a-button v-else type="primary" class="graph-tool-button" shape="circle" :icon="h(t.icon)" @click="editorExec[t.name](t.value)" />
+        </a-tooltip>
+        <div v-if="t.split" class="split" />
+      </template>
     </div>
     <!-- 左侧资产栏 -->
     <div className="asset-list">
@@ -19,6 +42,7 @@
         :title="a.label"
         color="#35bfff"
         overlayClassName="graph-asset-tooltip"
+        placement="right"
       >
         <a-button
           type="primary"
@@ -33,6 +57,24 @@
       </a-tooltip>
     </div>
     <div class="rete-basic-container" ref="containerRef"></div>
+    <svg>
+      <defs>
+        <marker
+          id="graph_connection_arrow"
+          viewBox="0 0 10 10"
+          refX="8"
+          refY="5"
+          markerWidth="5"
+          markerHeight="5"
+          orient="auto"
+        >
+          <!-- 尾翼箭头 -->
+          <path d="M0,0 L10,5 L0,10 L3,5 z" fill="context-stroke" stroke="none" />
+          <!-- 平箭头 -->
+          <!-- <path d="M0,0 L10,5 L0,10 z" fill="context-stroke" stroke="none" /> -->
+        </marker>
+      </defs>
+    </svg>
   </div>
 </template>
 
@@ -40,12 +82,12 @@
 import { onMounted, onBeforeUnmount, ref, type Ref, h, watch } from 'vue'
 import { toolbarList, assetsList, assetNode } from './tools'
 import { GraphExec, makeupEditor, GraphAbility } from './editor'
-import type { GraphExecCallback, RawDataFlowNode, GraphEditor, GraphExecNoParamCallback } from './editor'
+import type { GraphExecCallback, RawDataFlowNode } from './editor'
 
 const containerRef: Ref<HTMLElement | undefined> = ref(undefined)
 
 // 向渲染器中注入基本的节点、连接的视图模板
-let editorExec: GraphExecNoParamCallback & { [GraphExec.DROP_ADD]: GraphEditor['dropAdd'] }
+let editorExec: GraphExecCallback
 const dragging = ref<RawDataFlowNode | null>(null)
 watch(
   () => dragging.value,
@@ -95,129 +137,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss">
-@use "sass:color";
 @import url('./editor/style/contextmenu.scss');
-
-.graph-basic {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  /* 黑底 */
-  // background-color: #262626;
-  // background-image: linear-gradient(#0f0f0f 1.5px, transparent 1.5px),
-  //   linear-gradient(90deg, #0f0f0f 1.5px, transparent 1.5px),
-  //   linear-gradient(#333333 1.5px, transparent 1.5px),
-  //   linear-gradient(90deg, #333333 1.5px, #262626 1.5px);
-  /* 白底：测试用 */
-  background-color: #ffffff;
-  background-image: linear-gradient(#d0d0d0 1.5px, transparent 1.5px),
-    linear-gradient(90deg, #d0d0d0 1.5px, transparent 1.5px),
-    linear-gradient(#e7e7e7 1.5px, transparent 1.5px),
-    linear-gradient(90deg, #e7e7e7 1.5px, transparent 1.5px);
-  background-size:
-    200px 200px,
-    200px 200px,
-    25px 25px,
-    25px 25px;
-  background-position:
-    -1.5px -1.5px,
-    -1.5px -1.5px,
-    -1.5px -1.5px,
-    -1.5px -1.5px;
-  box-shadow:
-    inset 4px 0 5px 0 rgba(0, 0, 0, 0.05),
-    inset -4px 0 5px 0 rgba(0, 0, 0, 0.05),
-    inset 4px 0 5px 0 rgba(0, 0, 0, 0.05),
-    inset -4px 0 5px 0 rgba(0, 0, 0, 0.05),
-    inset 0px 0 3px 0 rgba(0, 0, 0, 0.1),
-    inset 0px 0 1px 0 rgba(0, 0, 0, 0.15);
-  .graph-toolbar {
-    position: absolute;
-    height: 32px;
-    padding: 8px 12px;
-    box-sizing: content-box;
-    border-radius: 24px;
-    left: 50%;
-    top: 8%;
-    transform: translate(-50%, -50%);
-    // background-color: #2d2d2d;
-    background-color: #ffffff;
-    box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.3);
-    z-index: 999;
-    button {
-      background-color: #eee;
-      color: #333;
-      // background-color: #3c3c3c;
-      box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.3);
-      --wave-color: #fff;
-      cursor: pointer;
-      &:not(:first-child) {
-        margin-left: 8px;
-      }
-      &:not(:disabled):not(.ant-btn-disabled) {
-        &:hover
-        // &:focus,
-        // &:active
-        {
-          color: #fff;
-          border: none;
-          outline: none;
-          background-color: color.adjust(#3c3c3c, $lightness: 15%);
-        }
-      }
-      .anticon {
-        font-size: 14px;
-        filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.6));
-      }
-    }
-  }
-  .asset-list {
-    position: absolute;
-    width: 48px;
-    padding: 12px 8px;
-    border-radius: 4px;
-    box-sizing: content-box;
-    top: 50%;
-    left: 80px;
-    transform: translate(-50%, -50%);
-    background-color: #ffffff;
-    box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    button {
-      width: 48px;
-      height: 48px;
-      background-color: #eee;
-      color: #333;
-      box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.3);
-      --wave-color: #fff;
-      &:not(:first-child) {
-        margin-top: 8px;
-      }
-      span {
-        transform: scale(1.5);
-      }
-      &:not(:disabled):not(.ant-btn-disabled) {
-        &:hover {
-          color: #fff;
-          border: none;
-          outline: none;
-          background-color: color.adjust(#3c3c3c, $lightness: 15%);
-        }
-      }
-    }
-  }
-  .rete-basic-container {
-    opacity: 1;
-    width: 100%;
-    height: 100%;
-    transition: opacity 0.4s;
-    // &.show {
-    //   opacity: 1;
-    // }
-  }
-}
-
-.graph-asset-tooltip {
-  pointer-events: none;
-}
+@import url('./editor/style/main.scss')
 </style>

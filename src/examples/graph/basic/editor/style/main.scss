@@ -1,0 +1,171 @@
+@use "sass:color";
+
+.graph-basic {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* 黑底 */
+  // background-color: #262626;
+  // background-image: linear-gradient(#0f0f0f 1.5px, transparent 1.5px),
+  //   linear-gradient(90deg, #0f0f0f 1.5px, transparent 1.5px),
+  //   linear-gradient(#333333 1.5px, transparent 1.5px),
+  //   linear-gradient(90deg, #333333 1.5px, #262626 1.5px);
+  /* 白底：测试用 */
+  background-color: #ffffff;
+  background-image: linear-gradient(#d0d0d0 1.5px, transparent 1.5px),
+    linear-gradient(90deg, #d0d0d0 1.5px, transparent 1.5px),
+    linear-gradient(#e7e7e7 1.5px, transparent 1.5px),
+    linear-gradient(90deg, #e7e7e7 1.5px, transparent 1.5px);
+  background-size:
+    200px 200px,
+    200px 200px,
+    25px 25px,
+    25px 25px;
+  background-position:
+    -1.5px -1.5px,
+    -1.5px -1.5px,
+    -1.5px -1.5px,
+    -1.5px -1.5px;
+  box-shadow:
+    inset 4px 0 5px 0 rgba(0, 0, 0, 0.05),
+    inset -4px 0 5px 0 rgba(0, 0, 0, 0.05),
+    inset 4px 0 5px 0 rgba(0, 0, 0, 0.05),
+    inset -4px 0 5px 0 rgba(0, 0, 0, 0.05),
+    inset 0px 0 3px 0 rgba(0, 0, 0, 0.1),
+    inset 0px 0 1px 0 rgba(0, 0, 0, 0.15);
+  .graph-toolbar {
+    position: absolute;
+    height: 32px;
+    line-height: 32px;
+    padding: 8px 12px;
+    box-sizing: content-box;
+    border-radius: 24px;
+    vertical-align: top;
+    left: 50%;
+    top: 8%;
+    transform: translate(-50%, -50%);
+    // background-color: #2d2d2d;
+    background-color: #ffffff;
+    box-shadow: 0 2px 2px 3px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    button {
+      &:not(:first-child) {
+        margin-left: 8px;
+      }
+    }
+    .split{
+      position: relative;
+      display: inline-block;
+      width: 2px;
+      height: 20px;
+      border-radius: 1px;
+      transform: translate(0, 4px);
+      margin-left: 8px;
+      margin-right: 0;
+      &:before {
+        content: '';
+        position: absolute;
+        width: 2px;
+        height: 28px;
+        left: 0;
+        top: -4px;
+        background-color: #fff;
+        box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+  .asset-list {
+    position: absolute;
+    width: 48px;
+    padding: 12px 8px;
+    border-radius: 4px;
+    box-sizing: content-box;
+    top: 50%;
+    left: 80px;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    box-shadow: 0 2px 2px 3px rgba(0, 0, 0, 0.1);
+    // box-shadow: 3px 3px 6px #b8b9be, -3px -3px 6px #fff;
+    z-index: 1000;
+    button {
+      width: 48px;
+      height: 48px;
+      background-color: #eee;
+      color: #333;
+      box-shadow: 0 1px 1px 1px rgba(0, 0, 0, 0.2);
+      --wave-color: #fff;
+      &:not(:first-child) {
+        margin-top: 8px;
+      }
+      span {
+        transform: scale(1.5);
+      }
+      &:not(:disabled):not(.ant-btn-disabled) {
+        &:hover {
+          color: #fff;
+          border: none;
+          outline: none;
+          background-color: color.adjust(#3c3c3c, $lightness: 15%);
+        }
+      }
+    }
+  }
+  .rete-basic-container {
+    opacity: 1;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.4s;
+    // &.show {
+    //   opacity: 1;
+    // }
+  }
+}
+
+.graph-tool-button {
+  background-color: #eee;
+  color: #333;
+  // background-color: #3c3c3c;
+  box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.3);
+  --wave-color: #fff;
+  cursor: pointer;
+  &:not(:disabled):not(.ant-btn-disabled) {
+    &:hover
+    // &:focus,
+    // &:active
+    {
+      color: #fff;
+      border: none;
+      outline: none;
+      background-color: color.adjust(#3c3c3c, $lightness: 15%);
+    }
+  }
+  .anticon {
+    font-size: 14px;
+    filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.6));
+  }
+}
+
+.graph-asset-tooltip {
+  pointer-events: none;
+  --graph-arrow-background-color: #999;
+  .ant-tooltip-inner{
+    background-color: var(--graph-arrow-background-color) !important;
+  }
+  .ant-tooltip-arrow{
+    &:before {
+      background-color: var(--graph-arrow-background-color) !important;
+    }
+  }
+}
+
+.graph-button-dropdown {
+  .ant-dropdown-menu {
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+    .ant-dropdown-menu-item {
+      padding: 2px 0;
+      cursor: pointer;
+    }
+  }
+}

@@ -12,7 +12,7 @@ export declare class SocketsPositionsStorage {
         nodeId: string;
         key: string;
         side: Side;
-    }, skipSideCheck?: boolean): Position | null;
+    }, connectionId?: string): Position | null;
     add(data: SocketPayload): void;
     remove(element: SocketPayload['element']): void;
     snapshot(): SocketPayload[];

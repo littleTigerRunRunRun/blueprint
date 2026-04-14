@@ -5,7 +5,7 @@ import type { nodeScaleEvent } from './plugin'
 import type { DataflowNode } from 'rete-engine'
 import type { SelectorEntity } from 'rete-area-plugin/_types/extensions/selectable.d'
 
-export type Callback = (...argus: unknown[]) => void
+export type Callback = (...argus: any[]) => void
 
 // editor基础定义
 // 重写了Connection，主要原因是retejs作为一个严谨的库，限制了只有output作为source，input作为target，而在我们的项目中这是不一定的（可以限制但是也可以不做限制）
@@ -16,17 +16,23 @@ export class Connection<
   id: ConnectionBase['id']
   source: NodeBase['id']
   target: NodeBase['id']
-  flowType?: GSFlowType
-  dataType?: GSDataType
-  isLoop?: boolean
+  // flowType?: GSFlowType
+  // dataType?: GSDataType
   selected?: boolean
+  line: GraphLineParamsObject = {
+    type: GraphLineType.MANHATTAN,
+    flow: false,
+    solid: true,
+    arrow: false
+  }
   constructor(
+    id: string,
     source: Source,
     public sourceOutput: keyof Source['outputs'],
     target: Target,
     public targetInput: keyof Target['inputs']
   ) {
-    this.id = getUID()
+    this.id = id || getUID()
     this.source = source.id
     this.target = target.id
   }
@@ -62,11 +68,9 @@ export declare interface DataFlowLine {
   sourceOutput: string // output name of source
   target: string
   targetInput: string // input name of target
-  flowType?: GSFlowType
-  dataType?: GSDataType
-  // status?: {
-  //   log: boolean
-  // }
+  // flowType?: GSFlowType
+  // dataType?: GSDataType
+  line: GraphLineParamsObject
 }
 
 export declare interface DataFlowGraph {
@@ -101,13 +105,13 @@ export enum GSFlowType {
 }
 
 // 无参数指令（快捷键）
-export enum GraphNoParamExec {
-  IMPORT = 'import',
-  EXPORT = 'export',
-  DELETE_SELECT = 'delete_select',
-  CLEAR = 'clear',
-  ADD_NODE_FROM_SELECTING = 'addNodeFromSelecting'
-}
+// export enum GraphNoParamExec {
+//   IMPORT = 'import',
+//   EXPORT = 'export',
+//   DELETE_SELECT = 'delete_select',
+//   CLEAR = 'clear',
+//   ADD_NODE_FROM_SELECTING = 'addNodeFromSelecting'
+// }
 
 // 指令（右键菜单、按钮等用于调取）
 export enum GraphExec {
@@ -136,21 +140,37 @@ export interface GraphEditor {
   export: () => DataFlowGraph
   import: (data: DataFlowGraph) => void
   dropAdd: (item: RawDataFlowNode | null) => void,
+  updateSelectingLine: (params: GraphLineParams) => void,
   addNodeFromSelecting: (nodeInfo:RawDataFlowNode) => void
 }
 
 // 无需参数的指令集，主要用于给快捷键系统调取
-export interface GraphExecNoParamCallback {
+// export interface GraphExecNoParamCallback {
+//   [GraphExec.IMPORT]: () => Promise<void>
+//   [GraphExec.EXPORT]: () => DataFlowGraph
+//   [GraphExec.DELETE_SELECT]: Callback
+//   [GraphExec.CLEAR]: Callback
+//   [GraphExec.ADD_NODE_FROM_SELECTING]: Callback
+// }
+
+export type GraphLineParamsObject = {
+  type: GraphLineType,
+  flow: false,
+  solid: true,
+  arrow: false
+}
+
+export type GraphLineParams = { attr: keyof GraphLineParamsObject, param: GraphLineParamsObject[keyof GraphLineParamsObject] }
+
+export interface GraphExecCallback {
   [GraphExec.IMPORT]: () => Promise<void>
   [GraphExec.EXPORT]: () => DataFlowGraph
   [GraphExec.DELETE_SELECT]: Callback
   [GraphExec.CLEAR]: Callback
   [GraphExec.ADD_NODE_FROM_SELECTING]: Callback
-}
-
-export interface GraphExecCallback extends GraphExecNoParamCallback {
   [GraphExec.DROP_ADD]: GraphEditor['dropAdd']
-  [GraphExec.SET_LINE]: (name: 'type' | 'flow' | 'arrow', params:any) => void
+  [GraphExec.SET_LINE]: (params:GraphLineParams) => void
+  [GraphExec.REARRANGE]: Callback
 }
 
 export interface CallbackEventHandler {
@@ -181,3 +201,9 @@ export enum GraphLineType {
   CLUSTERCURVE = 'clusterCurve', // 聚合曲线（所谓聚合，就是指一系列平级子节点都连接到同一个父节点，从而需要进行整体自动布局）
   CLUSTERMANHATTAN = 'clusterManhattan', // 聚合折线
 }
+
+// export enum GraphLineArrow {
+//   NONE = 'none', // 无箭头
+//   SOLID = 'solid', // 实心箭头
+//   HALLOW = 'hallow', // 空心箭头
+// }

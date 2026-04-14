@@ -8,18 +8,18 @@
 </template>
 
 <script lang="ts" setup>
-import { global } from '../global'
+import { subscriber } from '../tool/Subscriber'
 
 const { data, nodeId } = defineProps(['data', 'nodeId'])
 
 const handleMouseEnter = () => {
-  global.hoveringSocket = {
+  subscriber.set('hoveringSocket', {
     nodeId,
     key: data.name
-  }
+  })
 }
 const handleMouseLeave = () => {
-  global.hoveringSocket = null
+  subscriber.set('hoveringSocket', null)
 }
 </script>
 

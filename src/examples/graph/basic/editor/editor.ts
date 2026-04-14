@@ -28,8 +28,7 @@ import CustomGroup from './view/group.vue'
 import { UniNode, scopeElder, getCreateUniNode } from './tool/uniNode'
 import { attachSmoothArea } from "./tool/smoothZoom";
 import { DropAddPlugin, NodeScalablePlugin } from './plugin'
-import { global } from './global'
-import { generateOrthogonalPath, type side } from './tool/path'
+import { subscriber } from './tool/Subscriber'
 const createNode = getCreateUniNode({})
 
 // 业务定义
@@ -39,9 +38,10 @@ import type {
   RawDataFlowNode,
   DataFlowGraph,
   GraphEditor,
-  EditorInitParams
+  EditorInitParams,
+  GraphLineParams
 } from './define'
-import { GraphAbility, Connection } from './define'
+import { GraphAbility, Connection, GraphLineType } from './define'
 import { CMItems } from './tool/contextmenu'
 
 // 画布生成主程序
@@ -143,6 +143,36 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
   // 插件安装
   arrange.addPreset(ArrangePresets.classic.setup())
 
+  render.addPreset(Presets.contextMenu.setup({ delay: 200, className: 'graph-context-menu' }) as any)
+  scopes.addPreset(ScopesPresets.classic.setup())
+  connection.addPreset(
+    ConnectionPresets.classic.setup(
+      {
+        makeConnection: (
+          initial: SocketData,
+          socket: SocketData,
+          context: Context<Schemes, Array<unknown>>,
+        ) => {
+          if (initial.nodeId === socket.nodeId && initial.key === socket.key) return false
+
+          context.editor.addConnection({
+            id: getUID(),
+            source: initial.nodeId,
+            sourceOutput: initial.key,
+            target: socket.nodeId,
+            targetInput: socket.key,
+            line: Object.assign({}, subscriber.get('line'))
+          });
+          return true;
+          // return makeConnection(initial, socket, context);
+        },
+        canMakeConnection: (from: SocketData, to: SocketData) => {
+          return true
+        }
+      }
+    ),
+  );
+
   // 注册视图
   render.addPreset(
     // setup<Schemes, MyAreaExtra>
@@ -163,8 +193,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
             y: position.y - 5
           }
         },
-        // 这导致初始化时每条线都被绘制了2次
-        skipSideCheck: true
+        skipSideCheck: true,
       }),
       customize: {
         node(_context) {
@@ -189,100 +218,29 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         },
         connection(_context) {
           return CustomConnection
-        },
-        // main(_context) {
-        //   return 
-        // }
-        // item: () => UI.ContextMenu.Item as any,
-        // common: () => UI.ContextMenu.Common as any,
-        // search: () => UI.ContextMenu.Search as any,
-        // subitems: () => UI.ContextMenu.Subitems as any
+        }
       }
     })
   )
-  render.addPreset(Presets.contextMenu.setup({ delay: 200, className: 'graph-context-menu' }) as any)
-  scopes.addPreset(ScopesPresets.classic.setup())
-  connection.addPreset(
-    ConnectionPresets.classic.setup(
-      {
-        makeConnection: (
-          initial: SocketData,
-          socket: SocketData,
-          context: Context<Schemes, Array<unknown>>,
-        ) => {
-          if (initial.nodeId === socket.nodeId && initial.key === socket.key) return false
-
-          context.editor.addConnection({
-            id: getUID(),
-            source: initial.nodeId,
-            sourceOutput: initial.key,
-            target: socket.nodeId,
-            targetInput: socket.key,
-            // flowType: sourceOutput.socket.flowType,
-            // dataType: sourceOutput.socket.dataType,
-          });
-          return true;
-          // return makeConnection(initial, socket, context);
-        },
-        canMakeConnection: (from: SocketData, to: SocketData) => {
-          return true
-        }
-      }
-    ),
-  );
-  //  // 定制连线校验规则
 
   // 监听事件提供线型修改中间函数
   render.addPipe((context:any) => {
     if (context.type === 'connectionpath') {
-      // source node view
-      const sn = editor.getNode(context.data.payload.source)
-      const snv = area.nodeViews.get(context.data.payload.source)
-
-      // target rect
-      let tr = {
-        x: context.data.points[1].x,
-        y: context.data.points[1].y,
-        width: 0,
-        height: 0
+      if (!context.data.payload.line) {
+        context.data.payload.line = Object.assign({}, subscriber.get('line'))
       }
-      let tside:side = 'l'
-      let paddingEnd = 0
-      if (global.hoveringSocket || context.data.payload.target) {
-        const tn = editor.getNode(context.data.payload.target || global.hoveringSocket!.nodeId)
-        const tnv = area.nodeViews.get(context.data.payload.target || global.hoveringSocket!.nodeId)
-        tr = {
-          x: tnv!.position.x,
-          y: tnv!.position.y,
-          width: tn!.width,
-          height: tn!.height
-        }
-        tside = (context.data.payload.targetInput || global.hoveringSocket!.key) as side
-        paddingEnd = 15
-      }
-
-      const points = generateOrthogonalPath({
-        x: snv!.position.x,
-        y: snv!.position.y,
-        width: sn!.width,
-        height: sn!.height
-      }, context.data.payload.sourceOutput, 15,
-      tr, tside, paddingEnd)
-      // console.log(points)
-      
-      const path = points.reduce((prev, current, index) => {
-        let next
-        if (index === 0) next = prev + `M${current.x},${current.y} `
-        else next = prev + `L${current.x},${current.y} `
-        return next
-      }, '')
-
       return {
         data: {
-          points,
-          path
+          points: context.data.points,
+          path: `${context.data.points[1].x},${context.data.points[1].y}`
         }
       }
+    }
+    return context
+  })
+  connection.addPipe((context:any) => {
+    if (context.type === 'render' && (!context.data.payload.line)) {
+      context.data.payload.line = Object.assign({}, subscriber.get('line'))
     }
     return context
   })
@@ -322,17 +280,18 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
   // 用户自定义能力注册
   const selector = new MySelector()
   const accumulating = AreaExtensions.accumulateOnCtrl()
-  global.connectionSelector = {
+  subscriber.set('connectionSelector', {
+    editor,
     area,
     selector,
     accumulating
-  }
+  })
   abilities.forEach((abl) => {
     switch (abl) {
       // 可选中节点
       case GraphAbility.NODE_SELECTABLE: {
         const selectableNodes = AreaExtensions.selectableNodes(area, selector, { accumulating })
-        global.connectionSelector.selectableNodes = selectableNodes
+        subscriber.get('connectionSelector').selectableNodes = selectableNodes
         dropAdd.getSelectHanlder({
           select: selectableNodes.select,
           unselect: selectableNodes.unselect
@@ -383,13 +342,15 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
       // ld = lineData
       for (const ld of data.lines) {
         const connection = new Connection(
+          ld.id,
           editor.getNode(ld.source) as UniNode,
           ld.sourceOutput,
           editor.getNode(ld.target) as UniNode,
           ld.targetInput,
         );
-        connection.flowType = ld.flowType;
-        connection.dataType = ld.dataType;
+        // connection.flowType = ld.flowType;
+        // connection.dataType = ld.dataType;
+        connection.line = ld.line
         await editor.addConnection(connection);
       }
     },
@@ -421,8 +382,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
           sourceOutput: connection.sourceOutput,
           target: connection.target,
           targetInput: connection.targetInput,
-          flowType: connection.flowType,
-          dataType: connection.dataType,
+          line: connection.line
         })),
       }
     },
@@ -515,9 +475,21 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         //   await area.translate(childId, position);
         // });
 
-        const connection = new Connection(sourceNode, 'r', targetNode, 'l')
+        const connection = new Connection(getUID(), sourceNode, 'r', targetNode, 'l')
         await editor.addConnection(connection);
       } else throw new Error('无选中节点')
+    },
+    updateSelectingLine(params: GraphLineParams) {
+      selector.entities.forEach((item) => {
+        if (item.label === 'connection') {
+          const connection = editor.getConnection(item.id)
+          if (connection) {
+            // @ts-ignore
+            // connection.line[params.attr] = params.param
+            subscriber.broadcast('CHANGE_LINE', item.id, params)
+          }
+        }
+      })
     },
     destroy() {
       editor.clear()

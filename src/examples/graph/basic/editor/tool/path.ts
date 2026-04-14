@@ -5,29 +5,22 @@
 type Point = { x: number, y: number }
 export type side = 't' | 'b' | 'l' | 'r'
 type Rect = { x: number, y: number, width: number, height: number }
-/**
- * 生成两个矩形边中心之间的正交避障折线路径
- * @param {Object} rectA - 起点矩形 { x, y, width, height } (x,y为矩形左上角坐标)
- * @param {string} sideA - 起点矩形边中心位置 't'/'b'/'l'/'r'
- * @param {number} paddingA - 起点矩形绕行间距
- * @param {Object} rectB - 终点矩形 { x, y, width, height }
- * @param {string} sideB - 终点矩形边中心位置 't'/'b'/'l'/'r'
- * @param {number} paddingB - 终点矩形绕行间距
- * @returns {Array} 路径坐标点数组 [ {x,y}, {x,y}, ... ]
- */
+
+// 工具函数：获取矩形指定边的中心点坐标
+export const getRectCenter = (rect:Rect, side:side) => {
+  const cx = rect.x + rect.width / 2;
+  const cy = rect.y + rect.height / 2;
+  switch (side) {
+    case 't': return { x: cx, y: rect.y };
+    case 'b': return { x: cx, y: rect.y + rect.height };
+    case 'l': return { x: rect.x, y: cy };
+    case 'r': return { x: rect.x + rect.width, y: cy };
+    default: return { x: cx, y: cy };
+  }
+};
+
+// 生成两个矩形边中心之间的正交避障折线路径
 export function generateOrthogonalPath(rectA:Rect, sideA:side, paddingA:number, rectB:Rect, sideB:side, paddingB:number) {
-  // 工具函数：获取矩形指定边的中心点坐标
-  const getRectCenter = (rect:Rect, side:side) => {
-    const cx = rect.x + rect.width / 2;
-    const cy = rect.y + rect.height / 2;
-    switch (side) {
-      case 't': return { x: cx, y: rect.y };
-      case 'b': return { x: cx, y: rect.y + rect.height };
-      case 'l': return { x: rect.x, y: cy };
-      case 'r': return { x: rect.x + rect.width, y: cy };
-      default: return { x: cx, y: cy };
-    }
-  };
 
   // 工具函数：获取方向偏移后的安全点（保证不与矩形相交）
   const getSafeOffsetPoint = (center:Point, side:side, padding:number) => {
@@ -116,4 +109,65 @@ export function generateOrthogonalPath(rectA:Rect, sideA:side, paddingA:number, 
   
   points.push(safeEnd, endCenter);
   return points;
+}
+
+// 将规整的正交路径补完成有圆角拐角的路径
+export function createRadiusOrthPath(points: Array<Point>, radius: number):string {
+  if (points.length < 3 || radius === 0) {
+    return points.reduce((prev, current, index) => {
+      if (index === 0) return prev + `M${current.x},${current.y} `
+      else return prev + `L${current.x},${current.y} `
+    }, '')
+  }
+  let path = `M${points[0].x},${points[0].y} `
+  for (let i = 1; i < points.length - 1; i++) {
+    const prev = points[i - 1]
+    const current = points[i]
+    const next = points[i + 1]
+
+    const pcLength = Math.hypot(prev.x - current.x, prev.y - current.y)
+    const cnLength = Math.hypot(next.x - current.x, next.y - current.y)
+    const r = Math.min(Math.min(radius, pcLength * 0.5), cnLength * 0.5)
+    const point1 = {
+      x: (prev.x * r + current.x * (pcLength - r)) / pcLength,
+      y: (prev.y * r + current.y * (pcLength - r)) / pcLength
+    }
+
+    const point2 = {
+      x: (next.x * r + current.x * (cnLength - r)) / cnLength,
+      y: (next.y * r + current.y * (cnLength - r)) / cnLength
+    }
+
+    //  
+    path += `L${[point1.x]},${point1.y} Q${current.x},${current.y} ${point2.x},${point2.y} `
+  }
+  path += `L${points[points.length - 1].x},${points[points.length - 1].y}`
+
+  return path
+}
+
+// to do: 根据两边点的side重新计算expand的作用方式
+export function createCurve(points:Array<Point>, expand: number) {
+  let path = ''
+  const usedExpand = Math.min(Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y) * 0.35, expand)
+  const center = [(points[0].x + points[1].x) * 0.5, (points[0].y + points[1].y) * 0.5]
+
+  if (points[0].x + usedExpand * 2 < points[1].x) {
+    path += `
+      M${points[0].x},${points[0].y} 
+      C${points[0].x + usedExpand},${points[0].y} ${points[0].x + usedExpand},${points[0].y} ${center[0]},${center[1]} 
+      C${points[1].x - usedExpand},${points[1].y} ${points[1].x - usedExpand},${points[1].y} ${points[1].x},${points[1].y} 
+    `
+  } else {
+    // usedExpand = expand
+    const rate = Math.min((points[0].x + usedExpand * 2 - points[1].x) / usedExpand * 0.5, 1) || 0
+    const yDirection = points[0].y < points[1].y ? 1 : -1
+    path += `
+      M${points[0].x},${points[0].y}
+      C${points[0].x + usedExpand * (1 + rate)},${points[0].y + usedExpand * 0.5 * rate * yDirection} ${points[0].x + usedExpand * (1 + rate)},${points[0].y + usedExpand * 0.5 * rate * yDirection} ${center[0]},${center[1]} 
+      C${points[1].x - usedExpand * (1 + rate)},${points[1].y - usedExpand * 0.5 * rate * yDirection} ${points[1].x - usedExpand * (1 + rate)},${points[1].y - usedExpand * 0.5 * rate * yDirection} ${points[1].x},${points[1].y} 
+    `
+  }
+
+  return path
 }
