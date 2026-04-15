@@ -11,7 +11,7 @@
       lineHeight: `${data!.height - 2}px`
     }"
   >
-    {{ data?.label }}
+    <span contenteditable="true">{{ data?.label }}</span>
   </div>
 </template>
 
@@ -40,6 +40,12 @@ const { data } = defineProps({
   box-sizing: border-box;
   &.selected {
     border-color: #1890ff;
+  }
+  span:focus-visible {
+    border: none;
+    outline: none;
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0.1);
   }
 }
 </style>

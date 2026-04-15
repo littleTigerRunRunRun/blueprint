@@ -22,6 +22,7 @@ type Events = {
     resize: (event: Event) => void;
     translated: (params: TranslateEventParams) => Promise<unknown>;
     reordered: (element: HTMLElement) => Promise<unknown>;
+    rectSelect: (start?: Position, end?: Position) => void;
 };
 type Guards = {
     translate: (params: TranslateEventParams) => Promise<unknown>;
@@ -36,6 +37,7 @@ export type AreaFilter = {
             x: number;
             y: number;
         };
+        isRectSelect?: () => boolean;
     };
 };
 export declare class Area {

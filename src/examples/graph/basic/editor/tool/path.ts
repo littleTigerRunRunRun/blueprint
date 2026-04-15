@@ -2,9 +2,8 @@
 // 要求1：折线为正交折线（只存在垂直和水平方向的线段）
 // 要求2：每个矩形都有自己的宽高，折线不能和这两个矩形相交
 // 要求3：可以对起点和终点的矩形设置padding值，用于设置路径绕行对应矩形时的间距
-type Point = { x: number, y: number }
-export type side = 't' | 'b' | 'l' | 'r'
-type Rect = { x: number, y: number, width: number, height: number }
+import type { side, Rect, Point } from '../define'
+
 
 // 工具函数：获取矩形指定边的中心点坐标
 export const getRectCenter = (rect:Rect, side:side) => {
@@ -60,6 +59,7 @@ export function generateOrthogonalPath(rectA:Rect, sideA:side, paddingA:number, 
   const points = [startCenter]
 
   // to do: 某些交叉情况还是没处理，一种思路：让node move的逻辑上做一些限制，让连线节点不能靠近padding距离
+  // to do: 当开始结束点的横向或者纵向距离小于paddingA + paddingB时，会出现反收缩的错误情况
   if ((sideA === 'r' && horizonPositive) || (sideA === 'l' && !horizonPositive)) {
     // 水平顺势，则出线不需要经过safeStart
     if ((sideB === 'b' && verticalPositive) || (sideB === 't' && !verticalPositive)) {
@@ -105,7 +105,7 @@ export function generateOrthogonalPath(rectA:Rect, sideA:side, paddingA:number, 
         { x, y: safeEnd.y }
       )
     } else points.push({ x: safeEnd.x, y: safeStart.y })
-  } 
+  }
   
   points.push(safeEnd, endCenter);
   return points;
@@ -138,15 +138,15 @@ export function createRadiusOrthPath(points: Array<Point>, radius: number):strin
       y: (next.y * r + current.y * (cnLength - r)) / cnLength
     }
 
-    //  
-    path += `L${[point1.x]},${point1.y} Q${current.x},${current.y} ${point2.x},${point2.y} `
+    //  Q${current.x},${current.y} 
+    path += `L${[point1.x]},${point1.y} L${point2.x},${point2.y} `
   }
   path += `L${points[points.length - 1].x},${points[points.length - 1].y}`
 
   return path
 }
 
-// to do: 根据两边点的side重新计算expand的作用方式
+// to do: 根据两边点的side重新计算expand的作用方式，现在只有某些方向的curve表现正常
 export function createCurve(points:Array<Point>, expand: number) {
   let path = ''
   const usedExpand = Math.min(Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y) * 0.35, expand)

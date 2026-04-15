@@ -185,10 +185,27 @@ var Drag = /*#__PURE__*/function () {
         x: e.pageX,
         y: e.pageY
       };
+      if (_this.config.isRectSelect && _this.config.isRectSelect() && _this.events.rectSelect) {
+        e.preventDefault();
+        // 说明正在发起一次框选
+        _this.pointerRectEnd = {
+          x: e.pageX,
+          y: e.pageY
+        };
+        _this.events.rectSelect(_this.pointerStart, _this.pointerRectEnd);
+        return;
+      }
       _this.startPosition = _objectSpread$4({}, _this.config.getCurrentPosition());
       _this.events.start(e);
     });
     _defineProperty__default["default"](this, "move", function (e) {
+      if (_this.pointerRectEnd && _this.pointerStart && _this.events.rectSelect) {
+        e.preventDefault();
+        _this.pointerRectEnd.x = e.pageX;
+        _this.pointerRectEnd.y = e.pageY;
+        _this.events.rectSelect(_this.pointerStart, _this.pointerRectEnd);
+        return;
+      }
       if (!_this.pointerStart || !_this.startPosition) return;
       if (!_this.guards.move(e)) return;
       e.preventDefault();
@@ -202,6 +219,11 @@ var Drag = /*#__PURE__*/function () {
       void _this.events.translate(x, y, e);
     });
     _defineProperty__default["default"](this, "up", function (e) {
+      if (_this.pointerRectEnd && _this.events.rectSelect) {
+        _this.pointerRectEnd = undefined;
+        _this.events.rectSelect();
+        return;
+      }
       if (!_this.pointerStart) return;
       delete _this.pointerStart;
       _this.events.drag(e);
@@ -441,7 +463,9 @@ var Area = /*#__PURE__*/function () {
   }, {
     key: "setDragHandler",
     value: function setDragHandler(drag) {
-      var _this2 = this;
+      var _this2 = this,
+        _this$filter,
+        _this$filter$move;
       if (this.dragHandler) this.dragHandler.destroy();
       this.dragHandler = drag;
       if (this.dragHandler) this.dragHandler.initialize(this.container, {
@@ -450,7 +474,8 @@ var Area = /*#__PURE__*/function () {
         },
         getZoom: function getZoom() {
           return 1;
-        }
+        },
+        isRectSelect: (_this$filter = this.filter) === null || _this$filter === void 0 ? void 0 : (_this$filter$move = _this$filter.move) === null || _this$filter$move === void 0 ? void 0 : _this$filter$move.isRectSelect
       }, {
         start: function start() {
           return null;
@@ -458,7 +483,8 @@ var Area = /*#__PURE__*/function () {
         translate: this.onTranslate,
         drag: function drag() {
           return null;
-        }
+        },
+        rectSelect: this.events.rectSelect
       });
     }
 
@@ -1615,6 +1641,15 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
             element: element
           }
         });
+      },
+      rectSelect: function rectSelect(start, end) {
+        return _this.emit({
+          type: 'rectselect',
+          data: {
+            start: start,
+            end: end
+          }
+        });
       }
     }, {
       translate: function translate(params) {
@@ -1738,6 +1773,14 @@ var AreaPlugin = /*#__PURE__*/function (_BaseAreaPlugin) {
     value: function addConnectionView(connection) {
       var _this3 = this;
       var view = new ConnectionView({
+        picked: function picked() {
+          return void _this3.emit({
+            type: 'connectionpicked',
+            data: {
+              id: connection.id
+            }
+          });
+        },
         contextmenu: function contextmenu(event) {
           return void _this3.emit({
             type: 'contextmenu',

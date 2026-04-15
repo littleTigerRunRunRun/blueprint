@@ -1,11 +1,12 @@
 import { AreaPlugin, Zoom } from "rete-area-plugin"
+// @ts-ignore
 import anime from "./anime.es.js";
 import type {
   Schemes,
   MyAreaExtra
 } from '../define'
 
-function screenToArea(x: number, y: number, t: any) {
+export function screenToArea(x: number, y: number, t: any) {
   const { x: tx, y: ty, k } = t;
 
   return { x: (x - tx) / k, y: (y - ty) / k };

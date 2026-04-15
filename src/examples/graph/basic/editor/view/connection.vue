@@ -12,15 +12,15 @@
         flow: line.flow.value
       }"
     />
-    <text fill="#000" font-size="12">{{ data.id }}</text>
+    <!-- <text fill="#000" font-size="12">{{ data.id }}</text> -->
   </svg>
 </template>
 
 <script lang="ts" setup>
 import { subscriber } from '../tool/Subscriber';
-import { GraphLineType, type GraphLineParamsObject, type GraphLineParams } from '../define'
+import { GraphLineType, type GraphLineParamsObject, type GraphLineParams, type side } from '../define'
 import { watch, ref, onBeforeUnmount, onMounted } from 'vue';
-import { generateOrthogonalPath, type side, getRectCenter, createRadiusOrthPath, createCurve } from '../tool/path'
+import { generateOrthogonalPath, getRectCenter, createRadiusOrthPath, createCurve } from '../tool/path'
 const { data, path } = defineProps(['path', 'data'])
 const emit = defineEmits(['update:data'])
 
@@ -101,7 +101,9 @@ function createPath() {
         }
       }
       
-      return createRadiusOrthPath(points, 4)
+      const path = createRadiusOrthPath(points, 0)
+
+      return path
     }
     case GraphLineType.STRAIGHT: {
       return `M${start!.x},${start!.y}, L${end!.x},${end!.y}`
@@ -125,7 +127,6 @@ const onLineChanged = (id:string, params:GraphLineParams) => {
 
   line[params.attr].value = params.param
   if (params.attr === 'type') tpath.value = createPath()
-  console.log(params.attr, line[params.attr].value)
 }
 subscriber.listen('CHANGE_LINE', onLineChanged)
 
@@ -158,7 +159,6 @@ onMounted(() => {
   line.arrow.value = data?.line?.arrow
   line.solid.value = data?.line?.solid
   line.flow.value = data?.line?.flow
-  console.log(data.id, data.line.solid)
 })
 
 onBeforeUnmount(() => {

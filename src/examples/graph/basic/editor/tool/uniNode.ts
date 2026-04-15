@@ -28,6 +28,8 @@ export type UniNodeConfig = {
   label: string
   width: number
   height: number
+  selected?: boolean
+  edit?: boolean
   // parent和nest是一组相关参数
   parent?: string
   nest?: boolean
@@ -49,6 +51,8 @@ export class UniNode extends ClassicPreset.Node<
   height: number
   nest?: boolean
   parent?: string
+  selected: boolean = false
+  edit: boolean = false
   sockets = ['t', 'r', 'b', 'l'] // 连线连接点
   dataOperation?: (
     inputs: Record<string, Array<unknown>>,

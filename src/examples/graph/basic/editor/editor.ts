@@ -20,6 +20,7 @@ import { compactBox } from '@antv/hierarchy'
 
 // 视图优化
 import NodeIntervalContainer from './view/node-interval-container.vue'
+import NodeText from './view/node-text.vue'
 import CustomConnection from './view/connection.vue'
 import CustomSocket from './view/socket.vue'
 import CustomGroup from './view/group.vue'
@@ -27,7 +28,7 @@ import CustomGroup from './view/group.vue'
 // 自研工具引用
 import { UniNode, scopeElder, getCreateUniNode } from './tool/uniNode'
 import { attachSmoothArea } from "./tool/smoothZoom";
-import { DropAddPlugin, NodeScalablePlugin } from './plugin'
+import { DropAddPlugin, NodeScalablePlugin, RectSelectPlugin } from './plugin'
 import { subscriber } from './tool/Subscriber'
 const createNode = getCreateUniNode({})
 
@@ -39,7 +40,8 @@ import type {
   DataFlowGraph,
   GraphEditor,
   EditorInitParams,
-  GraphLineParams
+  GraphLineParams,
+  side
 } from './define'
 import { GraphAbility, Connection, GraphLineType } from './define'
 import { CMItems } from './tool/contextmenu'
@@ -73,7 +75,8 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         // if (y + node.height > parentView!.position.y + parent!.height - border) result.y = parentView!.position.y + parent!.height - border - node.height
 
         return result
-      }
+      },
+      isRectSelect: () => subscriber.get('isRectSelect')
     }
   })
   // 顺滑area缩放
@@ -123,7 +126,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
   const arrange = new AutoArrangePlugin<Schemes>()
 
   // 节点拖拽加入插件（自研）
-  const dropAdd = new DropAddPlugin<Schemes>(undefined, {
+  const dropAdd = new DropAddPlugin(undefined, {
     onNodeAdd: (node: UniNode) => {
       // if (config.eventHandlers.onNodeAdd) config.eventHandlers.onNodeAdd(node);
       // if (node.type === 'group') {
@@ -139,6 +142,9 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
 
   // 节点支持缩放插件（自研）
   const nodeScale = new NodeScalablePlugin<Schemes>()
+
+  // 支持框选能力（自研）
+  const rectSelect = new RectSelectPlugin()
 
   // 插件安装
   arrange.addPreset(ArrangePresets.classic.setup())
@@ -196,16 +202,15 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         skipSideCheck: true,
       }),
       customize: {
-        node(_context) {
-          return NodeIntervalContainer
-          // switch (context.payload.name) {
-          //   case 'node':
-          //     return NodeView
-          //   case 'start':
-          //     return StartNodeView
-          //   case 'end':
-          //     return EndNodeView
-          // }
+        node(context) {
+          switch (context.payload.name) {
+            case 'node':
+            case 'start':
+            case 'end':
+              return NodeIntervalContainer
+            case 'text':
+              return NodeText
+          }
         },
         socket(_context) {
           // if (
@@ -239,7 +244,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
     return context
   })
   connection.addPipe((context:any) => {
-    if (context.type === 'render' && (!context.data.payload.line)) {
+    if (context.type === 'render' && context.data.payload && (!context.data.payload.line)) {
       context.data.payload.line = Object.assign({}, subscriber.get('line'))
     }
     return context
@@ -254,6 +259,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
   area.use(arrange)
   area.use(dropAdd)
   area.use(nodeScale)
+  area.use(rectSelect)
 
   // 能力注册：
   class MySelector<E extends SelectorEntity> extends AreaExtensions.Selector<E> {
@@ -418,7 +424,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         }
       });
     },
-    addNodeFromSelecting: async (nodeInfo:RawDataFlowNode) => {
+    addNodeFromSelecting: async (nodeInfo:RawDataFlowNode, s:side) => {
       let selectingNodeId:string|undefined
       selector.entities.forEach((item) => {
         if (item.label === 'node' && !selectingNodeId) {
@@ -438,19 +444,34 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         })
         await editor.addNode(targetNode)
 
-        const rightChilds = editor.getConnections().filter((c) => {
-          return c.source === sourceNode.id && c.sourceOutput === 'r'
+        const oppositeSideMapping = {
+          'l': 'r',
+          'r': 'l',
+          't': 'b',
+          'b': 't'
+        }
+
+        const childs = editor.getConnections().filter((c) => {
+          return c.source === sourceNode.id && c.sourceOutput === s
         }).map((connection) => connection.target)
 
-        rightChilds.push(targetNodeId)
+        childs.push(targetNodeId)
 
         const tree = {
           isRoot: true,
           id: sourceNode.id,
-          children: rightChilds.map((childId) => ({ id: childId }))
+          children: childs.map((childId) => ({ id: childId }))
+        }
+
+        const directionMapping = {
+          'l': 'RL',
+          'r': 'LR',
+          't': 'BT',
+          'b': 'TB'
         }
         const rootNode = compactBox(tree, {
-          direction: 'LR',
+          // @ts-ignore
+          direction: directionMapping[s] || 'LR',
           getId(d) {
             if (!d.id) console.error('no id', d)
             return d.id || ''
@@ -466,6 +487,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         rootNode.children.forEach(async (child) => {
           const x = child.x - rootNode.x + source.x
           const y = child.y - rootNode.y + source.y
+          console.log(x, y)
           await area.translate(child.id, { x, y });
         })
 
@@ -475,7 +497,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         //   await area.translate(childId, position);
         // });
 
-        const connection = new Connection(getUID(), sourceNode, 'r', targetNode, 'l')
+        const connection = new Connection(getUID(), sourceNode, s, targetNode, oppositeSideMapping[s])
         await editor.addConnection(connection);
       } else throw new Error('无选中节点')
     },

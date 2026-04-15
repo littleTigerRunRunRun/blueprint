@@ -11,7 +11,8 @@ import {
   Loading3QuartersOutlined,
   RiseOutlined,
   DashOutlined,
-  DoubleRightOutlined
+  DoubleRightOutlined,
+  FontSizeOutlined
 } from '@ant-design/icons-vue'
 import { GraphExec, GraphLineType, GraphNodeType, type GraphLineParamsObject, type RawDataFlowNode } from './editor'
 import { subscriber } from './editor'
@@ -120,6 +121,12 @@ export const assetNode: Record<GraphNodeType, RawDataFlowNode> = {
     label: '新建节点',
     width: 100,
     height: 40
+  },
+  [GraphNodeType.TEXT]: {
+    name: 'text',
+    label: '文字',
+    width: 80,
+    height: 30
   }
 }
 
@@ -142,5 +149,10 @@ export const assetsList: Array<{
     name: GraphNodeType.NODE,
     label: '节点',
     icon: BorderOutlined
+  },
+  {
+    name: GraphNodeType.TEXT,
+    label: '文字',
+    icon: FontSizeOutlined
   }
 ]

@@ -18,22 +18,43 @@ const deleteItem:Item = {
 // to do: 整体方向变化，不做布局改动
 
 // 添加子节点可以选择方向
-// const addNextNode:Item = {
-//   label: '添加子节点',
-//   key: GraphExec.ADD_NODE,
-//   handler() {
-//     console.log('add next node')
-//   },
-//   subitems: [
-//     {
-//       label: '右侧添加',
-//       key: GraphExec.ADD_NODE,
-//       handler() {
-//         console.log('add next right node')
-//       }
-//     }
-//   ]
-// }
+const addNextNode:Item = {
+  label: '添加子节点',
+  key: GraphExec.ADD_NODE_FROM_SELECTING,
+  handler() {
+    console.log('add next node')
+  },
+  subitems: [
+    {
+      label: '右侧添加',
+      key: GraphExec.ADD_NODE_FROM_SELECTING,
+      handler() {
+        subscriber.get('exec')?.[GraphExec.ADD_NODE_FROM_SELECTING]('r')
+      }
+    },
+    {
+      label: '左侧添加',
+      key: GraphExec.ADD_NODE_FROM_SELECTING,
+      handler() {
+        subscriber.get('exec')?.[GraphExec.ADD_NODE_FROM_SELECTING]('l')
+      }
+    },
+    {
+      label: '上方添加',
+      key: GraphExec.ADD_NODE_FROM_SELECTING,
+      handler() {
+        subscriber.get('exec')?.[GraphExec.ADD_NODE_FROM_SELECTING]('t')
+      }
+    },
+    {
+      label: '下方添加',
+      key: GraphExec.ADD_NODE_FROM_SELECTING,
+      handler() {
+        subscriber.get('exec')?.[GraphExec.ADD_NODE_FROM_SELECTING]('b')
+      }
+    },
+  ]
+}
 
 const setLinesType:Item = {
   label: '设置线型（暂无）',
@@ -153,7 +174,7 @@ export const CMItems:Items<Schemes> = (context:any, plugin:any) => {
       return {
         searchBar: false,
         // addNextNode, 
-        list: [deleteItem]
+        list: [deleteItem, addNextNode]
       }
     } else return {
       searchBar: false,

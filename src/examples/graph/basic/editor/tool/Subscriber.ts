@@ -1,4 +1,5 @@
-import { GraphLineType, type GraphExecCallback, type Callback, type GraphLineParams, type GraphLineParamsObject } from '../define'
+import { GraphLineType } from '../define'
+import type { GraphExecCallback, Callback, GraphLineParams, GraphLineParamsObject, KeyboardTool } from '../define'
 
 export interface CallPrepare {
   callback: Callback,
@@ -249,6 +250,8 @@ export const subscriber = new Subscriber<{
     nodeId: string
     key: string
   } | null
+  keyboard: KeyboardTool | null
+  isRectSelect: boolean
 }, {
   CHANGE_LINE: (id:string, params: GraphLineParams) => void
   SELECT_LINE: (params: GraphLineParamsObject) => void
@@ -261,7 +264,9 @@ export const subscriber = new Subscriber<{
   },
   connectionSelector: null,
   exec: null,
-  hoveringSocket: null
+  hoveringSocket: null,
+  keyboard: null,
+  isRectSelect: false
 }, ['CHANGE_LINE', 'SELECT_LINE'])
 
 // command是一个由|分隔的由调用名和参数组成的字符串，该方法需要帮助用户把里面的数字参数自动从字符串转成数字

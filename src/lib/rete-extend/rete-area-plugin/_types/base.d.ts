@@ -30,6 +30,11 @@ export type BaseArea<Schemes extends BaseSchemes> = {
         id: string;
     };
 } | {
+    type: 'connectionpicked';
+    data: {
+        id: string;
+    };
+} | {
     type: 'nodedragged';
     data: Schemes['Node'];
 } | {
@@ -91,6 +96,12 @@ export type BaseArea<Schemes extends BaseSchemes> = {
     type: 'reordered';
     data: {
         element: HTMLElement;
+    };
+} | {
+    type: 'rectselect';
+    data: {
+        start?: Position;
+        end?: Position;
     };
 };
 /**

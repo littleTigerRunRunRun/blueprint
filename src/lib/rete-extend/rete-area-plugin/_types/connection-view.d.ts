@@ -1,5 +1,6 @@
 type Events = {
     contextmenu: (event: MouseEvent) => void;
+    picked: () => void;
 };
 export declare class ConnectionView {
     element: HTMLElement;

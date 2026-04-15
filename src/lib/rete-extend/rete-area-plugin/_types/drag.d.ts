@@ -3,6 +3,7 @@ type Events = {
     start: (e: PointerEvent) => void;
     translate: (x: number, y: number, e: PointerEvent) => unknown;
     drag: (e: PointerEvent) => void;
+    rectSelect?: (start?: Position, end?: Position) => void;
 };
 type Guards = {
     down: (e: PointerEvent) => boolean;
@@ -11,12 +12,14 @@ type Guards = {
 type DragConfig = {
     getCurrentPosition: () => Position;
     getZoom: () => number;
+    isRectSelect?: () => boolean;
 };
 /**
  * Drag handler, used to handle dragging of the area and nodes. Can be extended to add custom behavior.
  */
 export declare class Drag {
     private pointerStart?;
+    private pointerRectEnd?;
     private startPosition?;
     private pointerListener;
     protected config: DragConfig;

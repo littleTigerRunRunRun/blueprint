@@ -5,8 +5,14 @@
     <div class="content">
       <router-link to="/graph-basic">
         <div class="example">
-          <img src="../assets/basic.png" />
+          <img src="../assets/line.png" />
           <span>功能展示：连线</span>
+        </div>
+      </router-link>
+      <router-link to="/graph-group">
+        <div class="example">
+          <img src="../assets/line.png" />
+          <span>功能展示：节点分组（聚合）</span>
         </div>
       </router-link>
     </div>

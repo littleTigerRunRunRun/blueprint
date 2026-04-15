@@ -3,7 +3,7 @@ export { subscriber } from './tool/Subscriber'
 
 // editor cli，一个用于组装你所需的定制编辑器的工具入口
 import { createEditor } from './editor'
-import { type EditorInitParams, GraphExec, type GraphLineParams } from './define'
+import { type EditorInitParams, GraphExec, type GraphLineParams, type side } from './define'
 import { BlueprintKeyboard } from './tool/keyborad'
 import { subscriber } from './tool/Subscriber'
 
@@ -19,19 +19,30 @@ export async function makeupEditor(params: EditorInitParams) {
 
   // 能力定制
   const abilities = []
+
+  // 快捷键、键盘事件管理工具
+  subscriber.set('keyboard', BlueprintKeyboard([
+    { key: 'delete', exec: GraphExec.DELETE_SELECT },
+    { key: 'tab', exec: GraphExec.ADD_NODE_FROM_SELECTING }
+  ], (key, value) => {
+    if (key === 'ctrl') subscriber.set('isRectSelect', value)
+  }))
   
   const editor = await createEditor(params)
 
   // 指令
   const callExec = {
     [GraphExec.IMPORT]: async (): Promise<void> => {
-      // const data = await tools.getImportData()
-      const data = JSON.parse(localStorage._testSaveGraph)
+      const importTarget = location.hash
+      const datastr = localStorage[importTarget]
+      if (!datastr) return
+      const data = JSON.parse(datastr)
       await editor.import(data)
     },
     [GraphExec.EXPORT]: () => {
       const exportData = editor.export()
-      localStorage._testSaveGraph = JSON.stringify(exportData)
+      const exportTarget = location.hash
+      localStorage[exportTarget] = JSON.stringify(exportData)
       return exportData
     },
     [GraphExec.DELETE_SELECT]: () => {
@@ -58,25 +69,24 @@ export async function makeupEditor(params: EditorInitParams) {
       }
       editor.updateSelectingLine(params)
     },
-    [GraphExec.ADD_NODE_FROM_SELECTING]: () => {
+    [GraphExec.ADD_NODE_FROM_SELECTING]: (s:side = 'r') => {
       editor.addNodeFromSelecting({
         name: 'node',
         label: '新建节点',
         width: 100,
         height: 40
-      })
+      }, s)
     },
     [GraphExec.REARRANGE]: () => {
       console.log('重排')
+    },
+    [GraphExec.SET_RECT_SELECT]: (value?:boolean) => {
+      if (value === undefined) subscriber.set('isRectSelect', true)
+      else subscriber.set('isRectSelect', value)
     }
   }
   subscriber.set('exec', callExec)
   // to do: 框选插件
-
-  BlueprintKeyboard([
-    { key: 'delete', exec: GraphExec.DELETE_SELECT },
-    { key: 'tab', exec: GraphExec.ADD_NODE_FROM_SELECTING }
-  ], callExec)
 
   return callExec
 }

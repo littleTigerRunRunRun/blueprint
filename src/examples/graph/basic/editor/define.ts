@@ -7,6 +7,10 @@ import type { SelectorEntity } from 'rete-area-plugin/_types/extensions/selectab
 
 export type Callback = (...argus: any[]) => void
 
+export type side = 't' | 'b' | 'l' | 'r'
+export type Point = { x: number, y: number }
+export type Rect = { x: number, y: number, width: number, height: number }
+
 // editor基础定义
 // 重写了Connection，主要原因是retejs作为一个严谨的库，限制了只有output作为source，input作为target，而在我们的项目中这是不一定的（可以限制但是也可以不做限制）
 export class Connection<
@@ -122,14 +126,16 @@ export enum GraphExec {
   DROP_ADD = 'dropAdd',
   SET_LINE = 'setLine',
   REARRANGE = 'rearrange',
-  ADD_NODE_FROM_SELECTING = 'addNodeFromSelecting'
+  ADD_NODE_FROM_SELECTING = 'addNodeFromSelecting',
+  SET_RECT_SELECT = 'setRectSelect'
 }
 
 // 图形节点类型
 export enum GraphNodeType {
   START = 'start',
   END = 'end',
-  NODE = 'node'
+  NODE = 'node',
+  TEXT = 'text'
 }
 
 // editor应用
@@ -141,7 +147,7 @@ export interface GraphEditor {
   import: (data: DataFlowGraph) => void
   dropAdd: (item: RawDataFlowNode | null) => void,
   updateSelectingLine: (params: GraphLineParams) => void,
-  addNodeFromSelecting: (nodeInfo:RawDataFlowNode) => void
+  addNodeFromSelecting: (nodeInfo:RawDataFlowNode, s:side) => void
 }
 
 // 无需参数的指令集，主要用于给快捷键系统调取
@@ -167,10 +173,11 @@ export interface GraphExecCallback {
   [GraphExec.EXPORT]: () => DataFlowGraph
   [GraphExec.DELETE_SELECT]: Callback
   [GraphExec.CLEAR]: Callback
-  [GraphExec.ADD_NODE_FROM_SELECTING]: Callback
+  [GraphExec.ADD_NODE_FROM_SELECTING]: (s?:side) => void
   [GraphExec.DROP_ADD]: GraphEditor['dropAdd']
   [GraphExec.SET_LINE]: (params:GraphLineParams) => void
   [GraphExec.REARRANGE]: Callback
+  [GraphExec.SET_RECT_SELECT]: (value?:boolean) => void
 }
 
 export interface CallbackEventHandler {
@@ -207,3 +214,11 @@ export enum GraphLineType {
 //   SOLID = 'solid', // 实心箭头
 //   HALLOW = 'hallow', // 空心箭头
 // }
+
+// 键盘相关功能工具
+export interface KeyboardTool {
+  checkAuxiliary(key:'ctrl'|'alt'|'shift'|'space'):boolean // 检查快捷键功能的启用性
+  bindKey(key:string, keyPressBind:Callback, keyReleaseBind?:Callback):void
+  unbindKey(key:string, keyPressBind:Callback, keyReleaseBind?:Callback):void
+  destroy():void
+}

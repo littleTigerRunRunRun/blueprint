@@ -11,7 +11,7 @@ import type { Schemes } from '../define'
 type getDropCenter = (width: number, height: number) => { x: number; y: number }
 
 // 该插件用于协助外部的拖拽添加捕捉鼠标挪入、鼠标挪出、鼠标拖拽元素移动等功能，以及借由retejs的scope系统，监听node新增和减少并抛出事件
-export class DropAddPlugin<S> extends Scope<never, Area2DInherited<Schemes, never>> {
+export class DropAddPlugin extends Scope<never, Area2DInherited<Schemes, never>> {
   draggingNode: Schemes['Node'] | null = null
   dragging = false
   area: AreaPlugin<Schemes> | null = null

@@ -1,8 +1,9 @@
 import keyboardJS from 'keyboardjs'
-import type { Callback, GraphExec, GraphExecCallback } from '../define'
+import type { Callback, GraphExec, GraphExecCallback, KeyboardTool } from '../define'
+import { subscriber } from './Subscriber'
 
 // 键盘监听模块属于一个输入辅助类型的功能模块，因此不适宜做到蓝图内部插件，因为不参与图编辑的事件流
-export function BlueprintKeyboard(config:Array<{ key: string, exec: GraphExec }>, callExec:GraphExecCallback) {
+export function BlueprintKeyboard(config:Array<{ key: string, exec: GraphExec }>, auxiliaryListen?:(key:string, value:boolean) => void):KeyboardTool {
   // 辅助键，用于响应组合键指令，例如ctrl + c复制等等
   const auxiliary = {
     ctrl: false,
@@ -14,23 +15,47 @@ export function BlueprintKeyboard(config:Array<{ key: string, exec: GraphExec }>
   const bindings:Array<[string, Callback, Callback|undefined]> = []
 
   const keyPress = (event:keyboardJS.KeyEvent|undefined) => {
-    if (event && event.key === 'Control') auxiliary.ctrl = true
-    if (event && event.key === 'Alt') auxiliary.alt = true
-    if (event && event.key === 'Shift') auxiliary.shift = true
-    if (event && event.code === 'Space') auxiliary.space = true
+    if (event && event.key === 'Control') {
+      auxiliary.ctrl = true
+      if (auxiliaryListen) auxiliaryListen('ctrl', true)
+    }
+    if (event && event.key === 'Alt'){
+      auxiliary.alt = true
+      if (auxiliaryListen) auxiliaryListen('alt', true)
+    }
+    if (event && event.key === 'Shift'){
+      auxiliary.shift = true
+      if (auxiliaryListen) auxiliaryListen('shift', true)
+    }
+    if (event && event.code === 'Space'){
+      auxiliary.space = true
+      if (auxiliaryListen) auxiliaryListen('space', true)
+    }
   }
 
   const keyRelease = (event:keyboardJS.KeyEvent|undefined) => {
-    if (event && event.key === 'Control') auxiliary.ctrl = false
-    if (event && event.key === 'Alt') auxiliary.alt = false
-    if (event && event.key === 'Shift') auxiliary.shift = false
-    if (event && event.code === 'Space') auxiliary.space = false
+    if (event && event.key === 'Control'){
+      auxiliary.ctrl = false
+      if (auxiliaryListen) auxiliaryListen('ctrl', false)
+    }
+    if (event && event.key === 'Alt'){
+      auxiliary.alt = false
+      if (auxiliaryListen) auxiliaryListen('alt', false)
+    }
+    if (event && event.key === 'Shift'){
+      auxiliary.shift = false
+      if (auxiliaryListen) auxiliaryListen('shift', false)
+    }
+    if (event && event.code === 'Space'){
+      auxiliary.space = false
+      if (auxiliaryListen) auxiliaryListen('space', false)
+    }
   }
 
   const commonBind = (event:keyboardJS.KeyEvent|undefined) => {
     const key = event?.key.toLowerCase()
     // to do: 类型不正确
-    if (key && keyExec[key]) (callExec as any)[keyExec[key]]()
+    if (key && keyExec[key]) subscriber.get('exec')[keyExec[key]]()
   }
 
   keyboardJS.bind('ctrl', keyPress, keyRelease)
@@ -57,13 +82,13 @@ export function BlueprintKeyboard(config:Array<{ key: string, exec: GraphExec }>
       keyboardJS.unbind(key, keyPressBind, keyReleaseBind)
     },
     // 恢复sleep状态
-    awake() {
+    // awake() {
 
-    },
+    // },
     // 让整个按键系统不响应交互
-    sleep() {
+    // sleep() {
 
-    },
+    // },
     destroy() {
       for (const binding of bindings) {
         keyboardJS.unbind(binding[0], binding[1], binding[2])
