@@ -277,7 +277,7 @@ const _sfc_main$d = {
       this.observedEnd = pos;
     });
     const unwatch3 = typeof this.connection === 'function' && this.connection(() => {
-      this.path(this.startPosition, this.endPosition);
+      this.observedPath = this.path(this.startPosition, this.endPosition);
     });
 
     this.onDestroy = () => {

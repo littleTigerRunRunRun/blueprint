@@ -14,7 +14,7 @@
     <NodeStart v-else-if="data?.name === 'start'" :data="data" :selected="data?.selected" />
     <Node v-else :data="data" :selected="data?.selected" />
 
-    <div
+    <!-- <div
       v-for="(input, key) in data.inputs"
       :key="`input_${key}`"
       class="socket input"
@@ -26,7 +26,7 @@
         :data="{ type: 'socket', side: 'input', key, nodeId: data.id, payload: input.socket }"
         data-testid="input-socket"
       />
-    </div>
+    </div> -->
 
     <div
       v-for="(output, key) in data.outputs"
@@ -59,6 +59,7 @@ const { data, emit } = defineProps(['data', 'emit'])
 <style lang="scss">
 .graph-node-interval-container {
   position: absolute;
+  z-index: 1;
   .socket {
     width: 10px;
     height: 10px;
@@ -70,6 +71,7 @@ const { data, emit } = defineProps(['data', 'emit'])
     opacity: 0;
     transition: opacity 0.2s;
     cursor: pointer;
+    z-index: 2;
     &.l,&.r{
       top: 50%;
     }

@@ -1,22 +1,22 @@
 import { ConnectionBase, GetSchemes, NodeBase, NodeId } from 'rete';
-export declare type Padding = {
+export type Padding = {
     top: number;
     left: number;
     right: number;
     bottom: number;
 };
-export declare type NodeScheme = NodeBase & {
+export type NodeScheme = NodeBase & {
     width: number;
     height: number;
     parent?: NodeId;
     selected?: boolean;
 };
-export declare type ExpectedScheme = GetSchemes<NodeScheme, ConnectionBase>;
-export declare type Position = {
+export type ExpectedScheme = GetSchemes<NodeScheme, ConnectionBase>;
+export type Position = {
     x: number;
     y: number;
 };
-export declare type Size = {
+export type Size = {
     width: number;
     height: number;
 };

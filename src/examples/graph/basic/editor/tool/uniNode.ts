@@ -2,7 +2,7 @@
 // 统一化节点，用一种统一数据结构描述多种节点
 
 import { ClassicPreset, getUID } from 'rete'
-import { GSDataType, GSFlowType } from '../define'
+import { GSDataType, GSFlowType, type DataFlowGroupShrinkInfo } from '../define'
 
 // 这个数组表示能够被加入内容的容器节点，这个部分是和我自己fork过的scope-plugin一起解决这个插件开启后任何节点都能相互嵌套的问题
 const canUseAsParent: Array<string> = []
@@ -33,6 +33,9 @@ export type UniNodeConfig = {
   // parent和nest是一组相关参数
   parent?: string
   nest?: boolean
+  // 记录group的展开状态
+  expand?: boolean
+  shrinkInfo?: DataFlowGroupShrinkInfo
   dataOperation?: (
     inputs: Record<string, Array<unknown>>,
     self: UniNode
@@ -50,6 +53,9 @@ export class UniNode extends ClassicPreset.Node<
   width: number
   height: number
   nest?: boolean
+  // 后续这两个值可以尝试合成一个值
+  expand?: boolean
+  shrinkInfo?: DataFlowGroupShrinkInfo
   parent?: string
   selected: boolean = false
   edit: boolean = false
@@ -67,6 +73,8 @@ export class UniNode extends ClassicPreset.Node<
     height = 150,
     nest,
     parent,
+    expand,
+    shrinkInfo,
     dataOperation,
     executeOperation
   }: UniNodeConfig) {
@@ -77,6 +85,8 @@ export class UniNode extends ClassicPreset.Node<
     this.width = width
     this.height = height
     this.parent = parent
+    this.expand = expand
+    this.shrinkInfo = shrinkInfo
     this.dataOperation = dataOperation
     this.executeOperation = executeOperation
     if (nest) {
@@ -131,3 +141,5 @@ export function getCreateUniNode(factor: createUniNodeFactor) {
     return node
   }
 }
+
+export const createNode = getCreateUniNode({})

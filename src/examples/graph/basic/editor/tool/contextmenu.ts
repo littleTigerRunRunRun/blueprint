@@ -160,6 +160,22 @@ const reArrange:Item = {
   }
 }
 
+const createGroup:Item = {
+  label: '聚合成组',
+  key: GraphExec.CREATE_GROUP,
+  handler() {
+    subscriber.get('exec')?.[GraphExec.CREATE_GROUP]()
+  }
+}
+
+const splitGroup:Item = {
+  label: '拆分组合',
+  key: GraphExec.SPLIT_GROUP,
+  handler() {
+    console.log('create group')
+  }
+}
+
 export const CMItems:Items<Schemes> = (context:any, plugin:any) => {
   if (context === 'root') {
     return {
@@ -168,13 +184,13 @@ export const CMItems:Items<Schemes> = (context:any, plugin:any) => {
     }
   } else {
     if (context.id && subscriber.get('connectionSelector').selectableNodes) {
-      subscriber.get('connectionSelector').selectableNodes.select(context.id, false)
+      subscriber.get('connectionSelector').selectableNodes.select(context.id, true)
     }
     if (context.name === 'node') {
       return {
         searchBar: false,
         // addNextNode, 
-        list: [deleteItem, addNextNode]
+        list: [deleteItem, addNextNode, createGroup]
       }
     } else return {
       searchBar: false,

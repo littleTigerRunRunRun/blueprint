@@ -6,9 +6,9 @@ import type { side, Rect, Point } from '../define'
 
 
 // 工具函数：获取矩形指定边的中心点坐标
-export const getRectCenter = (rect:Rect, side:side) => {
-  const cx = rect.x + rect.width / 2;
-  const cy = rect.y + rect.height / 2;
+export const getRectCenter = (rect:Rect, side:side, anchor?:Point) => {
+  const cx = rect.x + rect.width * (anchor?.x || 0.5);
+  const cy = rect.y + rect.height * (anchor?.y || 0.5);
   switch (side) {
     case 't': return { x: cx, y: rect.y };
     case 'b': return { x: cx, y: rect.y + rect.height };
@@ -19,7 +19,7 @@ export const getRectCenter = (rect:Rect, side:side) => {
 };
 
 // 生成两个矩形边中心之间的正交避障折线路径
-export function generateOrthogonalPath(rectA:Rect, sideA:side, paddingA:number, rectB:Rect, sideB:side, paddingB:number) {
+export function generateOrthogonalPath(rectA:Rect, sideA:side, paddingA:number, rectB:Rect, sideB:side, paddingB:number, startCenter:Point, endCenter:Point) {
 
   // 工具函数：获取方向偏移后的安全点（保证不与矩形相交）
   const getSafeOffsetPoint = (center:Point, side:side, padding:number) => {
@@ -44,8 +44,8 @@ export function generateOrthogonalPath(rectA:Rect, sideA:side, paddingA:number, 
   }
 
   // 1. 获取起点、终点的中心点
-  const startCenter = getRectCenter(rectA, sideA);
-  const endCenter = getRectCenter(rectB, sideB);
+  // const startCenter = getRectCenter(rectA, sideA);
+  // const endCenter = getRectCenter(rectB, sideB);
 
   // 2. 计算整体是水平移动还是垂直移动
   // const directionHorizon = Math.abs(startCenter.x - endCenter.x) > Math.abs(startCenter.y - endCenter.y)

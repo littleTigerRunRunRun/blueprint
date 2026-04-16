@@ -2,7 +2,7 @@ import { NodeEditor } from 'rete';
 import { BaseAreaPlugin } from 'rete-area-plugin';
 import { AgentParams } from './agents/types';
 import { ExpectedScheme } from './types';
-declare type Props<T> = {
+type Props<T> = {
     editor: NodeEditor<ExpectedScheme>;
     area: BaseAreaPlugin<ExpectedScheme, T>;
 };
@@ -14,7 +14,7 @@ export declare function getNodesBoundingBox<T>(nodes: ExpectedScheme['Node'][], 
     width: number;
     height: number;
 };
-declare type Size = {
+type Size = {
     width: number;
     height: number;
 };

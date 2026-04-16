@@ -4,7 +4,7 @@ import { ConnectionPlugin, Presets as ConnectionPresets } from "rete-connection-
 import { VuePlugin, Presets, type VueArea2D } from "rete-vue-plugin"
 import type { SelectorEntity } from 'rete-area-plugin/_types/extensions/selectable.d'
 import { getDOMSocketPosition } from 'rete-render-utils'
-import { ScopesPlugin, Presets as ScopesPresets } from '@/lib/rete-extend/rete-scopes-plugin'
+import { ScopesPlugin, Presets as ScopesPresets } from 'rete-scopes-plugin'
 // import { ScopesPlugin, Presets as ScopesPresets } from 'rete-scopes-plugin'
 import { structures } from 'rete-structures'
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin'

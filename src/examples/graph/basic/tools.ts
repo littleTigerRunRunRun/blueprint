@@ -12,7 +12,8 @@ import {
   RiseOutlined,
   DashOutlined,
   DoubleRightOutlined,
-  FontSizeOutlined
+  FontSizeOutlined,
+  AppstoreOutlined
 } from '@ant-design/icons-vue'
 import { GraphExec, GraphLineType, GraphNodeType, type GraphLineParamsObject, type RawDataFlowNode } from './editor'
 import { subscriber } from './editor'
@@ -74,10 +75,21 @@ export const toolbarList:Array<{
     name: GraphExec.SET_LINE,
     label: '设置流动',
     icon: ref(MinusOutlined),
+    split: true,
     params: [
       { label: '流动（会被强制设定成虚线）', icon: DoubleRightOutlined, value: { attr: 'flow', param: true } },
       { label: '固定', icon: MinusOutlined, value: { attr: 'flow', param: false } }
     ]
+  },
+  {
+    name: GraphExec.CREATE_GROUP,
+    label: '聚合成组',
+    icon: BorderOutlined
+  },
+  {
+    name: GraphExec.SPLIT_GROUP,
+    label: '拆分组合',
+    icon: AppstoreOutlined
   }
 ]
 

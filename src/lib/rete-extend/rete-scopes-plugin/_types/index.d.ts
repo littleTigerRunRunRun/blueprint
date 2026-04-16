@@ -6,7 +6,7 @@ export * as Presets from './presets';
 /**
  * Props for `ScopesPlugin` class.
  */
-export declare type Props = {
+export type Props = {
     /** Padding (space) between the scope's border and its children. Default is `() => ({ top: 40, left: 20, right: 20, bottom: 20 })` */
     padding?: (id: NodeId) => Padding;
     /** Determines whether the nested node should be excluded from affecting the scope's size, etc. Default is `() => false` */
@@ -16,12 +16,12 @@ export declare type Props = {
     /** 决定这个目标节点是否具备父级能力 */
     elder?: (id: NodeId) => boolean;
 };
-declare type Requires<Schemes extends ExpectedScheme> = BaseArea<Schemes>;
+type Requires<Schemes extends ExpectedScheme> = BaseArea<Schemes>;
 /**
  * Signal types produced by ConnectionPlugin instance
  * @priority 10
  */
-export declare type Scopes = {
+export type Scopes = {
     type: 'scopepicked';
     data: {
         ids: NodeId[];
@@ -30,6 +30,11 @@ export declare type Scopes = {
     type: 'scopereleased';
     data: {
         ids: NodeId[];
+    };
+} | {
+    type: 'scopeupdated';
+    data: {
+        id: NodeId;
     };
 };
 /**
@@ -56,6 +61,8 @@ export declare class ScopesPlugin<Schemes extends ExpectedScheme, T = never> ext
      */
     addPreset(preset: Preset): void;
     isDependent(id: NodeId): boolean;
+    update(scopeId: NodeId): Promise<void>;
+    reorder(parentId: NodeId): void;
 }
 export declare function getPickedNodes<S extends ExpectedScheme>(scopes: Scope<Scopes, [Requires<S>, Root<S>]>): string[];
 //# sourceMappingURL=index.d.ts.map

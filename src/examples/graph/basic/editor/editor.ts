@@ -26,11 +26,10 @@ import CustomSocket from './view/socket.vue'
 import CustomGroup from './view/group.vue'
 
 // 自研工具引用
-import { UniNode, scopeElder, getCreateUniNode } from './tool/uniNode'
+import { UniNode, scopeElder, createNode } from './tool/uniNode'
 import { attachSmoothArea } from "./tool/smoothZoom";
 import { DropAddPlugin, NodeScalablePlugin, RectSelectPlugin } from './plugin'
 import { subscriber } from './tool/Subscriber'
-const createNode = getCreateUniNode({})
 
 // 业务定义
 import type {
@@ -210,6 +209,8 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
               return NodeIntervalContainer
             case 'text':
               return NodeText
+            case 'group':
+              return CustomGroup
           }
         },
         socket(_context) {
@@ -328,17 +329,31 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
       area.area.transform.y = 0
 
       // nd = nodeData
+      const waitAddList = []
       for (const nd of data.nodes) {
         const node = createNode({
           id: nd.id,
           name: nd.name,
           label: nd.label,
           width: nd.width,
-          height: nd.height
+          height: nd.height,
+          expand: nd.expand,
+          shrinkInfo: nd.shrinkInfo,
+          parent: nd.parent
         })
-        // to do list 节点较多时，应该允许每个节点的add和translate合并成一个promise和其他节点的生成并行，而不是同步操作
+        // 如果有父元素，则延迟添加
+        if (nd.parent) waitAddList.push({ node, position: nd.position })
+        else {
+          // to do list 节点较多时，应该允许每个节点的add和translate合并成一个promise和其他节点的生成并行，而不是同步操作
+          await editor.addNode(node)
+          await area.translate(nd.id, nd.position);
+        }
+      }
+
+      for (const waitNode of waitAddList) {
+        const { node, position } = waitNode
         await editor.addNode(node)
-        await area.translate(nd.id, nd.position);
+        await area.translate(node.id, position);
       }
 
       // 还原画布transform
@@ -357,6 +372,8 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         // connection.flowType = ld.flowType;
         // connection.dataType = ld.dataType;
         connection.line = ld.line
+        connection.sourceAnchor = ld.sourceAnchor
+        connection.targetAnchor = ld.targetAnchor
         await editor.addConnection(connection);
       }
     },
@@ -373,7 +390,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         nodes: nodes.map((node) => {
           const view = area.nodeViews.get(node.id)
           if (!view) throw new Error(`no node view when export data:${node.id}`)
-          return {
+          const nodeData:any = {
             id: node.id,
             name: node.name,
             label: node.label,
@@ -381,6 +398,11 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
             height: node.height,
             position: view.position
           }
+          if (node.parent) nodeData.parent = node.parent
+          if (node.expand !== undefined) nodeData.expand = node.expand
+          if (node.shrinkInfo !== undefined) nodeData.shrinkInfo = node.shrinkInfo
+          if (node.name === 'group') console.log(nodeData)
+          return nodeData
         }),
         lines: editor.getConnections().map((connection) => ({
           id: connection.id,
@@ -388,7 +410,9 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
           sourceOutput: connection.sourceOutput,
           target: connection.target,
           targetInput: connection.targetInput,
-          line: connection.line
+          line: connection.line,
+          sourceAnchor: connection.sourceAnchor,
+          targetAnchor: connection.targetAnchor
         })),
       }
     },
@@ -512,6 +536,71 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
           }
         }
       })
+    },
+    createGroup: async () => {
+      // 查找需要被聚合的选中节点
+      const nodeIds:Array<string> = []
+      selector.entities.forEach((entity) => {
+        nodeIds.push(entity.id)
+      })
+
+      let joinedRect:any
+      nodeIds.forEach((id) => {
+        const node = editor.getNode(id)
+        const nposition = area.nodeViews.get(id)!.position
+
+        if (!joinedRect) {
+          joinedRect = {
+            x: nposition.x,
+            y: nposition.y,
+            width: node!.width,
+            height: node!.height
+          }
+        } else {
+          if (joinedRect.x > nposition.x) joinedRect.x = nposition.x
+          if (joinedRect.x + joinedRect.width < nposition.x + node!.width) joinedRect.width = nposition.x + node!.width - joinedRect.x
+          if (joinedRect.y > nposition.y) joinedRect.y = nposition.y
+          if (joinedRect.y + joinedRect.height < nposition.y + node!.height) joinedRect.height = nposition.y + node!.height - joinedRect.y
+        }
+      })
+
+      const padding = 20
+      const headerHeight = 20
+      joinedRect.x -= padding
+      joinedRect.y -= (padding + headerHeight)
+      joinedRect.width += padding * 2
+      joinedRect.height += (padding * 2 + headerHeight)
+
+      if (joinedRect) {
+        let nid = getUID()
+        const group = createNode({
+          id: nid,
+          name: 'group',
+          nest: true,
+          expand: true,
+          label: '新建组',
+          width: joinedRect.width,
+          height: joinedRect.height
+        })
+        // to do list 节点较多时，应该允许每个节点的add和translate合并成一个promise和其他节点的生成并行，而不是同步操作
+        await editor.addNode(group)
+        await area.translate(nid, {
+          x: joinedRect.x,
+          y: joinedRect.y
+        });
+
+        nodeIds.forEach(async (id) => {
+          const node = editor.getNode(id)
+          if (node) node.parent = nid
+        })
+        scopes.reorder(nid)
+        subscriber.get('connectionSelector').selectableNodes.select(nid)
+
+        console.log(editor)
+      }
+    },
+    splitGroup() {
+
     },
     destroy() {
       editor.clear()

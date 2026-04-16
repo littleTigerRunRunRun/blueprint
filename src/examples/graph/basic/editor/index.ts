@@ -29,6 +29,7 @@ export async function makeupEditor(params: EditorInitParams) {
   }))
   
   const editor = await createEditor(params)
+  console.log(editor)
 
   // 指令
   const callExec = {
@@ -83,6 +84,12 @@ export async function makeupEditor(params: EditorInitParams) {
     [GraphExec.SET_RECT_SELECT]: (value?:boolean) => {
       if (value === undefined) subscriber.set('isRectSelect', true)
       else subscriber.set('isRectSelect', value)
+    },
+    [GraphExec.CREATE_GROUP]: () => {
+      editor.createGroup()
+    },
+    [GraphExec.SPLIT_GROUP]: () => {
+
     }
   }
   subscriber.set('exec', callExec)

@@ -40,7 +40,6 @@ const line = {
 }
 
 watch(() => path, () => {
-  // console.log('xxx', data.points[1].x, data.points[1].y)
   if (!path) return
   tpath.value = createPath()
 })
@@ -50,6 +49,7 @@ function createPath() {
   const { editor, area } = subscriber.get('connectionSelector')
   const sn = editor.getNode(data.source)
   const snv = area.nodeViews.get(data.source)?.position
+  if (!snv) return ''
   const srect = {
     x: snv!.x,
     y: snv!.y,
@@ -78,8 +78,8 @@ function createPath() {
     trect.height = tn!.height
     tside = (data.targetInput || subscriber.get('hoveringSocket')!.key) as side
   }
-  const start = getRectCenter(srect, sside)
-  const end = getRectCenter(trect, tside)
+  const start = getRectCenter(srect, sside, data.sourceAnchor)
+  const end = getRectCenter(trect, tside, data.targetAnchor)
 
   switch (data.line.type) {
     case GraphLineType.MANHATTAN: {
@@ -88,9 +88,11 @@ function createPath() {
         paddingEnd = 15
       }
 
+      // to do: 该方法没有考虑sourceAnchor和targetAnchor的情况
       const points = generateOrthogonalPath(
         srect, data.sourceOutput, 15,
-        trect, tside, paddingEnd
+        trect, tside, paddingEnd,
+        start, end
       )
       for (let i = 0; i < points.length - 1; i++) {
         const point = points[i]
@@ -173,9 +175,9 @@ onBeforeUnmount(() => {
   pointer-events: none;
   width: 9999px;
   height: 9999px;
-  z-index: -2;
+  z-index: 4;
   &.selected {
-    z-index: -1;
+    z-index: 5;
     // .view-path {
     //   stroke: #1890ff;
     // }

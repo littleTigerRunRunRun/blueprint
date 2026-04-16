@@ -11,7 +11,10 @@
       lineHeight: `${data!.height - 2}px`
     }"
   >
-    <span contenteditable="true">{{ data?.label }}</span>
+    <span
+      contenteditable="true"
+      @input="handleChange"
+    >{{ data?.label }}</span>
   </div>
 </template>
 
@@ -23,6 +26,11 @@ const { data } = defineProps({
   selected: Boolean
 })
 
+const handleChange = (val:InputEvent) => {
+  // @ts-ignore
+  const text = val?.target?.innerText
+  if (data) data.label = text
+}
 </script>
 
 <style lang="scss">

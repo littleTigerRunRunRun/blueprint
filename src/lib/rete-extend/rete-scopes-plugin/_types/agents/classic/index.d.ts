@@ -1,5 +1,5 @@
 import { AgentContext, AgentParams, ScopeAgent } from '../types';
-export declare type DefaultScopesAgentParams = AgentParams & {
+export type DefaultScopesAgentParams = AgentParams & {
     timeout?: number;
 };
 export declare const useScopeAgent: ScopeAgent;

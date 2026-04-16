@@ -1,6 +1,6 @@
 /*!
-* rete-scopes-plugin v2.0.1
-* (c) 2024 Vitaliy Stoliarov
+* rete-scopes-plugin v2.1.1
+* (c) 2026 Vitaliy Stoliarov
 * Released under the CC-BY-NC-SA-4.0 license.
 * */
 import _toConsumableArray from '@babel/runtime/helpers/toConsumableArray';
@@ -8,8 +8,8 @@ import _asyncToGenerator from '@babel/runtime/helpers/asyncToGenerator';
 import _classCallCheck from '@babel/runtime/helpers/classCallCheck';
 import _createClass from '@babel/runtime/helpers/createClass';
 import _possibleConstructorReturn from '@babel/runtime/helpers/possibleConstructorReturn';
-import _get from '@babel/runtime/helpers/get';
 import _getPrototypeOf from '@babel/runtime/helpers/getPrototypeOf';
+import _get from '@babel/runtime/helpers/get';
 import _inherits from '@babel/runtime/helpers/inherits';
 import _defineProperty from '@babel/runtime/helpers/defineProperty';
 import _regeneratorRuntime from '@babel/runtime/regenerator';
@@ -39,59 +39,31 @@ function bringForward(nodeId, props) {
     return n.parent === nodeId;
   });
   connections.forEach(function (connection) {
-    return bringConnectionForward(connection.id, props);
+    bringConnectionForward(connection.id, props);
   });
   if (view) {
     props.area.area.content.reorder(view.element, null);
   }
   children.forEach(function (child) {
-    return bringForward(child.id, props);
+    bringForward(child.id, props);
   });
 }
 function useOrdering(props) {
-  // eslint-disable-next-line max-statements
-  props.area.addPipe( /*#__PURE__*/function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(context) {
-      var id, connection;
-      return _regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) switch (_context.prev = _context.next) {
-          case 0:
-            if (!(!(context instanceof Object) || !('type' in context))) {
-              _context.next = 2;
-              break;
-            }
-            return _context.abrupt("return", context);
-          case 2:
-            if (context.type === 'nodepicked') {
-              bringForward(context.data.id, props);
-            }
-            if (!(context.type === 'connectioncreated')) {
-              _context.next = 11;
-              break;
-            }
-            id = context.data.id;
-            connection = props.editor.getConnection(id);
-            if (connection) {
-              _context.next = 8;
-              break;
-            }
-            throw new Error('connection was removed');
-          case 8:
-            bringConnectionBack(context.data.id, props);
-            bringForward(connection.source, props);
-            bringForward(connection.target, props);
-          case 11:
-            return _context.abrupt("return", context);
-          case 12:
-          case "end":
-            return _context.stop();
-        }
-      }, _callee);
-    }));
-    return function (_x) {
-      return _ref.apply(this, arguments);
-    };
-  }());
+  props.area.addPipe(function (context) {
+    if (!context || _typeof(context) !== 'object' || !('type' in context)) return context;
+    if (context.type === 'nodepicked') {
+      bringForward(context.data.id, props);
+    }
+    if (context.type === 'connectioncreated') {
+      var id = context.data.id;
+      var connection = props.editor.getConnection(id);
+      if (!connection) throw new Error('connection was removed');
+      bringConnectionBack(context.data.id, props);
+      bringForward(connection.source, props);
+      bringForward(connection.target, props);
+    }
+    return context;
+  });
 }
 
 // eslint-disable-next-line max-statements
@@ -99,7 +71,7 @@ function resizeParent(_x, _x2, _x3) {
   return _resizeParent.apply(this, arguments);
 }
 function _resizeParent() {
-  _resizeParent = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(parent, agentParams, props) {
+  _resizeParent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee(parent, agentParams, props) {
     return _regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
         case 0:
@@ -117,15 +89,15 @@ function _resizeParent() {
   return _resizeParent.apply(this, arguments);
 }
 
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t["return"] || t["return"](); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 // eslint-disable-next-line max-statements, max-len
 function reassignParent(_x, _x2, _x3, _x4) {
   return _reassignParent.apply(this, arguments);
 }
 function _reassignParent() {
-  _reassignParent = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(ids, pointer, agentParams, props) {
+  _reassignParent = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee(ids, pointer, agentParams, props) {
     var nodes, overlayNodes, areaElements, overlayNodesWithIndex, topOverlayParent, formerParents, _iterator, _step, formerParent;
     return _regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) switch (_context.prev = _context.next) {
@@ -229,7 +201,7 @@ function translateChildren(_x5, _x6, _x7) {
   return _translateChildren.apply(this, arguments);
 }
 function _translateChildren() {
-  _translateChildren = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee3(id, _ref, props) {
+  _translateChildren = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee3(id, _ref, props) {
     var position, previous, children;
     return _regeneratorRuntime.wrap(function _callee3$(_context3) {
       while (1) switch (_context3.prev = _context3.next) {
@@ -239,8 +211,8 @@ function _translateChildren() {
             return n.parent === id;
           });
           _context3.next = 4;
-          return Promise.all(children.map( /*#__PURE__*/function () {
-            var _ref4 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(n) {
+          return Promise.all(children.map(/*#__PURE__*/function () {
+            var _ref4 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee2(n) {
               var dx, dy, view, node, nodePosition;
               return _regeneratorRuntime.wrap(function _callee2$(_context2) {
                 while (1) switch (_context2.prev = _context2.next) {
@@ -297,14 +269,16 @@ function hasSelectedParent(nodeId, props) {
 function trackedTranslate(props) {
   var active = new Map();
   var increment = function increment(id) {
-    return active.set(id, (active.get(id) || 0) + 1);
+    var _active$get;
+    return active.set(id, ((_active$get = active.get(id)) !== null && _active$get !== void 0 ? _active$get : 0) + 1);
   };
   var decrement = function decrement(id) {
-    return active.set(id, (active.get(id) || 0) - 1);
+    var _active$get2;
+    return active.set(id, ((_active$get2 = active.get(id)) !== null && _active$get2 !== void 0 ? _active$get2 : 0) - 1);
   };
   return {
     translate: function translate(id, x, y) {
-      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+      return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
         var view, previous;
         return _regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
@@ -334,7 +308,8 @@ function trackedTranslate(props) {
       }))();
     },
     isTranslating: function isTranslating(id) {
-      return (active.get(id) || 0) > 0;
+      var _active$get3;
+      return ((_active$get3 = active.get(id)) !== null && _active$get3 !== void 0 ? _active$get3 : 0) > 0;
     }
   };
 }
@@ -356,8 +331,6 @@ function watchClearing(editor) {
 
 function useValidator(props) {
   var isClearing = watchClearing(props.editor);
-
-  // eslint-disable-next-line max-statements
   props.area.addPipe(function (context) {
     if (!context || !(_typeof(context) === 'object' && 'type' in context)) return context;
     if (context.type === 'nodecreate') {
@@ -403,7 +376,7 @@ var useScopeAgent = function useScopeAgent(params, _ref) {
         return n.id;
       }) : [id];
       (_candidates = candidates).push.apply(_candidates, _toConsumableArray(targets));
-      scopes.emit({
+      void scopes.emit({
         type: 'scopepicked',
         data: {
           ids: targets
@@ -418,7 +391,7 @@ var useScopeAgent = function useScopeAgent(params, _ref) {
     var list = _toConsumableArray(candidates);
     cancel();
     candidates = [];
-    scopes.emit({
+    void scopes.emit({
       type: 'scopereleased',
       data: {
         ids: list
@@ -426,13 +399,13 @@ var useScopeAgent = function useScopeAgent(params, _ref) {
     });
     return list;
   }
-  area.addPipe( /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(context) {
+  area.addPipe(/*#__PURE__*/function () {
+    var _ref2 = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee(context) {
       var pointer, ids;
       return _regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) switch (_context.prev = _context.next) {
           case 0:
-            if (!(!(context instanceof Object) || !('type' in context))) {
+            if (!(!context || _typeof(context) !== 'object' || !('type' in context))) {
               _context.next = 2;
               break;
             }
@@ -484,7 +457,6 @@ function useVisualEffects(params, _ref3) {
 
   // eslint-disable-next-line max-statements
   function updateHighlightedScopes(position, nodes) {
-    // 如果先前有高亮对象，先取消其高亮
     if (previousHighlighted) {
       var view = area.nodeViews.get(previousHighlighted);
       if (view && nodes.length) view.element.style.opacity = '0.4';
@@ -514,7 +486,6 @@ function useVisualEffects(params, _ref3) {
       var nonSelected = intersectedNodes.filter(function (item) {
         return !item.node.selected;
       });
-      // 从交互点出发，找到画布中交互点位置上的节点们，然后和画布中记录的节点做比对，找出交叉内容，之后剔除选中（正在拖拽的）的内容后，第一个交互点就是会进行拖入操作的。
       var first = nonSelected[0];
       if (first) {
         first.view.element.style.opacity = '0.8';
@@ -522,35 +493,26 @@ function useVisualEffects(params, _ref3) {
       }
     }
   }
-  // eslint-disable-next-line max-statements
   scopes.addPipe(function (context) {
     if (context.type === 'scopepicked') {
       var ids = context.data.ids;
-
-      // 未选中的节点统统改为虚化（opacity=0.4)
       editor.getNodes().filter(function (n) {
         return !ids.includes(n.id);
       }).forEach(function (node) {
         var view = area.nodeViews.get(node.id);
         if (view) view.element.style.opacity = '0.4';
       });
-      if (clientPointerPostion) {
-        updateHighlightedScopes(clientPointerPostion, pickedNodes);
-      }
+      if (clientPointerPostion) updateHighlightedScopes(clientPointerPostion, pickedNodes);
     }
     if (context.type === 'scopereleased') {
       var _ids = context.data.ids;
-
-      // 未选中的节点统统解除虚化（opacity='')
       editor.getNodes().filter(function (n) {
         return !_ids.includes(n.id);
       }).forEach(function (node) {
         var view = area.nodeViews.get(node.id);
         if (view) view.element.style.opacity = '';
       });
-      if (clientPointerPostion) {
-        updateHighlightedScopes(clientPointerPostion, pickedNodes);
-      }
+      if (clientPointerPostion) updateHighlightedScopes(clientPointerPostion, pickedNodes);
     }
     if (context.type === 'pointermove') {
       clientPointerPostion = {
@@ -598,6 +560,7 @@ function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbol
 function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
 function _callSuper(t, o, e) { return o = _getPrototypeOf(o), _possibleConstructorReturn(t, _isNativeReflectConstruct() ? Reflect.construct(o, e || [], _getPrototypeOf(t).constructor) : o.apply(t, e)); }
 function _isNativeReflectConstruct() { try { var t = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); } catch (t) {} return (_isNativeReflectConstruct = function _isNativeReflectConstruct() { return !!t; })(); }
+function _superPropGet(t, e, o, r) { var p = _get(_getPrototypeOf(1 & r ? t.prototype : t), e, o); return 2 & r && "function" == typeof p ? function (t) { return p.apply(o, t); } : p; }
 /**
  * Props for `ScopesPlugin` class.
  */
@@ -638,14 +601,12 @@ var ScopesPlugin = /*#__PURE__*/function (_Scope) {
     };
     return _this;
   }
-
-  // eslint-disable-next-line max-statements
   _inherits(ScopesPlugin, _Scope);
   return _createClass(ScopesPlugin, [{
     key: "setParent",
     value: function setParent(scope) {
       var _this2 = this;
-      _get(_getPrototypeOf(ScopesPlugin.prototype), "setParent", this).call(this, scope);
+      _superPropGet(ScopesPlugin, "setParent", this, 3)([scope]);
       this.area = this.parentScope(BaseAreaPlugin);
       this.editor = this.area.parentScope(NodeEditor);
       var props = {
@@ -664,8 +625,8 @@ var ScopesPlugin = /*#__PURE__*/function (_Scope) {
         padding: padding,
         size: size,
         exclude: exclude,
-        elder: elder,
-        translate: translate
+        translate: translate,
+        elder: elder
       };
       useValidator(props);
       useOrdering(props);
@@ -676,9 +637,9 @@ var ScopesPlugin = /*#__PURE__*/function (_Scope) {
       });
 
       // eslint-disable-next-line max-statements, complexity
-      this.addPipe( /*#__PURE__*/function () {
-        var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee(context) {
-          var _id, current, parent, hasAnySelectedParent, isPicked, parentId, _parent;
+      this.addPipe(/*#__PURE__*/function () {
+        var _ref = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee(context) {
+          var id, current, parent, hasAnySelectedParent, isPicked, parentId, _parent, _parent2;
           return _regeneratorRuntime.wrap(function _callee$(_context) {
             while (1) switch (_context.prev = _context.next) {
               case 0:
@@ -686,27 +647,27 @@ var ScopesPlugin = /*#__PURE__*/function (_Scope) {
                   _context.next = 15;
                   break;
                 }
-                _id = context.data.id;
-                current = props.editor.getNode(_id);
+                id = context.data.id;
+                current = props.editor.getNode(id);
                 if (current) {
                   _context.next = 5;
                   break;
                 }
                 throw new Error('cannot find node');
               case 5:
-                if (isTranslating(_id)) {
+                if (isTranslating(id)) {
                   _context.next = 8;
                   break;
                 }
                 _context.next = 8;
-                return translateChildren(_id, context.data, props);
+                return translateChildren(id, context.data, props);
               case 8:
                 parent = current.parent ? props.editor.getNode(current.parent) : null;
-                if (!(parent && !agentParams.exclude(_id))) {
+                if (!(parent && !agentParams.exclude(id))) {
                   _context.next = 15;
                   break;
                 }
-                hasAnySelectedParent = hasSelectedParent(_id, props);
+                hasAnySelectedParent = hasSelectedParent(id, props);
                 isPicked = belongsTo(current.id, pickedNodes, props);
                 if (!(!hasAnySelectedParent && !isPicked)) {
                   _context.next = 15;
@@ -728,8 +689,20 @@ var ScopesPlugin = /*#__PURE__*/function (_Scope) {
                 _context.next = 21;
                 return resizeParent(_parent, agentParams, props);
               case 21:
+                if (!(context.type === 'scopeupdated')) {
+                  _context.next = 26;
+                  break;
+                }
+                _parent2 = _this2.editor.getNode(context.data.id);
+                if (!_parent2) {
+                  _context.next = 26;
+                  break;
+                }
+                _context.next = 26;
+                return resizeParent(_parent2, agentParams, props);
+              case 26:
                 return _context.abrupt("return", context);
-              case 22:
+              case 27:
               case "end":
                 return _context.stop();
             }
@@ -760,40 +733,55 @@ var ScopesPlugin = /*#__PURE__*/function (_Scope) {
       var node = this.editor.getNode(id);
       return node && (node.selected || hasSelectedParent(id, props));
     }
+  }, {
+    key: "update",
+    value: function () {
+      var _update = _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime.mark(function _callee2(scopeId) {
+        return _regeneratorRuntime.wrap(function _callee2$(_context2) {
+          while (1) switch (_context2.prev = _context2.next) {
+            case 0:
+              _context2.next = 2;
+              return this.emit({
+                type: 'scopeupdated',
+                data: {
+                  id: scopeId
+                }
+              });
+            case 2:
+            case "end":
+              return _context2.stop();
+          }
+        }, _callee2, this);
+      }));
+      function update(_x2) {
+        return _update.apply(this, arguments);
+      }
+      return update;
+    }()
+  }, {
+    key: "reorder",
+    value: function reorder(parentId) {
+      bringForward(parentId, {
+        editor: this.editor,
+        area: this.area
+      });
+    }
   }]);
 }(Scope);
 function getPickedNodes(scopes) {
   var nodes = [];
-  scopes.addPipe( /*#__PURE__*/function () {
-    var _ref2 = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee2(context) {
-      return _regeneratorRuntime.wrap(function _callee2$(_context2) {
-        while (1) switch (_context2.prev = _context2.next) {
-          case 0:
-            if ('type' in context) {
-              _context2.next = 2;
-              break;
-            }
-            return _context2.abrupt("return", context);
-          case 2:
-            if (context.type === 'scopepicked') {
-              nodes.push.apply(nodes, _toConsumableArray(context.data.ids));
-            }
-            if (context.type === 'scopereleased') {
-              nodes.splice.apply(nodes, [0, nodes.length].concat(_toConsumableArray(nodes.filter(function (id) {
-                return !context.data.ids.includes(id);
-              }))));
-            }
-            return _context2.abrupt("return", context);
-          case 5:
-          case "end":
-            return _context2.stop();
-        }
-      }, _callee2);
-    }));
-    return function (_x2) {
-      return _ref2.apply(this, arguments);
-    };
-  }());
+  scopes.addPipe(function (context) {
+    if (!('type' in context)) return context;
+    if (context.type === 'scopepicked') {
+      nodes.push.apply(nodes, _toConsumableArray(context.data.ids));
+    }
+    if (context.type === 'scopereleased') {
+      nodes.splice.apply(nodes, [0, nodes.length].concat(_toConsumableArray(nodes.filter(function (id) {
+        return !context.data.ids.includes(id);
+      }))));
+    }
+    return context;
+  });
   return nodes;
 }
 

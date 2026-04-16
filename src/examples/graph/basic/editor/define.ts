@@ -29,6 +29,8 @@ export class Connection<
     solid: true,
     arrow: false
   }
+  sourceAnchor?:Point
+  targetAnchor?:Point
   constructor(
     id: string,
     source: Source,
@@ -54,6 +56,13 @@ export declare interface RawDataFlowNode {
   height: number
 }
 
+export declare interface DataFlowGroupShrinkInfo {
+  width: number
+  height: number
+  nodes: Array<DataFlowNode>
+  lines: Array<DataFlowLine>
+}
+
 // 数据结构定义
 export declare interface DataFlowNode {
   id: string
@@ -62,6 +71,9 @@ export declare interface DataFlowNode {
   width: number
   height: number
   position: { x: number; y: number }
+  parent?: string // 是否存在parent节点
+  expand?: boolean
+  shrinkInfo?: DataFlowGroupShrinkInfo
 }
 
 export declare interface DataFlowGroup extends DataFlowNode {}
@@ -72,9 +84,9 @@ export declare interface DataFlowLine {
   sourceOutput: string // output name of source
   target: string
   targetInput: string // input name of target
-  // flowType?: GSFlowType
-  // dataType?: GSDataType
   line: GraphLineParamsObject
+  sourceAnchor?:Point
+  targetAnchor?:Point
 }
 
 export declare interface DataFlowGraph {
@@ -127,7 +139,9 @@ export enum GraphExec {
   SET_LINE = 'setLine',
   REARRANGE = 'rearrange',
   ADD_NODE_FROM_SELECTING = 'addNodeFromSelecting',
-  SET_RECT_SELECT = 'setRectSelect'
+  SET_RECT_SELECT = 'setRectSelect',
+  CREATE_GROUP = 'createGroup',
+  SPLIT_GROUP = 'splitGroup'
 }
 
 // 图形节点类型
@@ -148,6 +162,8 @@ export interface GraphEditor {
   dropAdd: (item: RawDataFlowNode | null) => void,
   updateSelectingLine: (params: GraphLineParams) => void,
   addNodeFromSelecting: (nodeInfo:RawDataFlowNode, s:side) => void
+  createGroup: () => void
+  splitGroup: () => void
 }
 
 // 无需参数的指令集，主要用于给快捷键系统调取
@@ -178,6 +194,8 @@ export interface GraphExecCallback {
   [GraphExec.SET_LINE]: (params:GraphLineParams) => void
   [GraphExec.REARRANGE]: Callback
   [GraphExec.SET_RECT_SELECT]: (value?:boolean) => void
+  [GraphExec.CREATE_GROUP]: () => void
+  [GraphExec.SPLIT_GROUP]: () => void
 }
 
 export interface CallbackEventHandler {

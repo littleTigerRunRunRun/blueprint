@@ -37,6 +37,7 @@ var Content = /*#__PURE__*/function () {
     _classCallCheck__default["default"](this, Content);
     this.reordered = reordered;
     this.holder = document.createElement('div');
+    this.holder.setAttribute('rete-type', 'content');
     this.holder.style.transformOrigin = '0 0';
   }
   return _createClass__default["default"](Content, [{
@@ -807,6 +808,7 @@ var NodeView = /*#__PURE__*/function () {
     this.events = events;
     this.guards = guards;
     this.element = document.createElement('div');
+    this.element.setAttribute('rete-type', 'node');
     this.element.style.position = 'absolute';
     this.position = {
       x: 0,
@@ -1279,7 +1281,7 @@ function selectableNodes(base, core, options) {
   }
   area.addPipe(/*#__PURE__*/function () {
     var _ref = _asyncToGenerator__default["default"](/*#__PURE__*/_regeneratorRuntime__default["default"].mark(function _callee5(context) {
-      var pickedId, accumulate, _context$data, id, position, previous, _dx, _dy;
+      var pickedId, accumulate, _context$data, id, position, previous, _dx, _dy, selected;
       return _regeneratorRuntime__default["default"].wrap(function _callee5$(_context5) {
         while (1) switch (_context5.prev = _context5.next) {
           case 0:
@@ -1303,7 +1305,7 @@ function selectableNodes(base, core, options) {
             _context5.next = 9;
             return add(pickedId, accumulate);
           case 9:
-            _context5.next = 33;
+            _context5.next = 39;
             break;
           case 11:
             if (!(context.type === 'nodetranslated')) {
@@ -1323,40 +1325,80 @@ function selectableNodes(base, core, options) {
             _context5.next = 18;
             return core.translate(_dx, _dy);
           case 18:
-            _context5.next = 33;
+            _context5.next = 39;
             break;
           case 20:
             if (!(context.type === 'pointerdown')) {
-              _context5.next = 24;
+              _context5.next = 30;
               break;
             }
+            if (!(context.data.event.button === 2)) {
+              _context5.next = 27;
+              break;
+            }
+            // 说明是右键点击
+            // 然后检测右键点击对象是不是已选中内容，是的话，则需要考虑不执行unselectAll
+            selected = false;
+            core.entities.forEach(function (entity) {
+              try {
+                var element = area.nodeViews.get(entity.id).element;
+                var currentElement = context.data.event.target;
+                while (currentElement) {
+                  // @ts-ignore
+                  if (currentElement.nodeName.toUpperCase() === 'BODY') {
+                    currentElement = null;
+                  }
+                  // @ts-ignore
+                  else if (currentElement.getAttribute('rete-type') === 'node') {
+                    if (element === currentElement) {
+                      selected = true;
+                    }
+                    currentElement = null;
+                  }
+                  // @ts-ignore
+                  else if (currentElement.getAttribute('rete-type') === 'content') {
+                    currentElement = null;
+                    // @ts-ignore
+                  } else currentElement = currentElement.parentNode;
+                }
+              } catch (e) {
+                console.log(e);
+              }
+            });
+            if (!selected) {
+              _context5.next = 27;
+              break;
+            }
+            twitch = null;
+            return _context5.abrupt("return", context);
+          case 27:
             twitch = 0;
-            _context5.next = 33;
+            _context5.next = 39;
             break;
-          case 24:
+          case 30:
             if (!(context.type === 'pointermove')) {
-              _context5.next = 28;
+              _context5.next = 34;
               break;
             }
             if (twitch !== null) twitch++;
-            _context5.next = 33;
+            _context5.next = 39;
             break;
-          case 28:
+          case 34:
             if (!(context.type === 'pointerup')) {
-              _context5.next = 33;
+              _context5.next = 39;
               break;
             }
             if (!(twitch !== null && twitch < 4)) {
-              _context5.next = 32;
+              _context5.next = 38;
               break;
             }
-            _context5.next = 32;
+            _context5.next = 38;
             return core.unselectAll();
-          case 32:
+          case 38:
             twitch = null;
-          case 33:
+          case 39:
             return _context5.abrupt("return", context);
-          case 34:
+          case 40:
           case "end":
             return _context5.stop();
         }

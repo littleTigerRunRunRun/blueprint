@@ -30,8 +30,8 @@
     "rete-connection-plugin": "file:./src/lib/rete-extend/rete-connection-plugin/",
     "rete-context-menu-plugin": "file:./src/lib/rete-extend/rete-context-menu-plugin/",
     "rete-engine": "^2.0.1",
-    "rete-render-utils": "file:./src/lib/rete-extend/rete-render-utils/",
     "rete-scopes-plugin": "file:./src/lib/rete-extend/rete-scopes-plugin/",
+    "rete-render-utils": "file:./src/lib/rete-extend/rete-render-utils/",
     "rete-structures": "^2.0.1",
     "rete-vue-plugin": "file:./src/lib/rete-extend/rete-vue-plugin/"
   },

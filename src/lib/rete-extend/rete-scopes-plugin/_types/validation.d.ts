@@ -1,7 +1,7 @@
 import { NodeEditor } from 'rete';
 import { BaseAreaPlugin } from 'rete-area-plugin';
 import { ExpectedScheme } from './types';
-declare type Props<T> = {
+type Props<T> = {
     editor: NodeEditor<ExpectedScheme>;
     area: BaseAreaPlugin<ExpectedScheme, T>;
 };
