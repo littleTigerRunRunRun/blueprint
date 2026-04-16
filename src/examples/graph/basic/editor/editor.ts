@@ -40,7 +40,11 @@ import type {
   GraphEditor,
   EditorInitParams,
   GraphLineParams,
-  side
+  side,
+  Bound,
+  TemplateDataFlowNode,
+  DataFlowGraphTemplate,
+  Point
 } from './define'
 import { GraphAbility, Connection, GraphLineType } from './define'
 import { CMItems } from './tool/contextmenu'
@@ -301,7 +305,8 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         subscriber.get('connectionSelector').selectableNodes = selectableNodes
         dropAdd.getSelectHanlder({
           select: selectableNodes.select,
-          unselect: selectableNodes.unselect
+          unselect: selectableNodes.unselect,
+          unselectAll: selector.unselectAll.bind(selector)
         })
         break
       }
@@ -428,11 +433,41 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         })
       } else dropAdd.remove()
     },
+    dropTemplateAdd: (data: DataFlowGraphTemplate) => {
+      const idMapping:Record<string, UniNode> = {}
+      // const positions:Record<string, Point> = {}
+      const nodes = data.nodes.map((item) => {
+        const id = getUID()
+        // positions[id] = item.position
+        const node = createNode({
+          id,
+          name: item.name,
+          label: item.label,
+          width: item.width,
+          height: item.height,
+        })
+        // @ts-ignore
+        node.position = item.position
+        idMapping[item.id] = node
+        return node
+      })
+      const lines = data.lines.map((item) => {
+        const id = getUID()
+        const line = new Connection(id, idMapping[item.source], item.sourceOutput, idMapping[item.target], item.targetInput)
+        line.line = item.line
+        return line
+      })
+
+      // @ts-ignore
+      dropAdd.addTemplate({ nodes, lines })
+    },
     deleteSelect: async () => {
+      const nodeIds:Array<string> = []
+      const lineIds:Array<string> = []
       selector.entities.forEach(async (entity) => {
         switch (entity.label) {
           case "connection": {
-            await editor.removeConnection(entity.id);
+            if (!lineIds.includes(entity.id)) lineIds.push(entity.id)
             break;
           }
           case "node": {
@@ -440,13 +475,19 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
               return c.source === entity.id || c.target === entity.id;
             });
             for (const connection of connections) {
-              await editor.removeConnection(connection.id);
+              if (!lineIds.includes(connection.id)) lineIds.push(connection.id)
             }
-            await editor.removeNode(entity.id);
+            nodeIds.push(entity.id)
             break;
           }
         }
       });
+      nodeIds.forEach(async (id) => {
+        await editor.removeNode(id);
+      })
+      lineIds.forEach(async (id) => {
+        await editor.removeConnection(id);
+      })
     },
     addNodeFromSelecting: async (nodeInfo:RawDataFlowNode, s:side) => {
       let selectingNodeId:string|undefined
@@ -609,6 +650,51 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
           await editor.removeNode(entity.id)
         }
       })
+    },
+    exportTemplate() {
+      const nodes:Array<TemplateDataFlowNode> = []
+      let bound:undefined | Bound
+      selector.entities.forEach((entity) => {
+        const node = editor.getNode(entity.id)
+        if (!node) throw new Error(`no such select node:${entity.id}`)
+        const nPosition = area.nodeViews.get(entity.id)!.position
+        nodes.push({
+          id: node.id,
+          name: node.name,
+          label: node.label,
+          width: node.width,
+          height: node.height,
+          position: nPosition
+        })
+        if (!bound) {
+          bound = {
+            xmin: nPosition.x,
+            xmax: nPosition.x + node.width,
+            ymin: nPosition.y,
+            ymax: nPosition.y + node.height
+          }
+        } else {
+          bound.xmin = Math.min(bound.xmin, nPosition.x)
+          bound.xmax = Math.max(bound.xmax, nPosition.x + node.width)
+          bound.ymin = Math.min(bound.ymin, nPosition.y)
+          bound.ymax = Math.max(bound.ymax, nPosition.y + node.height)
+        }
+      })
+      if (bound) {
+        nodes.forEach((node) => {
+          // 归零
+          node.position.x -= (bound!.xmin + bound!.xmax) * 0.5
+          node.position.y -= (bound!.ymin + bound!.ymax) * 0.5
+        })
+      }
+      // 和nodes相关的连线
+      const nodeIds = nodes.map((node) => node.id)
+      // 开头和结尾都是上述node的连线也计入模版
+      const lines = editor.getConnections().filter((conn) => nodeIds.includes(conn.target) && nodeIds.includes(conn.source))
+      return {
+        nodes,
+        lines
+      }
     },
     destroy() {
       editor.clear()

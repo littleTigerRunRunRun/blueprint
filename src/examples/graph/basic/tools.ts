@@ -13,7 +13,9 @@ import {
   DashOutlined,
   DoubleRightOutlined,
   FontSizeOutlined,
-  AppstoreOutlined
+  AppstoreOutlined,
+  LayoutOutlined,
+  CopyOutlined
 } from '@ant-design/icons-vue'
 import { GraphExec, GraphLineType, GraphNodeType, type GraphLineParamsObject, type RawDataFlowNode } from './editor'
 import { subscriber } from './editor'
@@ -90,6 +92,11 @@ export const toolbarList:Array<{
     name: GraphExec.SPLIT_GROUP,
     label: '拆分组合',
     icon: AppstoreOutlined
+  },
+  {
+    name: GraphExec.CREATE_TEMPLATE,
+    label: '生成模版',
+    icon: LayoutOutlined
   }
 ]
 
@@ -115,7 +122,7 @@ subscriber.listen('SELECT_LINE', (line:GraphLineParamsObject) => {
   }
 })
 
-export const assetNode: Record<GraphNodeType, RawDataFlowNode> = {
+export const assetNode: Record<GraphNodeType, RawDataFlowNode | GraphExec> = {
   [GraphNodeType.START]: {
     name: 'start',
     label: '开始',
@@ -139,7 +146,8 @@ export const assetNode: Record<GraphNodeType, RawDataFlowNode> = {
     label: '文字',
     width: 80,
     height: 30
-  }
+  },
+  [GraphNodeType.TEMPLATE]: GraphExec.IMPORT_TEMPLATE
 }
 
 export const assetsList: Array<{
@@ -166,5 +174,10 @@ export const assetsList: Array<{
     name: GraphNodeType.TEXT,
     label: '文字',
     icon: FontSizeOutlined
+  },
+  {
+    name: GraphNodeType.TEMPLATE,
+    label: '导入模版',
+    icon: CopyOutlined
   }
 ]

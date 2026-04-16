@@ -10,6 +10,7 @@ export type Callback = (...argus: any[]) => void
 export type side = 't' | 'b' | 'l' | 'r'
 export type Point = { x: number, y: number }
 export type Rect = { x: number, y: number, width: number, height: number }
+export type Bound = { xmin: number, xmax: number, ymin: number, ymax: number }
 
 // editor基础定义
 // 重写了Connection，主要原因是retejs作为一个严谨的库，限制了只有output作为source，input作为target，而在我们的项目中这是不一定的（可以限制但是也可以不做限制）
@@ -56,6 +57,12 @@ export declare interface RawDataFlowNode {
   height: number
 }
 
+// 模版节点数据虽然和节点数据DataFlowNode一样拥有id和position，但是在用于生成时，仅仅用于给connection指示首尾，以及生成其他节点的相对位置
+export declare interface TemplateDataFlowNode extends RawDataFlowNode {
+  id: string
+  position: Point // 模版节点的position在导出时会将模版内容的中心位置归零，而这里保存的position将会是节点和模版中心点的相对位置
+}
+
 export declare interface DataFlowGroupShrinkInfo {
   width: number
   height: number
@@ -64,19 +71,18 @@ export declare interface DataFlowGroupShrinkInfo {
 }
 
 // 数据结构定义
-export declare interface DataFlowNode {
-  id: string
-  label: string
-  name: string
-  width: number
-  height: number
-  position: { x: number; y: number }
+export declare interface DataFlowNode extends TemplateDataFlowNode {
   parent?: string // 是否存在parent节点
   expand?: boolean
   shrinkInfo?: DataFlowGroupShrinkInfo
 }
 
 export declare interface DataFlowGroup extends DataFlowNode {}
+
+export declare interface DataFlowGraphTemplate {
+  nodes: Array<TemplateDataFlowNode>
+  lines: Array<DataFlowLine>
+}
 
 export declare interface DataFlowLine {
   id: string
@@ -141,7 +147,25 @@ export enum GraphExec {
   ADD_NODE_FROM_SELECTING = 'addNodeFromSelecting',
   SET_RECT_SELECT = 'setRectSelect',
   CREATE_GROUP = 'createGroup',
-  SPLIT_GROUP = 'splitGroup'
+  SPLIT_GROUP = 'splitGroup',
+  CREATE_TEMPLATE = 'createTemplate',
+  IMPORT_TEMPLATE = 'importTemplate'
+}
+
+export interface GraphExecCallback {
+  [GraphExec.IMPORT]: () => Promise<void>
+  [GraphExec.EXPORT]: () => DataFlowGraph
+  [GraphExec.DELETE_SELECT]: Callback
+  [GraphExec.CLEAR]: Callback
+  [GraphExec.ADD_NODE_FROM_SELECTING]: (s?:side) => void
+  [GraphExec.DROP_ADD]: GraphEditor['dropAdd']
+  [GraphExec.SET_LINE]: (params:GraphLineParams) => void
+  [GraphExec.REARRANGE]: Callback
+  [GraphExec.SET_RECT_SELECT]: (value?:boolean) => void
+  [GraphExec.CREATE_GROUP]: () => void
+  [GraphExec.SPLIT_GROUP]: () => void
+  [GraphExec.CREATE_TEMPLATE]: () => void
+  [GraphExec.IMPORT_TEMPLATE]: () => void
 }
 
 // 图形节点类型
@@ -149,7 +173,8 @@ export enum GraphNodeType {
   START = 'start',
   END = 'end',
   NODE = 'node',
-  TEXT = 'text'
+  TEXT = 'text',
+  TEMPLATE = 'template'
 }
 
 // editor应用
@@ -160,10 +185,12 @@ export interface GraphEditor {
   export: () => DataFlowGraph
   import: (data: DataFlowGraph) => void
   dropAdd: (item: RawDataFlowNode | null) => void,
+  dropTemplateAdd: (data: DataFlowGraphTemplate) => void,
   updateSelectingLine: (params: GraphLineParams) => void,
   addNodeFromSelecting: (nodeInfo:RawDataFlowNode, s:side) => void
   createGroup: () => void
   splitGroup: () => void
+  exportTemplate: () => DataFlowGraphTemplate
 }
 
 // 无需参数的指令集，主要用于给快捷键系统调取
@@ -183,20 +210,6 @@ export type GraphLineParamsObject = {
 }
 
 export type GraphLineParams = { attr: keyof GraphLineParamsObject, param: GraphLineParamsObject[keyof GraphLineParamsObject] }
-
-export interface GraphExecCallback {
-  [GraphExec.IMPORT]: () => Promise<void>
-  [GraphExec.EXPORT]: () => DataFlowGraph
-  [GraphExec.DELETE_SELECT]: Callback
-  [GraphExec.CLEAR]: Callback
-  [GraphExec.ADD_NODE_FROM_SELECTING]: (s?:side) => void
-  [GraphExec.DROP_ADD]: GraphEditor['dropAdd']
-  [GraphExec.SET_LINE]: (params:GraphLineParams) => void
-  [GraphExec.REARRANGE]: Callback
-  [GraphExec.SET_RECT_SELECT]: (value?:boolean) => void
-  [GraphExec.CREATE_GROUP]: () => void
-  [GraphExec.SPLIT_GROUP]: () => void
-}
 
 export interface CallbackEventHandler {
   onNodeAdd?: (node: DataflowNode) => void

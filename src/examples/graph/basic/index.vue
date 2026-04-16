@@ -50,7 +50,12 @@
           :icon="h(a.icon)"
           @mousedown="
             () => {
-              dragging = assetNode[a.name]
+              if (typeof assetNode[a.name] === 'string') {
+                // @ts-ignore
+                editorExec[assetNode[a.name]]()
+              } else {
+                dragging = assetNode[a.name] as RawDataFlowNode
+              }
             }
           "
         />
@@ -92,12 +97,12 @@ const dragging = ref<RawDataFlowNode | null>(null)
 watch(
   () => dragging.value,
   () => {
-    if (editorExec) editorExec.dropAdd(dragging.value)
+    if (editorExec && dragging.value) editorExec.dropAdd(dragging.value)
   }
 )
 
 const onDragEnd = () => {
-  dragging.value = null
+  editorExec.dropAdd(null)
 }
 
 onMounted(async () => {

@@ -29,7 +29,6 @@ export async function makeupEditor(params: EditorInitParams) {
   }))
   
   const editor = await createEditor(params)
-  // console.log(editor)
 
   // 指令
   const callExec = {
@@ -90,6 +89,17 @@ export async function makeupEditor(params: EditorInitParams) {
     },
     [GraphExec.SPLIT_GROUP]: () => {
       editor.splitGroup()
+    },
+    [GraphExec.CREATE_TEMPLATE]: () => {
+      const template = JSON.stringify(editor.exportTemplate())
+      console.log('模版已导出', template)
+      localStorage.tempTemplate = template
+    },
+    [GraphExec.IMPORT_TEMPLATE]: () => {
+      const template = localStorage.tempTemplate
+      if (template) {
+        editor.dropTemplateAdd(JSON.parse(template))
+      }
     }
   }
   subscriber.set('exec', callExec)

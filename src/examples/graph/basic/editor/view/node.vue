@@ -15,6 +15,7 @@
       contenteditable="true"
       @input="handleChange"
     >{{ data?.label }}</span>
+    <span>{{ data?.id }}</span>
   </div>
 </template>
 
