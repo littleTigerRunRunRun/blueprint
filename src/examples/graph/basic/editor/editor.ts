@@ -595,12 +595,20 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         })
         scopes.reorder(nid)
         subscriber.get('connectionSelector').selectableNodes.select(nid)
-
-        console.log(editor)
       }
     },
-    splitGroup() {
-
+    splitGroup: async () => {
+      // 目前没有做先展开后聚合的
+      await selector.entities.forEach(async (entity) => {
+        const node = editor.getNode(entity.id)
+        if (node!.name === 'group') {
+          // 将子元素放回画布中
+          editor.getNodes().forEach((node) => {
+            if (node.parent === entity.id) node.parent = undefined
+          })
+          await editor.removeNode(entity.id)
+        }
+      })
     },
     destroy() {
       editor.clear()

@@ -172,7 +172,7 @@ const splitGroup:Item = {
   label: '拆分组合',
   key: GraphExec.SPLIT_GROUP,
   handler() {
-    console.log('create group')
+    subscriber.get('exec')?.[GraphExec.SPLIT_GROUP]()
   }
 }
 
@@ -186,11 +186,16 @@ export const CMItems:Items<Schemes> = (context:any, plugin:any) => {
     if (context.id && subscriber.get('connectionSelector').selectableNodes) {
       subscriber.get('connectionSelector').selectableNodes.select(context.id, true)
     }
+    console.log(context)
     if (context.name === 'node') {
       return {
         searchBar: false,
-        // addNextNode, 
         list: [deleteItem, addNextNode, createGroup]
+      }
+    } else if (context.name === 'group') {
+      return {
+        searchBar: false,
+        list: [splitGroup]
       }
     } else return {
       searchBar: false,

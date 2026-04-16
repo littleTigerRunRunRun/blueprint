@@ -29,7 +29,7 @@ export async function makeupEditor(params: EditorInitParams) {
   }))
   
   const editor = await createEditor(params)
-  console.log(editor)
+  // console.log(editor)
 
   // 指令
   const callExec = {
@@ -89,7 +89,7 @@ export async function makeupEditor(params: EditorInitParams) {
       editor.createGroup()
     },
     [GraphExec.SPLIT_GROUP]: () => {
-
+      editor.splitGroup()
     }
   }
   subscriber.set('exec', callExec)

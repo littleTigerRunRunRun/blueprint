@@ -11,8 +11,14 @@
       </router-link>
       <router-link to="/graph-group">
         <div class="example">
-          <img src="../assets/line.png" />
+          <img src="../assets/group.png" />
           <span>功能展示：节点分组（聚合）</span>
+        </div>
+      </router-link>
+      <router-link to="/graph-template">
+        <div class="example">
+          <img src="../assets/group.png" />
+          <span>功能展示：模版</span>
         </div>
       </router-link>
     </div>
