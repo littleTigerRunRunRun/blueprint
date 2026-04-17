@@ -100,6 +100,12 @@ export async function makeupEditor(params: EditorInitParams) {
       if (template) {
         editor.dropTemplateAdd(JSON.parse(template))
       }
+    },
+    [GraphExec.CHANGE_NODE_STATUS]: (param:{ id:string, parent?:string, status: boolean }) => {
+      editor.changeNodeStatus(param)
+    },
+    [GraphExec.ADD_LINE_INFO]: (param:{ id:string, info: string }) => {
+      editor.addLineInfo(param)
     }
   }
   subscriber.set('exec', callExec)

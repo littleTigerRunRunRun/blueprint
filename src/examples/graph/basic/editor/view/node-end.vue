@@ -2,7 +2,8 @@
   <div
     class="graph-node-end"
     :class="{
-      selected
+      selected,
+      status
     }"
     :style="{
       width: `${data?.width}px`,
@@ -16,9 +17,10 @@
 <script lang="ts" setup>
 import { UniNode } from '../tool/uniNode'
 
-const { data } = defineProps({
+const { data, selected, status } = defineProps({
   data: UniNode,
-  selected: Boolean
+  selected: Boolean,
+  status: Boolean
 })
 </script>
 
@@ -46,6 +48,12 @@ const { data } = defineProps({
     background-color: #1890ff;
     span {
       color: #1890ff;
+    }
+  }
+  &.status {
+    background-color: #11b949;
+    span {
+      color: #11b949;
     }
   }
 }

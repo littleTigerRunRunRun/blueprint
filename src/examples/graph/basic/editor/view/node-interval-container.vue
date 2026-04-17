@@ -10,9 +10,9 @@
       height: `${data?.height}px`
     }"
   >
-    <NodeEnd v-if="data?.name === 'end'" :data="data" :selected="data?.selected" />
-    <NodeStart v-else-if="data?.name === 'start'" :data="data" :selected="data?.selected" />
-    <Node v-else :data="data" :selected="data?.selected" />
+    <NodeEnd v-if="data?.name === 'end'" :data="data" :status="status" :selected="data?.selected" />
+    <NodeStart v-else-if="data?.name === 'start'" :data="data" :status="status" :selected="data?.selected" />
+    <Node v-else :data="data" :status="status" :selected="data?.selected" />
 
     <!-- <div
       v-for="(input, key) in data.inputs"
@@ -50,6 +50,14 @@ import Node from './node.vue'
 import NodeStart from './node-start.vue'
 import NodeEnd from './node-end.vue';
 import { Ref } from 'rete-vue-plugin'
+import { onUpdated, ref } from 'vue';
+
+const status = ref(false)
+
+onUpdated(() => {
+  // @ts-ignore
+  if (data.status !== undefined) status.value = data.status
+})
 
 const { data, emit } = defineProps(['data', 'emit'])
 

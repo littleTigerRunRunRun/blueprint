@@ -58,7 +58,7 @@ export const toolbarList:Array<{
   {
     name: GraphExec.SET_LINE,
     label: '设置箭头',
-    icon: ref(MinusOutlined),
+    icon: ref(RiseOutlined),
     params: [
       { label: '有箭头', icon: RiseOutlined, value: { attr: 'arrow', param: true } },
       { label: '无箭头', icon: MinusOutlined, value: { attr: 'arrow', param: false } },

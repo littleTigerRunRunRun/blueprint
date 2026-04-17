@@ -42,6 +42,7 @@ export class RectSelectPlugin extends Scope<never, Area2DInherited<Schemes, neve
 
     this.addPipe((context) => {
       if (context.type === 'rectselect') {
+        console.log('===========')
         const start = context.data.start
         const end = context.data.end
         if (start && end) {
@@ -95,6 +96,7 @@ export class RectSelectPlugin extends Scope<never, Area2DInherited<Schemes, neve
         width: node.width,
         height: node.height
       }
+      console.log(selectRect, node.id, rect, isRectangleContained(selectRect, rect))
 
       if (isRectangleContained(selectRect, rect)) rectSelecting.push(node.id)
     })

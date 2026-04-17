@@ -1,10 +1,9 @@
 <template>
-  <svg class="graph-connection" :class="{ selected: data?.selected }">
+  <svg class="graph-connection" :class="{ selected: data?.selected, status }">
     <path :d="tpath" class="interval-path" @click="handleSelect" />
     <path
       :d="tpath"
       :marker-end="line.arrow.value ? 'url(#graph_connection_arrow)' : ''"
-      :stroke="data?.selected ? '#1890ff' : '#999'"
       stroke-width="1.8"
       class="view-path"
       :class="{
@@ -12,14 +11,20 @@
         flow: line.flow.value
       }"
     />
-    <!-- <text fill="#000" font-size="12">{{ data.id }}</text> -->
+    <text
+      fill="#333"
+      font-size="12"
+      :x="infoPosition.x"
+      :y="infoPosition.y"
+      style="transform: translate(-40px, 25px);"
+    >{{ info }}</text>
   </svg>
 </template>
 
 <script lang="ts" setup>
 import { subscriber } from '../tool/Subscriber';
 import { GraphLineType, type GraphLineParamsObject, type GraphLineParams, type side } from '../define'
-import { watch, ref, onBeforeUnmount, onMounted } from 'vue';
+import { watch, ref, onBeforeUnmount, onMounted, onUpdated } from 'vue';
 import { generateOrthogonalPath, getRectCenter, createRadiusOrthPath, createCurve } from '../tool/path'
 const { data, path } = defineProps(['path', 'data'])
 const emit = defineEmits(['update:data'])
@@ -38,6 +43,24 @@ const line = {
   solid: ref(true),
   flow: ref(false)
 }
+
+const status = ref(false)
+const info = ref('')
+const infoPosition = ref({ x: 0, y: 0 })
+
+onUpdated(() => {
+  if (data.status !== undefined) status.value = data.status
+  if (data.info !== undefined && data.info !== info.value) {
+    info.value = data.info
+    const { editor, area } = subscriber.get('connectionSelector')
+    const snv = area.nodeViews.get(data.source)?.position
+    const tnv = area.nodeViews.get(data.target)?.position
+    if (snv && tnv) {
+      infoPosition.value.x = (snv.x + tnv.x) * 0.5 + 50
+      infoPosition.value.y = (snv.y + tnv.y) * 0.5 + 20
+    }
+  }
+})
 
 watch(() => path, () => {
   if (!path) return
@@ -103,7 +126,7 @@ function createPath() {
         }
       }
       
-      const path = createRadiusOrthPath(points, 0)
+      const path = createRadiusOrthPath(points, 4)
 
       return path
     }
@@ -178,13 +201,18 @@ onBeforeUnmount(() => {
   z-index: 4;
   &.selected {
     z-index: 5;
-    // .view-path {
-    //   stroke: #1890ff;
-    // }
+    .view-path {
+      stroke: #1890ff;
+    }
+  }
+  &.status {
+    .view-path {
+      stroke: #11b949;
+    }
   }
   .view-path {
     fill: none;
-    // stroke: #666;
+    stroke: #666;
     pointer-events: none;
     &.dotted {
       stroke-dasharray: 6 6;

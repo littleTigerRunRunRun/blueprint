@@ -2,7 +2,8 @@
   <div
     class="graph-node"
     :class="{
-      selected
+      selected,
+      status
     }"
     :style="{
       // 这里的2对应的是.graph-node的border-width
@@ -15,16 +16,17 @@
       contenteditable="true"
       @input="handleChange"
     >{{ data?.label }}</span>
-    <span>{{ data?.id }}</span>
+    <!-- <span>{{ data?.id }}</span> -->
   </div>
 </template>
 
 <script lang="ts" setup>
 import { UniNode } from '../tool/uniNode'
 
-const { data } = defineProps({
+const { data, selected, status } = defineProps({
   data: UniNode,
-  selected: Boolean
+  selected: Boolean,
+  status: Boolean
 })
 
 const handleChange = (val:InputEvent) => {
@@ -49,6 +51,15 @@ const handleChange = (val:InputEvent) => {
   box-sizing: border-box;
   &.selected {
     border-color: #1890ff;
+    span {
+      color: #1890ff;
+    }
+  }
+  &.status {
+    border-color: #11b949;
+    span {
+      color: #11b949;
+    }
   }
   span:focus-visible {
     border: none;

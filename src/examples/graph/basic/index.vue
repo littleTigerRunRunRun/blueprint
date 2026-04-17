@@ -102,11 +102,12 @@ watch(
 )
 
 const onDragEnd = () => {
+  dragging.value = null
   editorExec.dropAdd(null)
 }
 
 onMounted(async () => {
-  if (containerRef.value)
+  if (containerRef.value) {
     editorExec = await makeupEditor({
       container: containerRef.value,
       eventHandlers: {
@@ -127,6 +128,17 @@ onMounted(async () => {
       },
       abilities: [GraphAbility.NODE_SELECTABLE]
     })
+    
+    if (location.hash === '#/graph-status') {
+      setTimeout(() => { editorExec.changeNodeStatus({ id: 'e85cff4b751e1577', status: true }) }, 2000)
+      setTimeout(() => { editorExec.changeNodeStatus({ id: '5ee212122b870c84', parent: 'c85d0407a8375387', status: true }) }, 5000)
+      setTimeout(() => { editorExec.changeNodeStatus({ id: '3e29895b52332033', parent: 'c85d0407a8375387', status: true }) }, 4000)
+      setTimeout(() => { editorExec.changeNodeStatus({ id: '400bda452b344e8c', parent: 'c85d0407a8375387', status: true }) }, 9000)
+      setTimeout(() => { editorExec.changeNodeStatus({ id: 'eb6424d58b79302d', status: true }) }, 12000)
+      
+      setTimeout(() => { editorExec.addLineInfo({ id: 'a5883bf2c1177811', info: '测试内容xxxxx' }) }, 6000)
+    }
+  }
 
   document.body.addEventListener('mouseup', onDragEnd)
   document.body.addEventListener('mouseleave', onDragEnd)

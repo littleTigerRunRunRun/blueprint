@@ -138,8 +138,7 @@ export function createRadiusOrthPath(points: Array<Point>, radius: number):strin
       y: (next.y * r + current.y * (cnLength - r)) / cnLength
     }
 
-    //  Q${current.x},${current.y} 
-    path += `L${[point1.x]},${point1.y} L${point2.x},${point2.y} `
+    path += `L${[point1.x]},${point1.y} Q${current.x},${current.y} ${point2.x},${point2.y} `
   }
   path += `L${points[points.length - 1].x},${points[points.length - 1].y}`
 

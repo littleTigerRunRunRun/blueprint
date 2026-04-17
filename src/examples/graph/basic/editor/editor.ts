@@ -152,7 +152,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
   // 插件安装
   arrange.addPreset(ArrangePresets.classic.setup())
 
-  render.addPreset(Presets.contextMenu.setup({ delay: 200, className: 'graph-context-menu' }) as any)
+  render.addPreset(Presets.contextMenu.setup({ delay: 300, className: 'graph-context-menu' }) as any)
   scopes.addPreset(ScopesPresets.classic.setup())
   connection.addPreset(
     ConnectionPresets.classic.setup(
@@ -606,7 +606,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
       })
 
       const padding = 20
-      const headerHeight = 20
+      const headerHeight = 24
       joinedRect.x -= padding
       joinedRect.y -= (padding + headerHeight)
       joinedRect.width += padding * 2
@@ -664,7 +664,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
           label: node.label,
           width: node.width,
           height: node.height,
-          position: nPosition
+          position: { ...nPosition }
         })
         if (!bound) {
           bound = {
@@ -694,6 +694,51 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
       return {
         nodes,
         lines
+      }
+    },
+    changeNodeStatus: async (param: { id:string, parent?:string, status: boolean }) => {
+      const { id, parent, status } = param
+      const node = editor.getNode(id)
+
+      if (!node) {
+        if (parent) {
+          const group = editor.getNode(parent)
+          if (!group) {
+            throw new Error(`no such node & parent, id = ${id}, parent = ${parent}`)
+          } else {
+            // @ts-ignore
+            group.status = id
+            await area.update('node', parent)
+          }
+        }
+      } else {
+        // @ts-ignore
+        node.status = status
+        await area.update('node', id)
+
+        // 发起连线状态监测
+        editor.getConnections().filter((line) => {
+          return line.source === id || line.target === id
+        }).forEach(async (line) => {
+          const s = editor.getNode(line.source)
+          const t = editor.getNode(line.target)
+          // @ts-ignore
+          const status = s && s.status && t && t.status
+          // @ts-ignore
+          if (status !== line.status) {
+            // @ts-ignore
+            line.status = status
+            await area.update('connection', line.id)
+          }
+        })
+      }
+    },
+    addLineInfo: async (param: { id:string, info: string }) =>  {
+      const line = editor.getConnection(param.id)
+      if (line) {
+        // @ts-ignore
+        line.info = param.info
+        await area.update('connection', line.id)
       }
     },
     destroy() {

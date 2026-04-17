@@ -79,6 +79,11 @@ const router = createRouter({
       path: '/graph-template',
       name: 'GraphTemplate',
       component: GraphBasic
+    },
+    {
+      path: '/graph-status',
+      name: 'GraphStatus',
+      component: GraphBasic
     }
   ]
 })

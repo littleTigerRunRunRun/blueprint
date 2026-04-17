@@ -17,8 +17,14 @@
       </router-link>
       <router-link to="/graph-template">
         <div class="example">
-          <img src="../assets/group.png" />
+          <img src="../assets/template.png" />
           <span>功能展示：模版</span>
+        </div>
+      </router-link>
+      <router-link to="/graph-status">
+        <div class="example">
+          <img src="../assets/status.png" />
+          <span>功能展示：状态显示</span>
         </div>
       </router-link>
     </div>

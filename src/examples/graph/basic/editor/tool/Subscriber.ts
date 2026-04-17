@@ -260,7 +260,7 @@ export const subscriber = new Subscriber<{
     type: GraphLineType.MANHATTAN,
     solid: true,
     flow: false,
-    arrow: false
+    arrow: true
   },
   connectionSelector: null,
   exec: null,

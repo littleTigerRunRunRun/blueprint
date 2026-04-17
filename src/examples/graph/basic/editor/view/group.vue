@@ -49,12 +49,16 @@
           data-testid="output-socket"
         />
       </div>
+
+      <div class="status-vis">
+        <div :style="{ width: `${status * 100}%` }" />
+      </div>
     </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onUpdated } from 'vue'
 import { UniNode, createNode } from '../tool/uniNode'
 import { subscriber } from '../tool/Subscriber';
 import type { DataFlowGroupShrinkInfo, DataFlowLine, Point } from '../define';
@@ -67,6 +71,20 @@ const { data, emit } = defineProps({
 })
 
 const expand = ref(data?.expand)
+const status = ref(0)
+const statusArr:Array<string> = []
+
+onUpdated(() => {
+  if (!expand.value && data?.shrinkInfo) {
+    // @ts-ignore
+    if (data.status !== undefined && !statusArr.includes(data.status)) {
+      // @ts-ignore
+      statusArr.push(data.status)
+      status.value = statusArr.length / data.shrinkInfo.nodes.length
+    }
+    
+  }
+})
 
 const switchGroupExpand = async () => {
   if (!data) throw new Error('no data')
@@ -291,9 +309,9 @@ const handleChange = (val:InputEvent) => {
     text-align: left;
     text-indent: 4px;
     width: 100%;
-    height: 20px;
-    line-height: 20px;
-    font-size: 12px;
+    height: 24px;
+    line-height: 24px;
+    font-size: 14px;
     border-bottom: 1px solid #333;
     span:focus-visible {
       border: none;
@@ -335,6 +353,19 @@ const handleChange = (val:InputEvent) => {
     top: 50%;
     width: 0px;
     height: 0px;
+  }
+  .status-vis{
+    position: absolute;
+    width: calc(100% + 4px);
+    height: 6px;
+    left: -2px;
+    bottom: -2px;
+    div {
+      width: 0%;
+      height: 100%;
+      background-color: #11b949;
+      transition: width 0.8s;
+    }
   }
 }
 </style>

@@ -149,7 +149,9 @@ export enum GraphExec {
   CREATE_GROUP = 'createGroup',
   SPLIT_GROUP = 'splitGroup',
   CREATE_TEMPLATE = 'createTemplate',
-  IMPORT_TEMPLATE = 'importTemplate'
+  IMPORT_TEMPLATE = 'importTemplate',
+  CHANGE_NODE_STATUS = 'changeNodeStatus',
+  ADD_LINE_INFO = 'addLineInfo'
 }
 
 export interface GraphExecCallback {
@@ -166,6 +168,8 @@ export interface GraphExecCallback {
   [GraphExec.SPLIT_GROUP]: () => void
   [GraphExec.CREATE_TEMPLATE]: () => void
   [GraphExec.IMPORT_TEMPLATE]: () => void
+  [GraphExec.CHANGE_NODE_STATUS]: (param: { id:string, parent?:string, status: boolean }) => void
+  [GraphExec.ADD_LINE_INFO]: (param: { id:string, info: string }) => void
 }
 
 // 图形节点类型
@@ -191,6 +195,8 @@ export interface GraphEditor {
   createGroup: () => void
   splitGroup: () => void
   exportTemplate: () => DataFlowGraphTemplate
+  changeNodeStatus: (param: { id:string, parent?:string, status: boolean }) => void
+  addLineInfo: (param: { id:string, info: string }) => void
 }
 
 // 无需参数的指令集，主要用于给快捷键系统调取
@@ -204,9 +210,9 @@ export interface GraphEditor {
 
 export type GraphLineParamsObject = {
   type: GraphLineType,
-  flow: false,
-  solid: true,
-  arrow: false
+  flow: boolean,
+  solid: boolean,
+  arrow: boolean
 }
 
 export type GraphLineParams = { attr: keyof GraphLineParamsObject, param: GraphLineParamsObject[keyof GraphLineParamsObject] }
