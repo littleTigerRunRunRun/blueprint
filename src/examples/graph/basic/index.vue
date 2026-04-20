@@ -50,11 +50,11 @@
           :icon="h(a.icon)"
           @mousedown="
             () => {
-              if (typeof assetNode[a.name] === 'string') {
+              if (typeof a.content === 'string') {
                 // @ts-ignore
-                editorExec[assetNode[a.name]]()
+                editorExec[a.content]()
               } else {
-                dragging = assetNode[a.name] as RawDataFlowNode
+                dragging = a.content as RawDataFlowNode
               }
             }
           "
@@ -85,7 +85,7 @@
 
 <script lang="ts" setup>
 import { onMounted, onBeforeUnmount, ref, type Ref, h, watch } from 'vue'
-import { toolbarList, assetsList, assetNode } from './tools'
+import { toolbarList, assetsList } from './tools'
 import { GraphExec, makeupEditor, GraphAbility } from './editor'
 import type { GraphExecCallback, RawDataFlowNode } from './editor'
 

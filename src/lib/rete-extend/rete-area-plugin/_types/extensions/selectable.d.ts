@@ -31,6 +31,7 @@ export declare class Selector<E extends SelectorEntity> {
     pick(entity: Pick<E, 'label' | 'id'>): void;
     release(): void;
     isPicked(entity: Pick<E, 'label' | 'id'>): boolean;
+    has(label: string, id: string): boolean;
 }
 /**
  * Selector factory, uses default Selector class

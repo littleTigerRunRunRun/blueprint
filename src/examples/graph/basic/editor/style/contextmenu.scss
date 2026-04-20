@@ -8,7 +8,7 @@
   margin-left: 0px !important;
   .block{
     position: relative;
-    padding: 5px 12px !important;
+    padding: 0px !important;
     background-color: transparent !important;
     border: none !important;
     color: #333 !important;
@@ -29,12 +29,13 @@
       border-top: 4px transparent solid;
       border-bottom: 4px transparent solid;
       transform: translate(-50%, -50%);
+      pointer-events: none;
     }
     &:hover {
       background-color: #eee !important;
     }
     .content{
-      padding: 0 !important;
+      padding: 5px 12px !important;
     }
   }
   .subitems{

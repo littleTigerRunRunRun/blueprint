@@ -2,15 +2,14 @@
   <div
     class="graph-node"
     :class="{
-      selected,
-      status
+      selected: data?.selected
     }"
     :style="{
       // 这里的2对应的是.graph-node的border-width
-      width: `${(width || 0) + 2}px`,
-      height: `${(height || 0) + 2}px`,
-      lineHeight: `${(height || 0) - 2}px`,
-      transform: `rotate(${rotation || 0}deg)`
+      width: `${(data?.width || 0) + 2}px`,
+      height: `${(data?.height || 0) + 2}px`,
+      lineHeight: `${(data?.height || 0) - 2}px`,
+      transform: `rotate(${data?.rotation || 0}deg)`
     }"
   >
     <span
@@ -26,15 +25,11 @@
 import { onUpdated } from 'vue';
 import { UniNode } from '../tool/uniNode'
 
-const { data, width, height, selected, status } = defineProps({
-  width: Number,
-  height: Number,
-  rotation: Number,
-  data: UniNode,
-  selected: Boolean,
-  status: Boolean
+const { data } = defineProps({
+  data: UniNode
 })
 
+// 
 const handleChange = (val:InputEvent) => {
   // @ts-ignore
   const text = val?.target?.innerText

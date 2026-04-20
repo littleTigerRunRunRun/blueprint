@@ -21,6 +21,7 @@ import { compactBox } from '@antv/hierarchy'
 // 视图优化
 import NodeIntervalContainer from './view/node-interval-container.vue'
 import NodeText from './view/node-text.vue'
+import NodeRR from './view/node-rr.vue'
 import CustomConnection from './view/connection.vue'
 import CustomSocket from './view/socket.vue'
 import CustomGroup from './view/group.vue'
@@ -28,7 +29,8 @@ import CustomGroup from './view/group.vue'
 // 自研工具引用
 import { UniNode, scopeElder, createNode } from './tool/uniNode'
 import { attachSmoothArea } from "./tool/smoothZoom";
-import { DropAddPlugin, NodeScalablePlugin, RectSelectPlugin } from './plugin'
+import { DropAddPlugin, NodeScalablePlugin, RectSelectPlugin, NodeScaleRotatePlugin } from './plugin'
+import './style/node-scale-rotate.scss'
 import { subscriber } from './tool/Subscriber'
 
 // 业务定义
@@ -146,13 +148,16 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
   // 节点支持缩放插件（自研）
   const nodeScale = new NodeScalablePlugin<Schemes>()
 
+  // 节点支持缩放旋转插件（自研）
+  const nodeScaleRotate = new NodeScaleRotatePlugin<Schemes>() as any;
+
   // 支持框选能力（自研）
   const rectSelect = new RectSelectPlugin()
 
   // 插件安装
   arrange.addPreset(ArrangePresets.classic.setup())
 
-  render.addPreset(Presets.contextMenu.setup({ delay: 300, className: 'graph-context-menu' }) as any)
+  render.addPreset(Presets.contextMenu.setup({ delay: 200, className: 'graph-context-menu' }) as any)
   scopes.addPreset(ScopesPresets.classic.setup())
   connection.addPreset(
     ConnectionPresets.classic.setup(
@@ -213,6 +218,8 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
               return NodeIntervalContainer
             case 'text':
               return NodeText
+            case 'noderr':
+              return NodeRR
             case 'group':
               return CustomGroup
           }
@@ -254,17 +261,6 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
     }
     return context
   })
-
-  // 链接各个插件的通信
-  editor.use(area)
-  area.use(connection)
-  area.use(contextMenu)
-  area.use(render)
-  area.use(scopes)
-  area.use(arrange)
-  area.use(dropAdd)
-  area.use(nodeScale)
-  area.use(rectSelect)
 
   // 能力注册：
   class MySelector<E extends SelectorEntity> extends AreaExtensions.Selector<E> {
@@ -313,6 +309,18 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
     }
   })
 
+  // 链接各个插件的通信
+  editor.use(area)
+  area.use(connection)
+  area.use(contextMenu)
+  area.use(render)
+  area.use(scopes)
+  area.use(arrange)
+  area.use(dropAdd)
+  area.use(nodeScale)
+  area.use(nodeScaleRotate)
+  area.use(rectSelect)
+
   // 返回各种回调函数
   return {
     clear: async () => {
@@ -346,6 +354,8 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
           shrinkInfo: nd.shrinkInfo,
           parent: nd.parent
         })
+        // @ts-ignore
+        if (nd.rotation !== undefined) node.rotation = nd.rotation
         // 如果有父元素，则延迟添加
         if (nd.parent) waitAddList.push({ node, position: nd.position })
         else {
@@ -407,6 +417,8 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
           if (node.expand !== undefined) nodeData.expand = node.expand
           if (node.shrinkInfo !== undefined) nodeData.shrinkInfo = node.shrinkInfo
           if (node.name === 'group') console.log(nodeData)
+          // @ts-ignore
+          if (node.rotation !== undefined) nodeData.rotation = node.rotation
           return nodeData
         }),
         lines: editor.getConnections().map((connection) => ({
@@ -552,7 +564,6 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         rootNode.children.forEach(async (child) => {
           const x = child.x - rootNode.x + source.x
           const y = child.y - rootNode.y + source.y
-          console.log(x, y)
           await area.translate(child.id, { x, y });
         })
 

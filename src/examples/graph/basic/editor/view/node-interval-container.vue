@@ -12,7 +12,7 @@
   >
     <NodeEnd v-if="data?.name === 'end'" :data="data" :status="status" :selected="data?.selected" />
     <NodeStart v-else-if="data?.name === 'start'" :data="data" :status="status" :selected="data?.selected" />
-    <Node v-else :data="data" :status="status" :selected="data?.selected" />
+    <Node v-else :width="data?.width" :height="data?.height" :rotation="rotation" :data="data" :status="status" :selected="data?.selected" />
 
     <!-- <div
       v-for="(input, key) in data.inputs"
@@ -53,10 +53,12 @@ import { Ref } from 'rete-vue-plugin'
 import { onUpdated, ref } from 'vue';
 
 const status = ref(false)
+const rotation = ref(0)
 
 onUpdated(() => {
   // @ts-ignore
   if (data.status !== undefined) status.value = data.status
+  if (data.rotation !== undefined) rotation.value = data.rotation
 })
 
 const { data, emit } = defineProps(['data', 'emit'])

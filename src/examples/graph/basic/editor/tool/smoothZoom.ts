@@ -12,7 +12,7 @@ export function screenToArea(x: number, y: number, t: any) {
   return { x: (x - tx) / k, y: (y - ty) / k };
 }
 
-function areaToScreen(x: number, y: number, t: any) {
+export function areaToScreen(x: number, y: number, t: any) {
   const { x: tx, y: ty, k } = t;
 
   return { x: x * k + tx, y: y * k + ty };

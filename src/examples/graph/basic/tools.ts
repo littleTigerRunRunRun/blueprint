@@ -15,7 +15,8 @@ import {
   FontSizeOutlined,
   AppstoreOutlined,
   LayoutOutlined,
-  CopyOutlined
+  CopyOutlined,
+  ReloadOutlined
 } from '@ant-design/icons-vue'
 import { GraphExec, GraphLineType, GraphNodeType, type GraphLineParamsObject, type RawDataFlowNode } from './editor'
 import { subscriber } from './editor'
@@ -122,62 +123,71 @@ subscriber.listen('SELECT_LINE', (line:GraphLineParamsObject) => {
   }
 })
 
-export const assetNode: Record<GraphNodeType, RawDataFlowNode | GraphExec> = {
-  [GraphNodeType.START]: {
-    name: 'start',
-    label: '开始',
-    width: 40,
-    height: 40
-  },
-  [GraphNodeType.END]: {
-    name: 'end',
-    label: '结束',
-    width: 40,
-    height: 40
-  },
-  [GraphNodeType.NODE]: {
-    name: 'node',
-    label: '新建节点',
-    width: 100,
-    height: 40
-  },
-  [GraphNodeType.TEXT]: {
-    name: 'text',
-    label: '文字',
-    width: 80,
-    height: 30
-  },
-  [GraphNodeType.TEMPLATE]: GraphExec.IMPORT_TEMPLATE
-}
-
 export const assetsList: Array<{
   name: GraphNodeType
   label: string
   icon: any
+  content: RawDataFlowNode | GraphExec
 }> = [
   {
     name: GraphNodeType.START,
     label: '开始点',
-    icon: LogoutOutlined
+    icon: LogoutOutlined,
+    content: {
+      name: 'start',
+      label: '开始',
+      width: 40,
+      height: 40
+    }
   },
   {
     name: GraphNodeType.END,
     label: '结束点',
-    icon: LoginOutlined
+    icon: LoginOutlined,
+    content: {
+      name: 'end',
+      label: '结束',
+      width: 40,
+      height: 40
+    }
   },
   {
     name: GraphNodeType.NODE,
     label: '节点',
-    icon: BorderOutlined
+    icon: BorderOutlined,
+    content: {
+      name: 'node',
+      label: '新建节点',
+      width: 100,
+      height: 40
+    }
+  },
+  {
+    name: GraphNodeType.NODE,
+    label: '节点',
+    icon: ReloadOutlined,
+    content: {
+      name: 'noderr',
+      label: '缩放旋转节点',
+      width: 100,
+      height: 40
+    }
   },
   {
     name: GraphNodeType.TEXT,
     label: '文字',
-    icon: FontSizeOutlined
+    icon: FontSizeOutlined,
+    content: {
+      name: 'text',
+      label: '文字',
+      width: 80,
+      height: 30
+    }
   },
   {
     name: GraphNodeType.TEMPLATE,
     label: '导入模版',
-    icon: CopyOutlined
+    icon: CopyOutlined,
+    content: GraphExec.IMPORT_TEMPLATE
   }
 ]

@@ -16,6 +16,7 @@ import ReteNest from './examples/rete/nest/index.vue'
 import ASTBasic from './examples/ast/basic/index.vue'
 
 import GraphBasic from './examples/graph/basic/index.vue'
+import GraphConstraint from './examples/graph/constraint/index.vue'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -84,6 +85,16 @@ const router = createRouter({
       path: '/graph-status',
       name: 'GraphStatus',
       component: GraphBasic
+    },
+    {
+      path: '/graph-rotate',
+      name: 'GraphRotate',
+      component: GraphBasic
+    },
+    {
+      path: '/graph-constraint',
+      name: 'GraphConstraint',
+      component: GraphConstraint
     }
   ]
 })

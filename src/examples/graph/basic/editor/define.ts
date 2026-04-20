@@ -6,7 +6,6 @@ import type { DataflowNode } from 'rete-engine'
 import type { SelectorEntity } from 'rete-area-plugin/_types/extensions/selectable.d'
 
 export type Callback = (...argus: any[]) => void
-
 export type side = 't' | 'b' | 'l' | 'r'
 export type Point = { x: number, y: number }
 export type Rect = { x: number, y: number, width: number, height: number }
