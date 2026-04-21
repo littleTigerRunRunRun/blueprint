@@ -1,7 +1,11 @@
+import type { ToolListSetting } from './panel'
+
 /* 通用类型 */
 export type EnumRecord<T extends keyof any, U> = { [K in T]?: U }
 export type Callback = (...argus: any[]) => void
-export type side = 't' | 'b' | 'l' | 'r'
+export type Side = 't' | 'b' | 'l' | 'r'
+export type Orientation = 't' | 'rt' | 'r' | 'rb' | 'b' | 'lb' | 'l' | 'lt' // 8个方向
+export type LayoutDirection = 'v' | 'h' // vertical & horizontal
 export type Point = { x: number, y: number }
 export type Rect = { x: number, y: number, width: number, height: number }
 export type Bound = { xmin: number, xmax: number, ymin: number, ymax: number }
@@ -14,24 +18,27 @@ export interface GraphMain {
 
 // GCS = GraphCustomService
 export enum GCS {
-  BG = 'background'
+  BG = 'background',
+  TL = 'toolList'
 }
 
 // GCS设置的数据结构
 export interface GCSParams {
   [GCS.BG]: string
+  [GCS.TL]: ToolListSetting
 }
 
 // GCS操作工具
-export type GCSTools = EnumRecord<GCS, GCSParams[GCS]>
+export type GCSTools = EnumRecord<GCS, GCSParams[GCS] | Array<GCSParams[GCS]>>
 
 export type GCSToolUseParam = 
   // GCS.BG
   ['pureBG', string] | 
   ['pointBG', { background: string, point: { interval: number, r: number, color: string } }] |
-  ['gridBG', { background: string, mainGrid: { interval: number, width:number, color: string }, subGrid: { interval: number, width:number, color: string } }]
+  ['gridBG', { background: string, mainGrid: { interval: number, width:number, color: string }, subGrid: { interval: number, width:number, color: string } }] |
+  ['toolList', ToolListSetting]
   
-export interface GCSApp<GD extends GetGraphDefine<GraphNode, GraphLine, GraphGroup, GraphSocket>> {
+export interface GCSApp<GD extends BaseGraphDefine> {
   tools: GCSTools
   set(...params: GCSToolUseParam): void
   defineGraph(element:GE, name:string, dataDefine:GD[GE.NODE]): void
@@ -76,29 +83,48 @@ export type GetGraphDefine<N extends GraphNode, L extends GraphLine, G extends G
   [GE.SOCKET]: S
 }
 
-interface UMLNode extends GraphNode {
-  label: string
-  x: number
-  y: number
-  width: number
-  height: number
+export type BaseGraphDefine = GetGraphDefine<GraphNode, GraphLine, GraphGroup, GraphSocket>
+
+// 能力赋予工具
+export interface Selectable {
+  selected: boolean
 }
 
-interface UMLLine extends GraphLine {
+export interface Sizable {
+  width: number
+  height: number
+  x: number
+  y: number
+}
+
+export interface Movable {
+  x: number
+  y: number
+}
+
+export interface Rotatable {
+  rotation: number
+}
+
+export interface SocketLine {
   sourceSocket: string
-  targetSocket: string
+  targetSocket?: string
+  targetPosition?: Point
 }
 
 type SocketSide = 'in' | 'out'
-
-interface UMLSocket extends GraphSocket {
+export interface AttachToNode {
   node: string // socket依附的node的id
   side: SocketSide // 是进线口还是出线口
 }
 
-interface UMLGroup extends GraphGroup {
-
-}
-
 // 预设1: UML图，节点可缩放、拖动位置，连线由锚点生成，并且连线可以编辑
+export interface UMLNode extends GraphNode, Selectable, Sizable {}
+
+export interface UMLLine extends GraphLine, Selectable, SocketLine {}
+
+export interface UMLSocket extends GraphSocket, AttachToNode {}
+
+export interface UMLGroup extends GraphGroup, Selectable {}
+
 export type PrefabUML = GetGraphDefine<UMLNode, UMLLine, UMLGroup, UMLSocket>

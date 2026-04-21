@@ -29,7 +29,7 @@
       </router-link>
       <router-link to="/graph-rotate">
         <div class="example">
-          <img src="../assets/status.png" />
+          <img src="../assets/resizeAndRotate.png" />
           <span>功能展示：缩放、旋转</span>
         </div>
       </router-link>

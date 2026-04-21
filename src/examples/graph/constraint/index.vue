@@ -1,7 +1,6 @@
 <template>
   <div class="graph-with-constraint">
     <Graph ref="graphRef" :app="app">
-      <
     </Graph>
   </div>
 </template>
@@ -25,7 +24,9 @@ app.set('pureBG', '#f2f2f2')
 // 定义一些内外联动用的工具
 // app.defineAsset('', )
 
-// app.defineTool
+app.set('toolList', {
+  name: 'main'
+})
 
 // onMounted(() => {
 //   if (graphRef.value) {

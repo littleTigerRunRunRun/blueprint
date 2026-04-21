@@ -39,11 +39,11 @@
 
 <script setup lang="ts">
 import { onBeforeMount } from 'vue';
-import type { GCSApp } from './define';
+import type { GCSApp, BaseGraphDefine } from './define';
 
 let containerStyle = ''
 const { app } = defineProps<{
-  app: GCSApp
+  app: GCSApp<BaseGraphDefine>
 }>()
 
 onBeforeMount(() => {

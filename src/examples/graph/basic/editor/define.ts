@@ -96,6 +96,7 @@ export declare interface DataFlowLine {
 
 export declare interface DataFlowGraph {
   id: string // 数据流图id标识
+  direction: side
   nodes: Array<DataFlowNode>
   lines: Array<DataFlowLine>
   transform: {
@@ -150,7 +151,8 @@ export enum GraphExec {
   CREATE_TEMPLATE = 'createTemplate',
   IMPORT_TEMPLATE = 'importTemplate',
   CHANGE_NODE_STATUS = 'changeNodeStatus',
-  ADD_LINE_INFO = 'addLineInfo'
+  ADD_LINE_INFO = 'addLineInfo',
+  SET_DIRECTION = 'setDirection'
 }
 
 export interface GraphExecCallback {
@@ -169,6 +171,7 @@ export interface GraphExecCallback {
   [GraphExec.IMPORT_TEMPLATE]: () => void
   [GraphExec.CHANGE_NODE_STATUS]: (param: { id:string, parent?:string, status: boolean }) => void
   [GraphExec.ADD_LINE_INFO]: (param: { id:string, info: string }) => void
+  [GraphExec.SET_DIRECTION]: (param: side) => void
 }
 
 // 图形节点类型
@@ -196,6 +199,7 @@ export interface GraphEditor {
   exportTemplate: () => DataFlowGraphTemplate
   changeNodeStatus: (param: { id:string, parent?:string, status: boolean }) => void
   addLineInfo: (param: { id:string, info: string }) => void
+  setDirection: (param: side) => void
 }
 
 // 无需参数的指令集，主要用于给快捷键系统调取
@@ -230,6 +234,7 @@ export enum GraphAbility {
 
 export interface EditorInitParams {
   id?: string
+  direction?: side
   container: HTMLElement
   eventHandlers: CallbackEventHandler
   abilities: Array<GraphAbility>

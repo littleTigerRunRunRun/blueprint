@@ -17,6 +17,7 @@ import {
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin'
 import { structures } from 'rete-structures'
 import { compactBox } from '@antv/hierarchy'
+import ELK from 'elkjs'
 
 // 视图优化
 import NodeIntervalContainer from './view/node-interval-container.vue'
@@ -51,11 +52,15 @@ import type {
 import { GraphAbility, Connection, GraphLineType } from './define'
 import { CMItems } from './tool/contextmenu'
 
+const elk = new ELK()
+
 // 画布生成主程序
 export async function createEditor(params: EditorInitParams): Promise<GraphEditor> {
   let id = params.id || getUID()
+  let direction = params.direction || 'r'
   const { container, abilities, eventHandlers } = params
 
+  subscriber.set('direction', direction)
   // 编辑器核心
   const editor = new NodeEditor<Schemes>()
 
@@ -115,7 +120,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
     //   }
     // }
   })
-  
+
   // 右键菜单插件
   const contextMenu = new ContextMenuPlugin<Schemes>({
     items: CMItems,
@@ -241,7 +246,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
   )
 
   // 监听事件提供线型修改中间函数
-  render.addPipe((context:any) => {
+  render.addPipe((context: any) => {
     if (context.type === 'connectionpath') {
       if (!context.data.payload.line) {
         context.data.payload.line = Object.assign({}, subscriber.get('line'))
@@ -255,7 +260,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
     }
     return context
   })
-  connection.addPipe((context:any) => {
+  connection.addPipe((context: any) => {
     if (context.type === 'render' && context.data.payload && (!context.data.payload.line)) {
       context.data.payload.line = Object.assign({}, subscriber.get('line'))
     }
@@ -283,7 +288,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         })
     }
   }
-  
+
   // 用户自定义能力注册
   const selector = new MySelector()
   const accumulating = AreaExtensions.accumulateOnCtrl()
@@ -334,8 +339,10 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
     },
     import: async (data: DataFlowGraph) => {
       id = data.id
+      direction = data.direction || 'r'
       // 清空画布
       await editor.clear()
+
       // 归零内容
       area.area.transform.k = 1
       area.area.transform.x = 0
@@ -375,6 +382,22 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
       await area.area.zoom(data.transform.scale);
       await area.area.translate(data.transform.x, data.transform.y);
 
+      // 加入一个原点
+      // const nid = getUID()
+      // const n = createNode({
+      //   id: nid,
+      //   name: 'node',
+      //   label: '原点',
+      //   width: 80,
+      //   height: 30
+      // })
+      // await editor.addNode(n)
+      // const pointer = {
+      //   x: x / data.transform.scale,
+      //   y: y / data.transform.scale
+      // }
+      // await area.translate(nid, pointer)
+
       // ld = lineData
       for (const ld of data.lines) {
         const connection = new Connection(
@@ -397,6 +420,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
       const transform = area.area.transform
       return {
         id,
+        direction,
         transform: {
           x: transform.x,
           y: transform.y,
@@ -405,7 +429,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         nodes: nodes.map((node) => {
           const view = area.nodeViews.get(node.id)
           if (!view) throw new Error(`no node view when export data:${node.id}`)
-          const nodeData:any = {
+          const nodeData: any = {
             id: node.id,
             name: node.name,
             label: node.label,
@@ -446,7 +470,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
       } else dropAdd.remove()
     },
     dropTemplateAdd: (data: DataFlowGraphTemplate) => {
-      const idMapping:Record<string, UniNode> = {}
+      const idMapping: Record<string, UniNode> = {}
       // const positions:Record<string, Point> = {}
       const nodes = data.nodes.map((item) => {
         const id = getUID()
@@ -474,8 +498,8 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
       dropAdd.addTemplate({ nodes, lines })
     },
     deleteSelect: async () => {
-      const nodeIds:Array<string> = []
-      const lineIds:Array<string> = []
+      const nodeIds: Array<string> = []
+      const lineIds: Array<string> = []
       selector.entities.forEach(async (entity) => {
         switch (entity.label) {
           case "connection": {
@@ -501,8 +525,8 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         await editor.removeConnection(id);
       })
     },
-    addNodeFromSelecting: async (nodeInfo:RawDataFlowNode, s:side) => {
-      let selectingNodeId:string|undefined
+    addNodeFromSelecting: async (nodeInfo: RawDataFlowNode, s: side) => {
+      let selectingNodeId: string | undefined
       selector.entities.forEach((item) => {
         if (item.label === 'node' && !selectingNodeId) {
           selectingNodeId = item.id
@@ -591,12 +615,12 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
     },
     createGroup: async () => {
       // 查找需要被聚合的选中节点
-      const nodeIds:Array<string> = []
+      const nodeIds: Array<string> = []
       selector.entities.forEach((entity) => {
         nodeIds.push(entity.id)
       })
 
-      let joinedRect:any
+      let joinedRect: any
       nodeIds.forEach((id) => {
         const node = editor.getNode(id)
         const nposition = area.nodeViews.get(id)!.position
@@ -663,8 +687,8 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
       })
     },
     exportTemplate() {
-      const nodes:Array<TemplateDataFlowNode> = []
-      let bound:undefined | Bound
+      const nodes: Array<TemplateDataFlowNode> = []
+      let bound: undefined | Bound
       selector.entities.forEach((entity) => {
         const node = editor.getNode(entity.id)
         if (!node) throw new Error(`no such select node:${entity.id}`)
@@ -707,7 +731,7 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         lines
       }
     },
-    changeNodeStatus: async (param: { id:string, parent?:string, status: boolean }) => {
+    changeNodeStatus: async (param: { id: string, parent?: string, status: boolean }) => {
       const { id, parent, status } = param
       const node = editor.getNode(id)
 
@@ -744,13 +768,82 @@ export async function createEditor(params: EditorInitParams): Promise<GraphEdito
         })
       }
     },
-    addLineInfo: async (param: { id:string, info: string }) =>  {
+    addLineInfo: async (param: { id: string, info: string }) => {
       const line = editor.getConnection(param.id)
       if (line) {
         // @ts-ignore
         line.info = param.info
         await area.update('connection', line.id)
       }
+    },
+    setDirection: async (param: side) => {
+      direction = param
+      subscriber.set('direction', param)
+      const transform = area.area.transform
+      const screenCenterPoint = {
+        x: window.innerWidth * 0.5 - transform.x,
+        y: window.innerHeight * 0.5 - transform.y
+      }
+
+      // 如果需要手动控制节点的层次，可以使用 elk.layered.nodePlacement.fixed 和 elk.position 属性来固定特定节点的位置。
+      const layoutOptions = {
+        'elk.algorithm': 'org.eclipse.elk.layered',  // 使用分层布局算法
+        'elk.direction': ({
+          l: 'LEFT',
+          r: 'RIGHT',
+          b: 'DOWN',
+          t: 'UP'
+        })[param],  // 布局方向：向右
+        // 布局方向选项：
+        // - 'RIGHT': 从左到右布局
+        // - 'DOWN': 从上到下布局
+        // - 'LEFT': 从右到左布局
+        // - 'UP': 从下到上布局
+        'elk.layered.spacing.nodeNodeBetweenLayers': 40,  // 层之间的间距
+        // 'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',  // 交叉最小化策略
+        // 'elk.layered.nodePlacement.strategy': 'BRANDES_KOEPF',  // 节点放置策略
+        // 'elk.layered.edgeRouting.strategy': 'ORTHOGONAL',  // 边缘路由策略：正交
+        // 'elk.layered.compaction.postCompaction': false,  // 启用后压缩
+        'elk.spacing.nodeNode': 30,  // 全局节点间距
+        // 'elk.spacing.edgeNode': 10,  // 边缘与节点的间距
+        // 'elk.spacing.edgeEdge': 10  // 边缘之间的间距
+      };
+      const elkData = {
+        id,
+        children: editor.getNodes().map((node) => ({
+          id: node.id,
+          width: node.width,
+          height: node.height
+        })),
+        edges: editor.getConnections().map((line) => ({
+          id: line.id,
+          sources: [line.source],
+          targets: [line.target]
+        })),
+        layoutOptions
+      }
+
+      // @ts-ignore
+      const result = await elk.layout(elkData)
+      result.children?.forEach(async (child) => {
+        await area.translate(child.id, {
+          x: (child.x || 0) - (result?.width || 0) + screenCenterPoint.x,
+          y: (child.y || 0) - (result?.height || 0) + screenCenterPoint.y
+        })
+      })
+      // 重建连线
+      editor.getConnections().forEach(async (line) => {
+        await editor.removeConnection(line.id)
+
+        line.sourceOutput = param
+        line.targetInput = ({
+          l: 'r',
+          r: 'l',
+          t: 'b',
+          b: 't'
+        })[param]
+        await editor.addConnection(line);
+      })
     },
     destroy() {
       editor.clear()

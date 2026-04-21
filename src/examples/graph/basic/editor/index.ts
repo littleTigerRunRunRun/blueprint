@@ -106,6 +106,9 @@ export async function makeupEditor(params: EditorInitParams) {
     },
     [GraphExec.ADD_LINE_INFO]: (param:{ id:string, info: string }) => {
       editor.addLineInfo(param)
+    },
+    [GraphExec.SET_DIRECTION]: (param: side) => {
+      editor.setDirection(param)
     }
   }
   subscriber.set('exec', callExec)

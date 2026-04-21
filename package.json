@@ -21,7 +21,7 @@
     "@types/keyboardjs": "^2.5.3",
     "animejs": "3.2.1",
     "ant-design-vue": "^4.1.2",
-    "elkjs": "^0.8.2",
+    "elkjs": "^0.11.1",
     "keyboardjs": "^2.7.0",
     "lodash": "^4.18.1",
     "rete": "^2.0.3",
@@ -30,8 +30,8 @@
     "rete-connection-plugin": "file:./src/lib/rete-extend/rete-connection-plugin/",
     "rete-context-menu-plugin": "file:./src/lib/rete-extend/rete-context-menu-plugin/",
     "rete-engine": "^2.0.1",
-    "rete-scopes-plugin": "file:./src/lib/rete-extend/rete-scopes-plugin/",
     "rete-render-utils": "file:./src/lib/rete-extend/rete-render-utils/",
+    "rete-scopes-plugin": "file:./src/lib/rete-extend/rete-scopes-plugin/",
     "rete-structures": "^2.0.1",
     "rete-vue-plugin": "file:./src/lib/rete-extend/rete-vue-plugin/"
   },

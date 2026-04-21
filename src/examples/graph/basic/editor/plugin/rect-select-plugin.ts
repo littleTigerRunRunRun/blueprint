@@ -96,7 +96,7 @@ export class RectSelectPlugin extends Scope<never, Area2DInherited<Schemes, neve
         width: node.width,
         height: node.height
       }
-      console.log(selectRect, node.id, rect, isRectangleContained(selectRect, rect))
+      // console.log(selectRect, node.id, rect, isRectangleContained(selectRect, rect))
 
       if (isRectangleContained(selectRect, rect)) rectSelecting.push(node.id)
     })

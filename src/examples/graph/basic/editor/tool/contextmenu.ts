@@ -152,6 +152,46 @@ const setLineArrow:Item = {
   ]
 }
 
+const switchDirection:Item = {
+  label: '整体方向',
+  key: GraphExec.SET_DIRECTION,
+  handler() {},
+  subitems: [
+    {
+      label: '向上',
+      key: GraphExec.SET_DIRECTION,
+      status: () => subscriber.get('direction') === 't',
+      handler() {
+        subscriber.get('exec')?.[GraphExec.SET_DIRECTION]('t')
+      }
+    },
+    {
+      label: '向下',
+      key: GraphExec.SET_DIRECTION,
+      status: () => subscriber.get('direction') === 'b',
+      handler() {
+        subscriber.get('exec')?.[GraphExec.SET_DIRECTION]('b')
+      }
+    },
+    {
+      label: '向左',
+      key: GraphExec.SET_DIRECTION,
+      status: () => subscriber.get('direction') === 'l',
+      handler() {
+        subscriber.get('exec')?.[GraphExec.SET_DIRECTION]('l')
+      }
+    },
+    {
+      label: '向右',
+      key: GraphExec.SET_DIRECTION,
+      status: () => subscriber.get('direction') === 'r',
+      handler() {
+        subscriber.get('exec')?.[GraphExec.SET_DIRECTION]('r')
+      }
+    }
+  ]
+}
+
 const reArrange:Item = {
   label: '优化布局',
   key: GraphExec.REARRANGE,
@@ -180,13 +220,12 @@ export const CMItems:Items<Schemes> = (context:any, plugin:any) => {
   if (context === 'root') {
     return {
       searchBar: false,
-      list: [reArrange, setLinesType, setLinesFlow, setLineArrow]
+      list: [reArrange, setLinesType, setLinesFlow, setLineArrow, switchDirection]
     }
   } else {
     if (context.id && subscriber.get('connectionSelector').selectableNodes) {
       subscriber.get('connectionSelector').selectableNodes.select(context.id, true)
     }
-    console.log(context)
     if (context.name === 'node') {
       return {
         searchBar: false,

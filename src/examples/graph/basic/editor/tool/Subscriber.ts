@@ -1,5 +1,5 @@
 import { GraphLineType } from '../define'
-import type { GraphExecCallback, Callback, GraphLineParams, GraphLineParamsObject, KeyboardTool } from '../define'
+import type { GraphExecCallback, Callback, GraphLineParams, GraphLineParamsObject, KeyboardTool, side } from '../define'
 
 export interface CallPrepare {
   callback: Callback,
@@ -252,6 +252,7 @@ export const subscriber = new Subscriber<{
   } | null
   keyboard: KeyboardTool | null
   isRectSelect: boolean
+  direction: side
 }, {
   CHANGE_LINE: (id:string, params: GraphLineParams) => void
   SELECT_LINE: (params: GraphLineParamsObject) => void
@@ -266,7 +267,8 @@ export const subscriber = new Subscriber<{
   exec: null,
   hoveringSocket: null,
   keyboard: null,
-  isRectSelect: false
+  isRectSelect: false,
+  direction: 'r'
 }, ['CHANGE_LINE', 'SELECT_LINE'])
 
 // command是一个由|分隔的由调用名和参数组成的字符串，该方法需要帮助用户把里面的数字参数自动从字符串转成数字
@@ -281,16 +283,3 @@ export const resolveCommand = (command:string):Array<any> => {
     return argu
   })]
 }
-
-// class A<Events> {
-//   events: Record<keyof Events, Array<Events[keyof Events]>>
-//   constructor(evs:Record<keyof Events, Array<Events[keyof Events]>>) {
-//     this.events = evs
-//   }
-//   listen(eventName:keyof Events, callback:Events[typeof eventName]) {
-//     this.events[eventName].push(callback)
-//   }
-//   broadcast<en extends keyof Events>(eventName:en, ...argus: Parameters<Events[en]>) {
-
-//   }
-// }
