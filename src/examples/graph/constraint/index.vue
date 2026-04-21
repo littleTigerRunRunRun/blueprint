@@ -21,11 +21,20 @@ app.set('pureBG', '#f2f2f2')
 // app.set('gridBG', { background: '#ffe4e4', mainGrid: { interval: 200, width: 1.5, color: '#ff5455' }, subGrid: { interval: 25, width: 1, color: '#ffa8a9' } })
 // app.set('gridBG', { background: '#222', mainGrid: { interval: 200, width: 1.5, color: '#666' }, subGrid: { interval: 25, width: 1, color: '#555' } })
 
+// 测试：使用内阴影
+// app.set('innerShadow', { color: '#333', intensity: 2 })
+
 // 定义一些内外联动用的工具
 // app.defineAsset('', )
 
 app.set('toolList', {
-  name: 'main'
+  name: 'main',
+  layoutDirection: 'h',
+  orientation: {
+    ori: 'rb',
+    right: 20,
+    bottom: 20
+  }
 })
 
 // onMounted(() => {

@@ -1,15 +1,14 @@
-import type { GCSParams, GCSTools, GCSToolUseParam, GCSApp, GE, BaseGraphDefine } from './define'
+import type { GCSParams, GCSTools, GCSArrayTools, GCSToolUseParam, GCSApp, GE, BaseGraphDefine, GCSO, GCSA } from './define'
 import { GCS } from './define'
 import GraphVue from './Graph.vue'
-import { createGridBG, createPointBG, createPureBG } from './tools/GCSTools'
+import { createGridBG, createPointBG, createPureBG, createInnerShadow } from './tools/GCSTools'
 
 export * from './define'
-
 
 // 用户自定义内容工具的总入口
 class GraphApp implements GCSApp<BaseGraphDefine> {
   public tools:GCSTools = {}
-
+  public arrayTools:GCSArrayTools = {}
   
   public set(...params: GCSToolUseParam) {
     const [name, param] = params
@@ -23,12 +22,16 @@ class GraphApp implements GCSApp<BaseGraphDefine> {
       case 'gridBG':
         this.placeTool(GCS.BG, createGridBG(param.background, param.mainGrid, param.subGrid))
         break
+      case 'innerShadow':
+        this.placeTool(GCS.IS, createInnerShadow(param.color, param.intensity))
+        break
       case 'toolList': {
-        const { name, orientation = 't', layoutDirection = 'h' } = param
+        const { name, orientation = { ori: 't', top: '10%' }, layoutDirection = 'h', style = 'icon' } = param
         this.pushTool(GCS.TL, {
           name,
           orientation,
-          layoutDirection
+          layoutDirection,
+          style
         })
         break
       }
@@ -36,13 +39,13 @@ class GraphApp implements GCSApp<BaseGraphDefine> {
   }
 
   // 放置工具，同GCS的工具之间会相互替换
-  private placeTool<T extends GCS>(gcs:T, param:GCSParams[T]) {
+  private placeTool(gcs:GCSO, param:GCSParams[GCSO]) {
     this.tools[gcs] = param
   }
 
-  private pushTool<T extends GCS>(gcs:T, param:GCSParams[T]) {
-    if (!this.tools[gcs]) this.tools[gcs] = []
-    if (this.tools[gcs] instanceof Array) this.tools[gcs].push(param)
+  private pushTool(gcs:GCSA, param:GCSParams[GCSA]) {
+    if (!this.arrayTools[gcs]) this.arrayTools[gcs] = []
+    if (this.arrayTools[gcs] instanceof Array) this.arrayTools[gcs].push(param)
   }
 
   // 定义图的各种图元的数据结构

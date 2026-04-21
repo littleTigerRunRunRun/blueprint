@@ -34,6 +34,43 @@
       </defs>
     </svg>
     <div class="rete-basic-container" ref="containerRef" />
+    
+    <!-- 工具栏 -->
+    <div className="graph-toolbars">
+      <div class="graph-toolbar graph-toolbar-main">
+
+      </div>
+      <!-- <template v-for="(t, ti) in toolbarList" :key="`tool_${ti}`">
+        <a-tooltip
+          :title="t.label"
+          color="#35bfff"
+          overlayClassName="graph-asset-tooltip"
+        >
+          <a-dropdown v-if="t.params" overlayClassName="graph-button-dropdown">
+            <a-button type="primary" shape="circle" class="graph-tool-button" :icon="h(t.icon.value || t.icon)" @click="(!t.params) ? editorExec[t.name](t.value) : ''" />
+            <template #overlay>
+              <a-menu>
+                <a-menu-item
+                  v-for="(par, pi) in t.params"
+                  :key="`bp_${pi}`"
+                >
+                  <a-tooltip
+                    :title="par.label"
+                    color="#35bfff"
+                    placement="left"
+                    overlayClassName="graph-asset-tooltip"
+                  >
+                    <a-button class="graph-tool-button" type="primary" shape="circle" :icon="h(par.icon)" @click="t.icon.value = par.icon, editorExec[t.name](par.value)" />
+                  </a-tooltip>
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+          <a-button v-else type="primary" class="graph-tool-button" shape="circle" :icon="h(t.icon)" @click="editorExec[t.name](t.value)" />
+        </a-tooltip>
+        <div v-if="t.split" class="split" />
+      </template> -->
+    </div>
   </div>
 </template>
 
@@ -46,11 +83,24 @@ const { app } = defineProps<{
   app: GCSApp<BaseGraphDefine>
 }>()
 
+const mainToolBar = {
+  show: false
+}
+
 onBeforeMount(() => {
   containerStyle = `
-    ${app.tools.background}
+    ${app.tools.background || ''}
+    ${app.tools.innerShadow || ''}
   `
   console.log(containerStyle)
+
+  app.arrayTools.toolList?.forEach((tool) => {
+    switch (tool.name) {
+      case 'main':
+        mainToolBar.show = true // 显示主工具栏
+        break
+    }
+  })
 })
 
 const defineCustomPattern = () => {

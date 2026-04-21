@@ -1,6 +1,7 @@
 import { type Root, Scope, NodeEditor } from 'rete'
 import { type Area2DInherited, type Area2D, AreaPlugin } from 'rete-area-plugin'
 import type { Schemes, Point, Rect } from '../define'
+import { getRectCenter } from '../tool/path'
 import { subscriber } from '../tool/Subscriber'
 import { screenToArea } from '../tool/smoothZoom'
 import { throttle } from 'lodash'
@@ -42,7 +43,6 @@ export class RectSelectPlugin extends Scope<never, Area2DInherited<Schemes, neve
 
     this.addPipe((context) => {
       if (context.type === 'rectselect') {
-        console.log('===========')
         const start = context.data.start
         const end = context.data.end
         if (start && end) {
@@ -86,6 +86,7 @@ export class RectSelectPlugin extends Scope<never, Area2DInherited<Schemes, neve
     const { selector, selectableNodes } = subscriber.get('connectionSelector')
 
     const rectSelecting:Array<string> = []
+    const rectSelectingLines:Array<string> = []
 
     this.editor?.getNodes().forEach((node) => {
       // 目前写死了只有node类型参与框选判断，实际上需要外面传入判断条件、是否包含的判断条件（比如节点中心被包含就算，还是必须所有内容框入才算）
@@ -100,6 +101,34 @@ export class RectSelectPlugin extends Scope<never, Area2DInherited<Schemes, neve
 
       if (isRectangleContained(selectRect, rect)) rectSelecting.push(node.id)
     })
+    this.editor?.getConnections().forEach((line) => {
+      const source = this.editor?.getNode(line.source)
+      const sourcePos = this.area?.nodeViews.get(line.source)?.position
+      const target = this.editor?.getNode(line.target)
+      const targetPos = this.area?.nodeViews.get(line.target)?.position
+      const startPos = getRectCenter({
+        x: sourcePos!.x,
+        y: sourcePos!.y,
+        width: source!.width,
+        height: source!.height
+      }, line.sourceOutput)
+      const endPos = getRectCenter({
+        x: targetPos!.x,
+        y: targetPos!.y,
+        width: target!.width,
+        height: target!.height
+      }, line.targetInput)
+
+      const rect = {
+        x: Math.min(startPos.x, endPos.x),
+        y: Math.min(startPos.y, endPos.y),
+        width: Math.abs(startPos.x - endPos.x),
+        height: Math.abs(startPos.y - endPos.y)
+      }
+      if (isRectangleContained(selectRect, rect)) {
+        rectSelectingLines.push(line.id)
+      }
+    })
 
     selector.entities.forEach((entity:any) => {
       // 框选的包含了已选中的，从rectSelecting中去掉该id
@@ -108,6 +137,10 @@ export class RectSelectPlugin extends Scope<never, Area2DInherited<Schemes, neve
       else {
         selectableNodes.unselect(entity.id)
       }
+    })
+
+    rectSelectingLines.forEach((id) => {
+      subscriber.broadcast('HANDLE_SELECT_LINE', id)
     })
 
     // rectSelecting中存在，而selector。entities中不存在，说明要新增选中

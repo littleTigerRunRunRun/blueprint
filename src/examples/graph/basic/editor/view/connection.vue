@@ -155,7 +155,8 @@ const onLineChanged = (id:string, params:GraphLineParams) => {
 }
 subscriber.listen('CHANGE_LINE', onLineChanged)
 
-const handleSelect = () => {
+const handleSelect = (id?:string) => {
+  if (typeof id === 'string' && id !== data.id) return
   const gcs = subscriber.get('connectionSelector')
   gcs.selector.add(
     {
@@ -184,10 +185,12 @@ onMounted(() => {
   line.arrow.value = data?.line?.arrow
   line.solid.value = data?.line?.solid
   line.flow.value = data?.line?.flow
+  subscriber.listen('HANDLE_SELECT_LINE', handleSelect)
 })
 
 onBeforeUnmount(() => {
   subscriber.remove('CHANGE_LINE', onLineChanged)
+  subscriber.remove('HANDLE_SELECT_LINE', handleSelect)
 })
 </script>
 

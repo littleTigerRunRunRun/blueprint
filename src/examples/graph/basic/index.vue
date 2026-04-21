@@ -130,13 +130,18 @@ onMounted(async () => {
     })
     
     if (location.hash === '#/graph-status') {
-      setTimeout(() => { editorExec.changeNodeStatus({ id: 'e85cff4b751e1577', status: true }) }, 2000)
+      setTimeout(() => { editorExec.changeNodeStatus({ id: 'e85cff4b751e1577', status: true }) }, 2000) // 开始
       setTimeout(() => { editorExec.changeNodeStatus({ id: '5ee212122b870c84', parent: 'c85d0407a8375387', status: true }) }, 5000)
-      setTimeout(() => { editorExec.changeNodeStatus({ id: '3e29895b52332033', parent: 'c85d0407a8375387', status: true }) }, 4000)
-      setTimeout(() => { editorExec.changeNodeStatus({ id: '400bda452b344e8c', parent: 'c85d0407a8375387', status: true }) }, 9000)
-      setTimeout(() => { editorExec.changeNodeStatus({ id: 'eb6424d58b79302d', status: true }) }, 12000)
+      setTimeout(() => { editorExec.changeNodeStatus({ id: '1efd2ea4c9c9b35d', status: true }) }, 4000)
+      setTimeout(() => { editorExec.changeNodeStatus({ id: '8dcefaa9df809ea0', status: true }) }, 7000)
+      setTimeout(() => { editorExec.changeNodeStatus({ id: '671baa7c144b21f3', status: true }) }, 11000)
+      setTimeout(() => { editorExec.changeNodeStatus({ id: '400bda452b344e8c', parent: 'c85d0407a8375387', status: true }) }, 13000)
+      setTimeout(() => { editorExec.changeNodeStatus({ id: 'eb6424d58b79302d', status: true }) }, 13100)
       
-      setTimeout(() => { editorExec.addLineInfo({ id: 'a5883bf2c1177811', info: '测试内容xxxxx' }) }, 6000)
+      setTimeout(() => { editorExec.addLineInfo({ id: 'a5883bf2c1177811', info: '测试内容1' }) }, 13000)
+      setTimeout(() => { editorExec.addLineInfo({ id: 'a5883bf2c1177811', info: '内容变更2' }) }, 16000)
+      setTimeout(() => { editorExec.addLineInfo({ id: 'a0267898bf5a279d', info: '测试内容1' }) }, 13000)
+      setTimeout(() => { editorExec.addLineInfo({ id: 'a0267898bf5a279d', info: '内容变更2' }) }, 16000)
     }
   }
 

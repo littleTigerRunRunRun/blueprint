@@ -256,6 +256,7 @@ export const subscriber = new Subscriber<{
 }, {
   CHANGE_LINE: (id:string, params: GraphLineParams) => void
   SELECT_LINE: (params: GraphLineParamsObject) => void
+  HANDLE_SELECT_LINE: (id:string) => void
 }>({
   line: {
     type: GraphLineType.MANHATTAN,
@@ -269,7 +270,7 @@ export const subscriber = new Subscriber<{
   keyboard: null,
   isRectSelect: false,
   direction: 'r'
-}, ['CHANGE_LINE', 'SELECT_LINE'])
+}, ['CHANGE_LINE', 'SELECT_LINE', 'HANDLE_SELECT_LINE'])
 
 // command是一个由|分隔的由调用名和参数组成的字符串，该方法需要帮助用户把里面的数字参数自动从字符串转成数字
 export const resolveCommand = (command:string):Array<any> => {

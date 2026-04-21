@@ -27,6 +27,9 @@
       <div className="resize-corner" @pointerdown.stop="onPointerDown" />
     </template>
     <template v-else>
+      <div class="status-vis">
+        <div :style="{ width: `${status * 100}%` }" />
+      </div>
       <span
         class="shrink-group"
         :style="{
@@ -48,10 +51,6 @@
           :data="{ type: 'socket', side: 'output', key, nodeId: data?.id, payload: output?.socket }"
           data-testid="output-socket"
         />
-      </div>
-
-      <div class="status-vis">
-        <div :style="{ width: `${status * 100}%` }" />
       </div>
     </template>
   </div>
@@ -342,10 +341,12 @@ const handleChange = (val:InputEvent) => {
     }
   }
   .shrink-group:focus-visible {
+    position: relative;
     border: none;
     outline: none;
     padding: 0;
     background-color: rgba(0, 0, 0, 0.1);
+    z-index: 2;
   }
   .socket{
     position: absolute;
@@ -356,14 +357,18 @@ const handleChange = (val:InputEvent) => {
   }
   .status-vis{
     position: absolute;
-    width: calc(100% + 4px);
-    height: 6px;
-    left: -2px;
-    bottom: -2px;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    position: absolute;
+    left: 0%;
+    top:0%;
+    z-index: 0;
     div {
       width: 0%;
       height: 100%;
       background-color: #11b949;
+      opacity: 0.5;
       transition: width 0.8s;
     }
   }
