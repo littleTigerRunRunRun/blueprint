@@ -1,6 +1,6 @@
 import { type Root, Scope, NodeEditor } from 'rete'
 import { type Area2DInherited, type Area2D, AreaPlugin } from 'rete-area-plugin'
-import type { Schemes, Point, Rect } from '../define'
+import type { Schemes, Point, Rect, side } from '../define'
 import { getRectCenter } from '../tool/path'
 import { subscriber } from '../tool/Subscriber'
 import { screenToArea } from '../tool/smoothZoom'
@@ -111,13 +111,13 @@ export class RectSelectPlugin extends Scope<never, Area2DInherited<Schemes, neve
         y: sourcePos!.y,
         width: source!.width,
         height: source!.height
-      }, line.sourceOutput)
+      }, line.sourceOutput as side)
       const endPos = getRectCenter({
         x: targetPos!.x,
         y: targetPos!.y,
         width: target!.width,
         height: target!.height
-      }, line.targetInput)
+      }, line.targetInput as side)
 
       const rect = {
         x: Math.min(startPos.x, endPos.x),
@@ -139,9 +139,9 @@ export class RectSelectPlugin extends Scope<never, Area2DInherited<Schemes, neve
       }
     })
 
-    rectSelectingLines.forEach((id) => {
-      subscriber.broadcast('HANDLE_SELECT_LINE', id)
-    })
+    // rectSelectingLines.forEach((id) => {
+    //   subscriber.broadcast('HANDLE_SELECT_LINE', id)
+    // })
 
     // rectSelecting中存在，而selector。entities中不存在，说明要新增选中
     rectSelecting.forEach((id) => {

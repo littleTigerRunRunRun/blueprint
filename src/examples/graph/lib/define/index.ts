@@ -1,14 +1,12 @@
 import type { ToolListSetting } from './panel'
+import type { GraphExecutor, GraphExec, Point, Callback } from './editor'
+export * from './panel'
+export * from './editor'
 
 /* 通用类型 */
 export type EnumRecord<T extends keyof any, U> = { [K in T]?: U }
-export type Callback = (...argus: any[]) => void
-export type Side = 't' | 'b' | 'l' | 'r'
 export type Orientation = 't' | 'rt' | 'r' | 'rb' | 'b' | 'lb' | 'l' | 'lt' // 8个方向
 export type LayoutDirection = 'v' | 'h' // vertical & horizontal
-export type Point = { x: number, y: number }
-export type Rect = { x: number, y: number, width: number, height: number }
-export type Bound = { xmin: number, xmax: number, ymin: number, ymax: number }
 export type PositionDescription = number | string // 可以是具体的数字，也可以是百分比
 export type OrientationSetting = 
   { ori: 't', top: PositionDescription } |
@@ -21,7 +19,6 @@ export type OrientationSetting =
   { ori: 'lb', bottom: PositionDescription, left: PositionDescription }
 
 /* Graph相关的类型 */
-
 export interface GraphMain {
   defineCustomPattern:() => void
 }
@@ -30,7 +27,9 @@ export interface GraphMain {
 export enum GCS {
   BG = 'background',
   IS = 'innerShadow', // 界面的内阴影
-  TL = 'toolList'
+  TL = 'toolList', // 涉及到的所有工具栏，包括固定的工具栏、资产工具栏、浮动工具栏
+  KB = 'keyboard',
+  EXEC = 'exec', // 用户绑定自定义指定
 }
 
 // GCS设置的数据结构
@@ -38,6 +37,8 @@ export interface GCSParams {
   [GCS.BG]: string
   [GCS.IS]: string
   [GCS.TL]: ToolListSetting
+  [GCS.KB]: Array<{ key: string, exec: GraphExec | string }>
+  [GCS.EXEC]: Array<{ name: string, exec: Callback }>
 }
 
 // GCS操作工具
@@ -52,13 +53,19 @@ export type GCSToolUseParam =
   ['pointBG', { background: string, point: { interval: number, r: number, color: string } }] |
   ['gridBG', { background: string, mainGrid: { interval: number, width:number, color: string }, subGrid: { interval: number, width:number, color: string } }] |
   ['innerShadow', { color: string, intensity: 1 | 2 | 3 }] | // 由于阴影风格属于预设，这里只能通过调整强度来综合调整内阴影的大小、透明度
-  ['toolList', ToolListSetting]
+  ['toolList', ToolListSetting] |
+  ['keyboard', Array<{ key: string, exec: GraphExec | string }>] | 
+  ['exec', Array<{ name: string, exec: Callback }>]
   
 export interface GCSApp<GD extends BaseGraphDefine> {
   tools: GCSTools
   arrayTools: GCSArrayTools
+  // icons:Record<string, string>
   set(...params: GCSToolUseParam): void
-  defineGraph(element:GE, name:string, dataDefine:GD[GE.NODE]): void
+  // defineGraph(element:GE, name:string, dataDefine:GD[GE.NODE]): void
+  // defineIcons(icons:Record<string, string>): void
+  // getIcon(icon:string): string
+  createEditor(container:HTMLDivElement):Promise<GraphExecutor>
 }
 
 // GE = GraphElement 图元素定义

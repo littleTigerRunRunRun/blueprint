@@ -1,6 +1,15 @@
 <template>
   <!-- <diagram /> -->
   <div class="home">
+    <div class="title">通用原型</div>
+    <div class="content">
+      <router-link to="/graph-constraint">
+        <div class="example">
+          <img src="../assets/status.png" />
+          <span>通用api版本（开发用）</span>
+        </div>
+      </router-link>
+    </div>
     <div class="title">功能预研</div>
     <div class="content">
       <router-link to="/graph-basic">
@@ -31,12 +40,6 @@
         <div class="example">
           <img src="../assets/resizeAndRotate.png" />
           <span>功能展示：缩放、旋转</span>
-        </div>
-      </router-link>
-      <router-link to="/graph-constraint">
-        <div class="example">
-          <img src="../assets/status.png" />
-          <span>通用api版本（自测用）</span>
         </div>
       </router-link>
     </div>

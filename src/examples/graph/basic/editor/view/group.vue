@@ -364,6 +364,7 @@ const handleChange = (val:InputEvent) => {
     left: 0%;
     top:0%;
     z-index: 0;
+    pointer-events: none;
     div {
       width: 0%;
       height: 100%;

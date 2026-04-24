@@ -1,14 +1,19 @@
-import type { GCSParams, GCSTools, GCSArrayTools, GCSToolUseParam, GCSApp, GE, BaseGraphDefine, GCSO, GCSA } from './define'
-import { GCS } from './define'
+import { subscriber } from './tools/Subscriber'
+import type { GCSParams, GCSTools, GCSArrayTools, GCSToolUseParam, GCSApp, GE, BaseGraphDefine, GCSO, GCSA, GraphExecutor, Callback } from './define'
+import { GCS, GraphExec } from './define'
 import GraphVue from './Graph.vue'
 import { createGridBG, createPointBG, createPureBG, createInnerShadow } from './tools/GCSTools'
+import { KeyboardManager } from './tools/keyborad'
 
 export * from './define'
+export * from './view/toolComponents'
 
 // 用户自定义内容工具的总入口
-class GraphApp implements GCSApp<BaseGraphDefine> {
+export class GraphApp<T extends BaseGraphDefine> implements GCSApp<BaseGraphDefine> {
   public tools:GCSTools = {}
   public arrayTools:GCSArrayTools = {}
+  // public icons:Record<string, string> = {}
+  public exec: Record<GraphExec | string, Callback> = {}
   
   public set(...params: GCSToolUseParam) {
     const [name, param] = params
@@ -26,15 +31,25 @@ class GraphApp implements GCSApp<BaseGraphDefine> {
         this.placeTool(GCS.IS, createInnerShadow(param.color, param.intensity))
         break
       case 'toolList': {
-        const { name, orientation = { ori: 't', top: '10%' }, layoutDirection = 'h', style = 'icon' } = param
+        const { name, size, orientation = { ori: 't', top: '10%' }, layoutDirection = 'h', style = 'icon', content } = param
         this.pushTool(GCS.TL, {
           name,
+          size,
           orientation,
           layoutDirection,
-          style
+          style,
+          content
         })
         break
       }
+      case 'keyboard':
+        KeyboardManager(param)
+        break
+      case 'exec':
+        for (const ex of param) {
+          this.exec[ex.name] = ex.exec
+        }
+        break
     }
   }
 
@@ -49,16 +64,29 @@ class GraphApp implements GCSApp<BaseGraphDefine> {
   }
 
   // 定义图的各种图元的数据结构
-  public defineGraph(element:GE, name:string, dataDefine:any) {
+  // public defineGraph(element:GE, name:string, dataDefine:any) {
 
-  }
+  // }
 
-  // 定义资产
-  public defineAsset() {
+  // public defineIcons(icons: Record<string, string>) {
+  //   for (const key in icons) {
+  //     this.icons[key] = icons[key]
+  //   }
+  // }
 
+  // public getIcon(icon: string) {
+  //   const iconUrl = this.icons[icon]
+  //   if (!iconUrl) console.error(`找不到名为${icon}的icon资源`)
+  //   return iconUrl || ''
+  // }
+
+  public createEditor = async (container:HTMLDivElement):Promise<GraphExecutor> => {
+    // 
+    subscriber.set('exec', this.exec)
+    return {} as GraphExecutor
   }
 }
-export const app = new GraphApp()
 
+export const app = new GraphApp()
 
 export { GraphVue as Graph }

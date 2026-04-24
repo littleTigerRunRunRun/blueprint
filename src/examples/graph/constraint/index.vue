@@ -1,16 +1,50 @@
 <template>
   <div class="graph-with-constraint">
-    <Graph ref="graphRef" :app="app">
+    <Graph
+      v-if="startGraphRender"
+      ref="graphRef"
+      :app="app"
+    >
+      <template #main_tool_scale>
+        <scale-tool />
+      </template>
     </Graph>
+    <div class="show-log-button" @click="showDrawer">功能日志</div>
+    <a-drawer
+      v-model:open="open"
+      class="custom-class"
+      root-class-name="root-class-name"
+      :root-style="{ color: 'blue' }"
+      style="color: red"
+      title="通用原型封装功能日志"
+      placement="left"
+    >
+      <div
+        v-for="(l, li) in log"
+        class="develop-log"
+        :key="`log_${li}`"
+        style="font-family: 微软雅黑; margin-bottom: 12px;"
+      >
+        <div class="title">{{ l.date }}</div>
+        <div class="content">{{ l.func }}</div>
+      </div>
+    </a-drawer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { GE, Graph, app } from '../lib'
+import { Graph, app, GraphExec } from '../lib'
 import type { GraphMain } from '../lib'
+// import {} from './define'
 import { ref, onMounted } from 'vue'
+import log from '../lib/log.json'
+import ScaleTool from './components/scale-tool.vue'
+import { toggleFullscreen } from './tool'
 
 const graphRef = ref<GraphMain | null>(null)
+const startGraphRender = ref(false)
+
+// const app = new GraphApp<MyExecutor>()
 
 // 测试：使用纯色背景
 app.set('pureBG', '#f2f2f2')
@@ -27,25 +61,87 @@ app.set('pureBG', '#f2f2f2')
 // 定义一些内外联动用的工具
 // app.defineAsset('', )
 
+// 设置主工具栏
 app.set('toolList', {
   name: 'main',
   layoutDirection: 'h',
+  size: 32,
   orientation: {
     ori: 'rb',
     right: 20,
     bottom: 20
-  }
+  },
+  content: [
+    { type: 'button', icon: 'mouse', exec: '', tooltip: '鼠标状态' },
+    { type: 'seperate', size1: 1, size2: 16, padding: [4, 4] }, 
+    { type: 'button', icon: 'placeholder', exec: '', tooltip: '网格' },
+    { type: 'seperate', size1: 1, size2: 16, padding: [4, 4] }, 
+    { type: 'switch', icon: 'collapse', exec: '', tooltip: '全屏状态' },
+    { type: 'seperate', size1: 1, size2: 16, padding: [4, 4] }, 
+    { type: 'button', icon: 'fitContent', exec: '', tooltip: '最佳适配，会根据内容尽可能地将内容以最佳的比例全部展示出来' },
+    { type: 'seperate', size1: 1, size2: 16, padding: [4, 4] }, 
+    { type: 'custom', name: 'scale' }
+  ]
 })
 
-// onMounted(() => {
-//   if (graphRef.value) {
-//     console.log(graphRef.value.defineCustomPattern)
-//   }
-// })
-app.defineGraph(GE.NODE, 'rect', {
-  width: 80,
-  height: 53
+// 设置侧工具栏
+app.set('toolList', {
+  name: 'asset',
+  layoutDirection: 'v',
+  size: 40,
+  orientation: {
+    ori: 'l',
+    left: 12
+  },
+  content: [
+    { type: 'drawer', icon: 'shape', tooltip: '形状', tools: [] },
+    { type: 'seperate', size1: 0, size2: 0, padding: [4, 4] }, 
+    { type: 'drawer', icon: 'placeholder', tooltip: '模版', tools: [] },
+    { type: 'seperate', size1: 0, size2: 0, padding: [4, 4] }, 
+    { type: 'drag', icon: 'line', tooltip: '连线', asset: '' },
+    { type: 'seperate', size1: 0, size2: 0, padding: [4, 4] }, 
+    { type: 'drag', icon: 'placeholder', tooltip: '圆角矩形', asset: '' },
+    { type: 'seperate', size1: 0, size2: 0, padding: [4, 4] }, 
+    { type: 'drag', icon: 'diamond', tooltip: '菱形', asset: '' },
+    { type: 'seperate', size1: 0, size2: 0, padding: [4, 4] }, 
+    { type: 'drag', icon: 'placeholder', tooltip: '椭圆', asset: '' },
+  ]
 })
+
+// 设置可拖拽的资产
+// app.set('assets')
+
+// 自定义可调用指令exec
+app.set('exec', [
+  // 配置了名为fullscreen的自定义指令
+  { name: 'fullscreen', exec: () => {
+    toggleFullscreen()
+  }}
+])
+
+// 绑定各种键盘快捷键
+app.set('keyboard', [
+  { key: 'delete', exec: GraphExec.DELETE_SELECT },
+  { key: 'tab', exec: GraphExec.ADD_FROM_SELECTING },
+  // 绑定了按键f到自定义指令fullscreen
+  { key: 'f', exec: 'fullscreen' }
+])
+
+// 定义右键菜单
+// 本项目好像暂时未用到右键菜单，因此暂时不用接入
+// app.set('contextmenu')
+
+// 初始化画布
+onMounted(() => {
+})
+
+startGraphRender.value = true
+
+// 查看开发日志新增内容
+const open = ref<boolean>(false)
+const showDrawer = () => {
+  open.value = true
+}
 
 </script>
 
@@ -54,5 +150,39 @@ app.defineGraph(GE.NODE, 'rect', {
   position: relative;
   width: 100%;
   height: 100%;
+  .show-log-button{
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    padding: 8px 12px;
+    border: 1px solid #000;
+    cursor: pointer;
+    transition: color 0.3s, border-color 0.3s;
+    &:hover {
+      color :#66aaff;
+      border-color: #66aaff;
+    }
+  }
+}
+</style>
+<style lang="scss">
+.custom-class{
+  .title {
+    color: #66aaff;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .content {
+    color: #333;
+    font-size: 14px;
+  }
+}
+
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
 }
 </style>

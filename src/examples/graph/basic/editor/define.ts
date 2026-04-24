@@ -156,7 +156,7 @@ export enum GraphExec {
 }
 
 export interface GraphExecCallback {
-  [GraphExec.IMPORT]: () => Promise<void>
+  [GraphExec.IMPORT]: (data: DataFlowGraph) => Promise<void>
   [GraphExec.EXPORT]: () => DataFlowGraph
   [GraphExec.DELETE_SELECT]: Callback
   [GraphExec.CLEAR]: Callback

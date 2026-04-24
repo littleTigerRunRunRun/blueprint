@@ -1,5 +1,6 @@
-import { GraphLineType } from '../define'
-import type { GraphExecCallback, Callback, GraphLineParams, GraphLineParamsObject, KeyboardTool, side } from '../define'
+// import { GraphLineType } from '../define'
+// import type { GraphExecCallback, Callback, GraphLineParams, GraphLineParamsObject, KeyboardTool, side } from '../define'
+import type { Callback, GraphExecutor } from '../define'
 
 export interface CallPrepare {
   callback: Callback,
@@ -243,33 +244,19 @@ class Subscriber<Sets, Events extends Record<string | number | symbol, Callback>
 // 而不需要在command中使用的事件，则建议设置为一个小数字，来减小缓存
 
 export const subscriber = new Subscriber<{
-  line: GraphLineParamsObject
-  connectionSelector: any
-  exec: GraphExecCallback | null
-  hoveringSocket: {
-    nodeId: string
-    key: string
-  } | null
-  keyboard: KeyboardTool | null
-  isRectSelect: boolean
-  direction: side
+  exec: GraphExecutor | null
+  'auxiliary.ctrl': boolean
+  'auxiliary.shift': boolean
+  'auxiliary.alt': boolean
+  'auxiliary.space': boolean
 }, {
-  CHANGE_LINE: (id:string, params: GraphLineParams) => void
-  SELECT_LINE: (params: GraphLineParamsObject) => void
 }>({
-  line: {
-    type: GraphLineType.MANHATTAN,
-    solid: true,
-    flow: false,
-    arrow: true
-  },
-  connectionSelector: null,
   exec: null,
-  hoveringSocket: null,
-  keyboard: null,
-  isRectSelect: false,
-  direction: 'r'
-}, ['CHANGE_LINE', 'SELECT_LINE'])
+  'auxiliary.ctrl': false,
+  'auxiliary.shift': false,
+  'auxiliary.alt': false,
+  'auxiliary.space': false
+}, [])
 
 // command是一个由|分隔的由调用名和参数组成的字符串，该方法需要帮助用户把里面的数字参数自动从字符串转成数字
 export const resolveCommand = (command:string):Array<any> => {

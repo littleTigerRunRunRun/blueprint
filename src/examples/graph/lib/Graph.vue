@@ -35,57 +35,48 @@
     </svg>
     <div class="rete-basic-container" ref="containerRef" />
     
-    <!-- 工具栏 -->
-    <div className="graph-toolbars">
-      <div class="graph-toolbar graph-toolbar-main">
-
-      </div>
-      <!-- <template v-for="(t, ti) in toolbarList" :key="`tool_${ti}`">
-        <a-tooltip
-          :title="t.label"
-          color="#35bfff"
-          overlayClassName="graph-asset-tooltip"
-        >
-          <a-dropdown v-if="t.params" overlayClassName="graph-button-dropdown">
-            <a-button type="primary" shape="circle" class="graph-tool-button" :icon="h(t.icon.value || t.icon)" @click="(!t.params) ? editorExec[t.name](t.value) : ''" />
-            <template #overlay>
-              <a-menu>
-                <a-menu-item
-                  v-for="(par, pi) in t.params"
-                  :key="`bp_${pi}`"
-                >
-                  <a-tooltip
-                    :title="par.label"
-                    color="#35bfff"
-                    placement="left"
-                    overlayClassName="graph-asset-tooltip"
-                  >
-                    <a-button class="graph-tool-button" type="primary" shape="circle" :icon="h(par.icon)" @click="t.icon.value = par.icon, editorExec[t.name](par.value)" />
-                  </a-tooltip>
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
-          <a-button v-else type="primary" class="graph-tool-button" shape="circle" :icon="h(t.icon)" @click="editorExec[t.name](t.value)" />
-        </a-tooltip>
-        <div v-if="t.split" class="split" />
-      </template> -->
-    </div>
+    <!-- 主工具栏 - 一般是那个固定在界面上不动的常驻工具栏，不过并非所有的编辑器都存在这样一个工具栏 -->
+    <Toolbar
+      v-if="mainToolBar"
+      name="main"
+      :setting="mainToolBar"
+    >
+      <!-- 插槽穿透 -->
+      <template v-for="(slotName, ti) in mainToolSlots" :key="`slot_main_${ti}`" #[slotName]="scope">
+        <slot :name="slotName" v-bind="scope" />
+      </template>
+    </Toolbar>
+    <!-- 资产工具栏 - 一般是一个具有大量可拖拽生成内容的工具栏 -->
+    <Toolbar
+      v-if="assetToolBar"
+      name="asset"
+      :setting="assetToolBar"
+    >
+      <!-- 插槽穿透 -->
+      <template v-for="(slotName, ti) in assetToolSlots" :key="`slot_main_${ti}`" #[slotName]="scope">
+        <slot :name="slotName" v-bind="scope" />
+      </template>
+    </Toolbar>
+    <!-- 浮窗工具栏 - 一般是一在某个内容被选中后出现的有针对性选项的工具栏 -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { onBeforeMount } from 'vue';
-import type { GCSApp, BaseGraphDefine } from './define';
+import { onBeforeMount, onMounted, ref } from 'vue';
+import type { GCSApp, BaseGraphDefine, ToolListSetting } from './define';
+import { Toolbar } from './view/toolComponents'
 
+// 
+const containerRef = ref<HTMLDivElement|null>(null)
 let containerStyle = ''
 const { app } = defineProps<{
   app: GCSApp<BaseGraphDefine>
 }>()
 
-const mainToolBar = {
-  show: false
-}
+let mainToolBar:Required<ToolListSetting>
+let mainToolSlots:Array<string>
+let assetToolBar:Required<ToolListSetting>
+let assetToolSlots:Array<string>
 
 onBeforeMount(() => {
   containerStyle = `
@@ -94,19 +85,30 @@ onBeforeMount(() => {
   `
   console.log(containerStyle)
 
-  app.arrayTools.toolList?.forEach((tool) => {
+  ;(app.arrayTools.toolList as Required<ToolListSetting>[]).forEach((tool) => {
     switch (tool.name) {
       case 'main':
-        mainToolBar.show = true // 显示主工具栏
+        mainToolBar = tool
+        mainToolSlots = tool.content.filter((tool) => tool.type === 'custom').map((tool) => `main_tool_${tool.name}`)
+        break
+      case 'asset':
+        assetToolBar = tool
+        assetToolSlots = tool.content.filter((tool) => tool.type === 'custom').map((tool) => `asset_tool_${tool.name}`)
         break
     }
   })
+})
+
+// 
+onMounted(() => {
+  if (containerRef.value) app.createEditor(containerRef.value)
 })
 
 const defineCustomPattern = () => {
   
 }
 
+// 输出接口
 defineExpose({
   defineCustomPattern
 })
@@ -117,5 +119,17 @@ defineExpose({
   position: relative;
   width: 100%;
   height: 100%;
+  * {
+    font-family: HarmonyOS Sans SC;
+  }
+  & > svg {
+    position: absolute;
+    left: 100%;
+    top: 100%;
+  }
+  .rete-basic-container {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

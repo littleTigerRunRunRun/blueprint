@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&amp;family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000000;
+        }
+        .acid-grid {
+            background-image: radial-gradient(circle, rgba(192, 255, 0, 0.15) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .liquid-line {
+            filter: drop-shadow(0 0 4px #befc00);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glow-primary {
+            box-shadow: 0 0 15px rgba(192, 255, 0, 0.2);
+        }
+        .glow-secondary {
+            box-shadow: 0 0 15px rgba(216, 115, 255, 0.3);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error-dim": "#d53d18",
+                      "tertiary-fixed": "#ff81f5",
+                      "tertiary-fixed-dim": "#ff61f8",
+                      "on-tertiary-container": "#230023",
+                      "surface-bright": "#2c2c2c",
+                      "outline-variant": "#484847",
+                      "on-primary-fixed": "#354900",
+                      "primary": "#eaffb8",
+                      "on-secondary-fixed-variant": "#8400b2",
+                      "background": "#0e0e0e",
+                      "secondary-fixed": "#f1c1ff",
+                      "on-secondary-container": "#fff5fc",
+                      "surface-tint": "#eaffb8",
+                      "on-secondary-fixed": "#580078",
+                      "on-surface-variant": "#adaaaa",
+                      "on-primary": "#4b6600",
+                      "on-error": "#450900",
+                      "primary-fixed-dim": "#b2ed00",
+                      "error-container": "#b92902",
+                      "on-secondary": "#39004f",
+                      "secondary-container": "#9900ce",
+                      "inverse-on-surface": "#565555",
+                      "surface-container-highest": "#262626",
+                      "secondary-fixed-dim": "#ebadff",
+                      "on-primary-container": "#445d00",
+                      "tertiary-container": "#fe00fe",
+                      "on-background": "#ffffff",
+                      "inverse-primary": "#4c6800",
+                      "surface-container": "#1a1919",
+                      "on-tertiary-fixed": "#320032",
+                      "primary-container": "#befc00",
+                      "surface": "#0e0e0e",
+                      "primary-dim": "#b2ed00",
+                      "surface-variant": "#262626",
+                      "on-tertiary": "#400040",
+                      "surface-dim": "#0e0e0e",
+                      "inverse-surface": "#fcf9f8",
+                      "on-tertiary-fixed-variant": "#6a006a",
+                      "tertiary": "#ff51fa",
+                      "surface-container-low": "#131313",
+                      "surface-container-high": "#201f1f",
+                      "secondary": "#d873ff",
+                      "on-surface": "#ffffff",
+                      "tertiary-dim": "#ff51fa",
+                      "on-primary-fixed-variant": "#4c6800",
+                      "secondary-dim": "#bc00fb",
+                      "primary-fixed": "#befc00",
+                      "on-error-container": "#ffd2c8",
+                      "error": "#ff7351",
+                      "outline": "#767575",
+                      "surface-container-lowest": "#000000"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0px",
+                      "lg": "0px",
+                      "xl": "0px",
+                      "full": "0px"
+              },
+              "fontFamily": {
+                      "headline": ["Space Grotesk"],
+                      "body": ["Manrope"],
+                      "label": ["Space Grotesk"]
+              }
+            },
+          }
+        }
+    </script>
+</head>
+<body class="font-body text-on-background selection:bg-primary selection:text-on-primary">
+<!-- Header Navigation Shell -->
+<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center w-full px-6 h-16 bg-black/80 backdrop-blur-xl rounded-none border-b-2 border-[#C0FF00]/20 shadow-[0_0_15px_rgba(192,255,0,0.1)]">
+<div class="flex items-center gap-8">
+<span class="text-2xl font-black text-[#C0FF00] italic font-headline tracking-tighter uppercase">ACID_FLOW</span>
+<nav class="hidden md:flex gap-1 h-full items-center font-headline tracking-tighter uppercase">
+<button class="px-4 py-2 text-[#C0FF00] border-b-2 border-[#C0FF00] shadow-[0_4px_10px_rgba(192,255,0,0.4)] transition-all">File</button>
+<button class="px-4 py-2 text-white/60 hover:text-[#C0FF00] hover:bg-[#C0FF00] hover:text-black transition-colors duration-150">Edit</button>
+<button class="px-4 py-2 text-white/60 hover:text-[#C0FF00] hover:bg-[#C0FF00] hover:text-black transition-colors duration-150">View</button>
+<button class="px-4 py-2 text-white/60 hover:text-[#C0FF00] hover:bg-[#C0FF00] hover:text-black transition-colors duration-150">Terminal</button>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center bg-surface-container-high px-3 py-1 border border-outline-variant/30">
+<span class="material-symbols-outlined text-primary text-sm mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-xs font-label uppercase text-on-surface-variant placeholder:text-on-surface-variant/50 w-32" placeholder="CMD_FIND" type="text"/>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-[#C0FF00] hover:text-black transition-colors duration-150 text-[#C0FF00]">
+<span class="material-symbols-outlined">ads_click</span>
+</button>
+<button class="p-2 hover:bg-[#C0FF00] hover:text-black transition-colors duration-150 text-[#C0FF00]">
+<span class="material-symbols-outlined">polyline</span>
+</button>
+<button class="p-2 hover:bg-[#C0FF00] hover:text-black transition-colors duration-150 text-[#C0FF00]">
+<span class="material-symbols-outlined">category</span>
+</button>
+<button class="p-2 hover:bg-[#C0FF00] hover:text-black transition-colors duration-150 text-[#C0FF00]">
+<span class="material-symbols-outlined">zoom_in</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Sidebar Shell -->
+<aside class="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center py-8 z-40 bg-[#0A0A0A] rounded-none border-r border-[#C0FF00]/10 transition-all duration-200 ease-in-out">
+<div class="mb-8 text-center px-2">
+<div class="w-10 h-10 bg-surface-container-highest border border-primary/20 flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">terminal</span>
+</div>
+<p class="font-headline text-[8px] font-bold uppercase tracking-[0.2em] text-white/40">NODE_OS</p>
+</div>
+<nav class="flex flex-col gap-4 flex-1">
+<button class="group flex flex-col items-center gap-1 p-3 bg-[#C0FF00] text-black shadow-[0_0_20px_#C0FF00] transition-all">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-headline text-[8px] font-bold uppercase tracking-[0.1em]">Library</span>
+</button>
+<button class="group flex flex-col items-center gap-1 p-3 text-white/40 border border-white/5 hover:border-[#C0FF00]/50 hover:text-[#C0FF00] transition-all">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-headline text-[8px] font-bold uppercase tracking-[0.1em]">Nodes</span>
+</button>
+<button class="group flex flex-col items-center gap-1 p-3 text-white/40 border border-white/5 hover:border-[#C0FF00]/50 hover:text-[#C0FF00] transition-all">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-headline text-[8px] font-bold uppercase tracking-[0.1em]">Logic</span>
+</button>
+<button class="group flex flex-col items-center gap-1 p-3 text-white/40 border border-white/5 hover:border-[#C0FF00]/50 hover:text-[#C0FF00] transition-all">
+<span class="material-symbols-outlined">history</span>
+<span class="font-headline text-[8px] font-bold uppercase tracking-[0.1em]">History</span>
+</button>
+</nav>
+<div class="flex flex-col gap-4 mb-4">
+<button class="text-white/40 hover:text-[#C0FF00] transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<button class="text-white/40 hover:text-[#C0FF00] transition-colors">
+<span class="material-symbols-outlined">description</span>
+</button>
+</div>
+<button class="w-16 h-16 bg-primary-container text-on-primary-container font-headline text-[9px] font-black uppercase tracking-tighter hover:bg-primary transition-colors flex items-center justify-center text-center p-2">
+            DEPLOY FLOW
+        </button>
+</aside>
+<!-- Main Canvas Area -->
+<main class="ml-20 mt-16 h-[calc(100vh-64px)] relative overflow-hidden bg-surface-container-lowest acid-grid">
+<!-- Floating Canvas Elements -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none">
+<!-- Liquid Lines -->
+<path class="liquid-line opacity-80" d="M 300 200 C 400 200, 400 400, 500 400" fill="none" stroke="#befc00" stroke-width="2"></path>
+<path class="liquid-line opacity-80" d="M 500 400 C 600 400, 600 300, 800 300" fill="none" stroke="#befc00" stroke-width="2"></path>
+<path d="M 800 300 C 900 300, 950 500, 1100 500" fill="none" stroke="#484847" stroke-dasharray="8 4" stroke-width="1.5"></path>
+</svg>
+<!-- Node 1: Logic Diamond (Purple) -->
+<div class="absolute left-[240px] top-[140px] group cursor-move">
+<div class="relative w-32 h-32 transform rotate-45 bg-secondary-container/40 border-2 border-secondary glow-secondary backdrop-blur-md flex items-center justify-center transition-all group-hover:scale-105">
+<div class="transform -rotate-45 text-center px-4">
+<span class="font-headline text-[10px] font-black tracking-widest text-on-secondary-container uppercase">GATE_01</span>
+<p class="font-body text-[9px] text-white/70 mt-1 leading-tight">IF_SIGNAL_NULL</p>
+</div>
+</div>
+<!-- Ports -->
+<div class="absolute left-[64px] -top-1 w-2 h-2 bg-primary"></div>
+<div class="absolute left-[64px] bottom-[-4px] w-2 h-2 bg-primary"></div>
+</div>
+<!-- Node 2: Technical Rect (Yellow/Primary) -->
+<div class="absolute left-[450px] top-[340px] group cursor-move">
+<div class="w-64 bg-surface-container-high border-t-4 border-primary shadow-[0_10px_30px_rgba(192,255,0,0.15)] transition-all group-hover:bg-surface-container-highest">
+<div class="px-4 py-2 bg-primary/10 flex justify-between items-center border-b border-white/5">
+<span class="font-headline text-[11px] font-bold text-primary tracking-tighter uppercase">PROCESSOR_CORE_V2</span>
+<span class="material-symbols-outlined text-primary text-xs">memory</span>
+</div>
+<div class="p-4 space-y-3">
+<div class="space-y-1">
+<label class="font-headline text-[8px] font-black text-white/40 uppercase tracking-widest">INPUT_DATA_STREAM</label>
+<div class="h-1 w-full bg-surface-container-highest">
+<div class="h-full bg-primary w-2/3 shadow-[0_0_8px_#befc00]"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-black/40 p-2 border border-white/5">
+<label class="block font-headline text-[7px] text-white/30 uppercase">VOLTAGE</label>
+<span class="font-headline text-xs font-bold text-primary">1.28V</span>
+</div>
+<div class="bg-black/40 p-2 border border-white/5">
+<label class="block font-headline text-[7px] text-white/30 uppercase">STATUS</label>
+<span class="font-headline text-xs font-bold text-secondary">ACTIVE</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Node 3: Logic Diamond (Purple) -->
+<div class="absolute left-[750px] top-[240px] group cursor-move">
+<div class="relative w-28 h-28 transform rotate-45 bg-secondary/20 border-2 border-secondary-dim backdrop-blur-sm flex items-center justify-center">
+<div class="transform -rotate-45 text-center">
+<span class="font-headline text-[9px] font-black tracking-widest text-secondary uppercase">SPLITTER</span>
+</div>
+</div>
+</div>
+<!-- Node 4: Sharp Rect (Primary Selection) -->
+<div class="absolute left-[1050px] top-[450px] group cursor-move">
+<div class="w-56 bg-surface-container-high border-2 border-primary glow-primary shadow-2xl transition-all">
+<div class="px-4 py-3 bg-primary text-black flex justify-between items-center">
+<span class="font-headline text-xs font-black uppercase">DATA_OUTPUT_NODE</span>
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">bolt</span>
+</div>
+<div class="p-4 bg-black/60">
+<div class="font-headline text-[9px] text-primary/80 mb-2 font-bold uppercase tracking-widest">METRICS_LOG</div>
+<div class="text-[10px] text-white/50 font-mono space-y-1">
+<p>SYNCING_PKT_0991...</p>
+<p class="text-primary">OK [200ms]</p>
+<p>DUMPING_CACHE...</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Floating Tool Palette -->
+<div class="absolute right-8 top-8 w-12 bg-surface-container-low border border-white/10 backdrop-blur-md p-1 space-y-1 z-30">
+<button class="w-full aspect-square flex items-center justify-center bg-primary text-black mb-2">
+<span class="material-symbols-outlined text-sm">navigation</span>
+</button>
+<button class="w-full aspect-square flex items-center justify-center hover:bg-white/10 text-white/60">
+<span class="material-symbols-outlined text-sm">square</span>
+</button>
+<button class="w-full aspect-square flex items-center justify-center hover:bg-white/10 text-white/60">
+<span class="material-symbols-outlined text-sm">circle</span>
+</button>
+<button class="w-full aspect-square flex items-center justify-center hover:bg-white/10 text-white/60">
+<span class="material-symbols-outlined text-sm">diamond</span>
+</button>
+<div class="h-px bg-white/10 mx-2 my-1"></div>
+<button class="w-full aspect-square flex items-center justify-center hover:bg-white/10 text-white/60">
+<span class="material-symbols-outlined text-sm">draw</span>
+</button>
+<button class="w-full aspect-square flex items-center justify-center hover:bg-white/10 text-white/60">
+<span class="material-symbols-outlined text-sm">text_fields</span>
+</button>
+</div>
+<!-- Canvas Stats Overlay -->
+<div class="absolute bottom-6 right-8 flex gap-6 z-30 pointer-events-none">
+<div class="flex flex-col items-end">
+<span class="font-headline text-[8px] text-white/30 uppercase tracking-[0.2em]">VIEWPORT_COORDS</span>
+<span class="font-headline text-sm font-bold text-primary">X: 1920 | Y: 1080</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-headline text-[8px] text-white/30 uppercase tracking-[0.2em]">ZOOM_LEVEL</span>
+<span class="font-headline text-sm font-bold text-primary">150%</span>
+</div>
+<div class="flex flex-col items-end border-l border-white/10 pl-6">
+<span class="font-headline text-[8px] text-white/30 uppercase tracking-[0.2em]">SYSTEM_LATENCY</span>
+<span class="font-headline text-sm font-bold text-secondary">0.4ms</span>
+</div>
+</div>
+<!-- Canvas Legend / Status -->
+<div class="absolute bottom-6 left-8 z-30 flex items-center gap-4 px-4 py-2 bg-black/40 border border-white/5 backdrop-blur-sm">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_#befc00] animate-pulse"></div>
+<span class="font-headline text-[9px] font-bold text-white/80 uppercase tracking-widest">LIVE_KERNEL_ACTIVE</span>
+</div>
+<div class="h-3 w-px bg-white/20"></div>
+<span class="font-headline text-[9px] text-white/40 uppercase">PROJECT_V01_FLOW</span>
+</div>
+</main>
+<!-- Contextual FAB (Hidden on editor, but structure preserved per rules) -->
+<!-- Suppression rule applied: Suppression on editor task screens unless primary action -->
+<!-- Left Interaction Indicator (Mini Library View) -->
+<div class="fixed left-20 top-16 bottom-0 w-64 bg-surface-container-low border-r border-white/5 z-30 translate-x-0 transition-transform">
+<div class="p-6 border-b border-white/5">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline text-xs font-black text-white uppercase tracking-widest">Node Library</h2>
+<span class="material-symbols-outlined text-xs text-white/30">filter_list</span>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<!-- Library Item 1 -->
+<div class="group bg-surface-container-high border border-white/5 p-3 flex flex-col items-center gap-3 hover:border-primary/40 cursor-grab active:cursor-grabbing transition-colors">
+<div class="w-10 h-10 border-2 border-primary/20 bg-primary/5"></div>
+<span class="font-headline text-[8px] font-bold uppercase text-white/40 group-hover:text-primary">Container</span>
+</div>
+<!-- Library Item 2 -->
+<div class="group bg-surface-container-high border border-white/5 p-3 flex flex-col items-center gap-3 hover:border-secondary/40 cursor-grab active:cursor-grabbing transition-colors">
+<div class="w-10 h-10 transform rotate-45 border-2 border-secondary/20 bg-secondary/5"></div>
+<span class="font-headline text-[8px] font-bold uppercase text-white/40 group-hover:text-secondary">Logic</span>
+</div>
+<!-- Library Item 3 -->
+<div class="group bg-surface-container-high border border-white/5 p-3 flex flex-col items-center gap-3 hover:border-primary/40 cursor-grab active:cursor-grabbing transition-colors">
+<div class="w-10 h-1 h-10 border-b-4 border-primary/40"></div>
+<span class="font-headline text-[8px] font-bold uppercase text-white/40 group-hover:text-primary">Interface</span>
+</div>
+<!-- Library Item 4 -->
+<div class="group bg-surface-container-high border border-white/5 p-3 flex flex-col items-center gap-3 hover:border-white/40 cursor-grab active:cursor-grabbing transition-colors">
+<div class="w-10 h-10 rounded-full border-2 border-white/20 bg-white/5"></div>
+<span class="font-headline text-[8px] font-bold uppercase text-white/40 group-hover:text-white">Trigger</span>
+</div>
+</div>
+</div>
+<div class="p-6">
+<h3 class="font-headline text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-4">Documentation</h3>
+<div class="space-y-4">
+<div class="p-3 bg-black/20 border-l-2 border-primary">
+<p class="font-body text-[10px] text-white/60 leading-relaxed italic">Drag items onto the canvas grid to initialize node sequencing. Use CTRL+L to auto-route connections.</p>
+</div>
+</div>
+</div>
+</div>
+</body></html>
