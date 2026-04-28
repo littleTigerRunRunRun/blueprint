@@ -1,11 +1,12 @@
 import type { ToolListSetting } from './panel'
-import type { GraphExecutor, GraphExec, Point, Callback } from './editor'
+import type { GraphExecutor, GraphExec, BaseGraphDefine, Callback } from './editor'
 export * from './panel'
 export * from './editor'
 
 /* 通用类型 */
 export type EnumRecord<T extends keyof any, U> = { [K in T]?: U }
 export type Orientation = 't' | 'rt' | 'r' | 'rb' | 'b' | 'lb' | 'l' | 'lt' // 8个方向
+export type GraphDirection = 'LR' | 'RL' | 'H' | 'TB' | 'BT' | 'V' | 'R' // H = horizontal 水平，即可以左也可以右 V = vertical 竖直，即可以上也可以下，R为无方向, radial
 export type LayoutDirection = 'v' | 'h' // vertical & horizontal
 export type PositionDescription = number | string // 可以是具体的数字，也可以是百分比
 export type OrientationSetting = 
@@ -60,95 +61,22 @@ export type GCSToolUseParam =
 export interface GCSApp<GD extends BaseGraphDefine> {
   tools: GCSTools
   arrayTools: GCSArrayTools
+  container:HTMLDivElement|null
   // icons:Record<string, string>
   set(...params: GCSToolUseParam): void
   // defineGraph(element:GE, name:string, dataDefine:GD[GE.NODE]): void
   // defineIcons(icons:Record<string, string>): void
   // getIcon(icon:string): string
-  createEditor(container:HTMLDivElement):Promise<GraphExecutor>
-}
-
-// GE = GraphElement 图元素定义
-export enum GE {
-  NODE = 'node',
-  LINE = 'line', // connection的说法太啰嗦，改为用line
-  SOCKET = 'socket', // 线的连接点
-  GROUP = 'group', // 组
-}
-
-export interface GraphNode {
-  id: string
-  type: GE.NODE
-  name: string
-  parent?: string
-}
-
-export interface GraphLine {
-  id: string
-  type: GE.LINE
-  source: string
-  target: string
-}
-
-export interface GraphGroup {
-  id: string
-  type: GE.GROUP
-}
-
-export interface GraphSocket {
-  name: string
-  type: GE.SOCKET
-}
-
-export type GetGraphDefine<N extends GraphNode, L extends GraphLine, G extends GraphGroup, S extends GraphSocket> = {
-  [GE.NODE]: N
-  [GE.LINE]: L
-  [GE.GROUP]: G
-  [GE.SOCKET]: S
-}
-
-export type BaseGraphDefine = GetGraphDefine<GraphNode, GraphLine, GraphGroup, GraphSocket>
-
-// 能力赋予工具
-export interface Selectable {
-  selected: boolean
-}
-
-export interface Sizable {
-  width: number
-  height: number
-  x: number
-  y: number
-}
-
-export interface Movable {
-  x: number
-  y: number
-}
-
-export interface Rotatable {
-  rotation: number
-}
-
-export interface SocketLine {
-  sourceSocket: string
-  targetSocket?: string
-  targetPosition?: Point
-}
-
-type SocketSide = 'in' | 'out'
-export interface AttachToNode {
-  node: string // socket依附的node的id
-  side: SocketSide // 是进线口还是出线口
+  onReady(container:HTMLDivElement): void
 }
 
 // 预设1: UML图，节点可缩放、拖动位置，连线由锚点生成，并且连线可以编辑
-export interface UMLNode extends GraphNode, Selectable, Sizable {}
+// export interface UMLNode extends GraphNode, Selectable, Sizable {}
 
-export interface UMLLine extends GraphLine, Selectable, SocketLine {}
+// export interface UMLLine extends GraphLine, Selectable, SocketLine {}
 
-export interface UMLSocket extends GraphSocket, AttachToNode {}
+// export interface UMLSocket extends GraphSocket, AttachToNode {}
 
-export interface UMLGroup extends GraphGroup, Selectable {}
+// export interface UMLGroup extends GraphGroup, Selectable {}
 
-export type PrefabUML = GetGraphDefine<UMLNode, UMLLine, UMLGroup, UMLSocket>
+// export type PrefabUML = GetGraphDefine<UMLNode, UMLLine, UMLGroup, UMLSocket>

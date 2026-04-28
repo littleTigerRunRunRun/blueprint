@@ -64,7 +64,7 @@
 <script setup lang="ts">
 import { onBeforeMount, onMounted, ref } from 'vue';
 import type { GCSApp, BaseGraphDefine, ToolListSetting } from './define';
-import { Toolbar } from './view/toolComponents'
+import { Toolbar } from './view/'
 
 // 
 const containerRef = ref<HTMLDivElement|null>(null)
@@ -101,7 +101,7 @@ onBeforeMount(() => {
 
 // 
 onMounted(() => {
-  if (containerRef.value) app.createEditor(containerRef.value)
+  if (containerRef.value) app.container = containerRef.value
 })
 
 const defineCustomPattern = () => {

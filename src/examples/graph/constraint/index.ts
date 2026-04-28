@@ -1,4 +1,15 @@
-// 通用的editor加上配置表完成业务形态定义
+import { Editor, Node } from '../lib'
+import type { DFDGraphNode, GraphNodeParamObject } from './define'
 
-// 方向约束:
-// LR RL BT TB B T L R
+export class DFDNode extends Node {
+  protected content: GraphNodeParamObject
+  constructor(config: DFDGraphNode) {
+    super(config)
+
+    this.content = config.content
+  }
+}
+
+export const editor = new Editor()
+
+editor.setNodeProto(DFDNode)

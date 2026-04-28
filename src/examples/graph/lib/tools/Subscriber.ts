@@ -1,4 +1,3 @@
-// import { GraphLineType } from '../define'
 // import type { GraphExecCallback, Callback, GraphLineParams, GraphLineParamsObject, KeyboardTool, side } from '../define'
 import type { Callback, GraphExecutor } from '../define'
 
@@ -245,6 +244,7 @@ class Subscriber<Sets, Events extends Record<string | number | symbol, Callback>
 
 export const subscriber = new Subscriber<{
   exec: GraphExecutor | null
+  connectionSelector: any
   'auxiliary.ctrl': boolean
   'auxiliary.shift': boolean
   'auxiliary.alt': boolean
@@ -252,6 +252,7 @@ export const subscriber = new Subscriber<{
 }, {
 }>({
   exec: null,
+  connectionSelector: null,
   'auxiliary.ctrl': false,
   'auxiliary.shift': false,
   'auxiliary.alt': false,

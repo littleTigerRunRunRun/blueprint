@@ -6,7 +6,8 @@ import { createGridBG, createPointBG, createPureBG, createInnerShadow } from './
 import { KeyboardManager } from './tools/keyborad'
 
 export * from './define'
-export * from './view/toolComponents'
+export * from './view'
+export * from './editor'
 
 // 用户自定义内容工具的总入口
 export class GraphApp<T extends BaseGraphDefine> implements GCSApp<BaseGraphDefine> {
@@ -14,6 +15,17 @@ export class GraphApp<T extends BaseGraphDefine> implements GCSApp<BaseGraphDefi
   public arrayTools:GCSArrayTools = {}
   // public icons:Record<string, string> = {}
   public exec: Record<GraphExec | string, Callback> = {}
+  private _container:HTMLDivElement|null = null
+  public set container(val:HTMLDivElement|null) {
+    this._container = val
+    if (val) {
+      subscriber.set('exec', this.exec)
+      this.onReady(val)
+    }
+  }
+  public get container() {
+    return this._container
+  }
   
   public set(...params: GCSToolUseParam) {
     const [name, param] = params
@@ -63,6 +75,11 @@ export class GraphApp<T extends BaseGraphDefine> implements GCSApp<BaseGraphDefi
     if (this.arrayTools[gcs] instanceof Array) this.arrayTools[gcs].push(param)
   }
 
+  // 给用户自己替换的
+  public onReady = (container: HTMLDivElement) => {
+    console.log('ready', container)
+  }
+
   // 定义图的各种图元的数据结构
   // public defineGraph(element:GE, name:string, dataDefine:any) {
 
@@ -79,12 +96,6 @@ export class GraphApp<T extends BaseGraphDefine> implements GCSApp<BaseGraphDefi
   //   if (!iconUrl) console.error(`找不到名为${icon}的icon资源`)
   //   return iconUrl || ''
   // }
-
-  public createEditor = async (container:HTMLDivElement):Promise<GraphExecutor> => {
-    // 
-    subscriber.set('exec', this.exec)
-    return {} as GraphExecutor
-  }
 }
 
 export const app = new GraphApp()

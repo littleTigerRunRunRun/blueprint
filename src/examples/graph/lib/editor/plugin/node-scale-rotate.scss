@@ -1,0 +1,103 @@
+.node-scale-rotate-panel {
+  position: absolute;
+  z-index: 10000;
+  pointer-events: none;
+  display: none;
+
+  .scale-handle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background-color: #1890ff;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+
+    &:hover {
+      background-color: #40a9ff;
+      transform: translate(-50%, -50%) scale(1.3);
+    }
+
+    &.scale-handle-top {
+      cursor: n-resize;
+    }
+
+    &.scale-handle-bottom {
+      cursor: s-resize;
+    }
+
+    &.scale-handle-left {
+      cursor: w-resize;
+    }
+
+    &.scale-handle-right {
+      cursor: e-resize;
+    }
+
+    &.scale-handle-topleft {
+      cursor: nw-resize;
+    }
+
+    &.scale-handle-topright {
+      cursor: ne-resize;
+    }
+
+    &.scale-handle-bottomleft {
+      cursor: sw-resize;
+    }
+
+    &.scale-handle-bottomright {
+      cursor: se-resize;
+    }
+  }
+
+  .rotate-handle {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-color: #52c41a;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    cursor: grab;
+    pointer-events: auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.15s ease, transform 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: #73d13d;
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+
+    &:active {
+      cursor: grabbing;
+      background-color: #389e0d;
+    }
+
+    .rotate-icon {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-left: none;
+      border-radius: 0 50% 50% 0;
+      display: block;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      width: 2px;
+      height: 12px;
+      background-color: #52c41a;
+      transform: translateX(-50%);
+    }
+  }
+}

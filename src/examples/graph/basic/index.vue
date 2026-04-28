@@ -149,6 +149,7 @@ onMounted(async () => {
   document.body.addEventListener('mouseleave', onDragEnd)
 
   // 测试用
+  // @ts-ignore
   editorExec[GraphExec.IMPORT]()
 })
 

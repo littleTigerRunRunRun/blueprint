@@ -33,13 +33,14 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { Graph, app, GraphExec } from '../lib'
 import type { GraphMain } from '../lib'
 // import {} from './define'
-import { ref, onMounted } from 'vue'
-import log from '../lib/log.json'
 import ScaleTool from './components/scale-tool.vue'
 import { toggleFullscreen } from './tool'
+import log from '../lib/log.json'
+import { editor } from './index'
 
 const graphRef = ref<GraphMain | null>(null)
 const startGraphRender = ref(false)
@@ -84,7 +85,7 @@ app.set('toolList', {
   ]
 })
 
-// 设置侧工具栏
+// 设置左侧资产工具栏
 app.set('toolList', {
   name: 'asset',
   layoutDirection: 'v',
@@ -122,7 +123,7 @@ app.set('exec', [
 // 绑定各种键盘快捷键
 app.set('keyboard', [
   { key: 'delete', exec: GraphExec.DELETE_SELECT },
-  { key: 'tab', exec: GraphExec.ADD_FROM_SELECTING },
+  { key: 'tab', exec: GraphExec.ADD_NODE },
   // 绑定了按键f到自定义指令fullscreen
   { key: 'f', exec: 'fullscreen' }
 ])
@@ -131,10 +132,12 @@ app.set('keyboard', [
 // 本项目好像暂时未用到右键菜单，因此暂时不用接入
 // app.set('contextmenu')
 
-// 初始化画布
-onMounted(() => {
-})
+// 监听onReady事件告诉什么时候可以开始渲染editor
+app.onReady = (container:HTMLDivElement) => {
+  editor.init(container)
+}
 
+// 初始化完app后开始渲染graph基底dom内容
 startGraphRender.value = true
 
 // 查看开发日志新增内容
@@ -142,7 +145,6 @@ const open = ref<boolean>(false)
 const showDrawer = () => {
   open.value = true
 }
-
 </script>
 
 <style lang="scss" scoped>
